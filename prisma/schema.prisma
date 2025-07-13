@@ -23,7 +23,7 @@ enum Status {
 
 model Ingredient {
   id                Int      @id @default(autoincrement())
-  name              String
+  name              String   @unique 
   type              String
   unit              String
   quantity          Float
@@ -83,4 +83,14 @@ model RecipeIngredient {
 
   recipe     Recipe     @relation(fields: [recipeId], references: [id])
   ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+}
+
+model ActivityLog {
+  id          Int      @id @default(autoincrement())
+  action      String
+  entity      String
+  entityId    Int
+  description String
+  timestamp   DateTime @default(now())
+  userId      Int?     // tuỳ chọn nếu bạn có bảng User
 }
