@@ -14,16 +14,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Status {
-  boiling
-  fermenting
-  cold_crashing
-  done
-}
 
 model Ingredient {
   id                Int      @id @default(autoincrement())
-  name              String   @unique 
+  name              String   @unique
   type              String
   unit              String
   quantity          Float
@@ -37,9 +31,17 @@ model Ingredient {
   recipeIngredients RecipeIngredient[]
 }
 
+enum Status {
+  boiling
+  fermenting
+  cold_crashing
+  done
+}
+
+
 model Batch {
   id        Int      @id @default(autoincrement())
-  code      String
+  code      String   @unique
   beerName  String
   status    Status
   volume    Float
@@ -92,10 +94,10 @@ model ActivityLog {
   entityId    Int
   description String
   timestamp   DateTime @default(now())
-  userId      Int?     // tuỳ chọn nếu bạn có bảng User
+  userId      Int? // tuỳ chọn nếu bạn có bảng User
 }
 
 model Type {
-  id Int @id @default(autoincrement())
-  typeName String @unique 
+  id       Int    @id @default(autoincrement())
+  typeName String @unique
 }

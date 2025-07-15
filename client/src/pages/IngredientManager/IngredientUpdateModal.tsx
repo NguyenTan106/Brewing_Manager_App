@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { updateIngredientByIdAPI } from "../services/CRUD_API_Ingredient";
+import { updateIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
 import type { Ingredient } from "./IngredientManager";
-
+import Select from "react-select";
+import { getAllTypesAPI } from "../../services/CRUD_API_type";
 type Props = {
   handleCloseUpdateModal: () => void;
   selectedIngredient: Ingredient | null;
   showUpdateModal: boolean;
   handleGetAllIngredientsAPI: () => void;
 };
+
+interface Type {
+  id: number;
+  typeName: string;
+}
 
 export default function IngredientUpdateModal({
   handleCloseUpdateModal,
@@ -17,16 +23,71 @@ export default function IngredientUpdateModal({
   handleGetAllIngredientsAPI,
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<Ingredient>>({});
+  const [type, setType] = useState<Type[]>([]);
+  const [selectedType, setSelectedType] = useState<{
+    label: string;
+    value: number;
+  } | null>(null);
 
   useEffect(() => {
+    if (selectedIngredient) {
+      setEditForm(selectedIngredient);
+
+      const matchedType = type.find(
+        (t) => t.typeName === selectedIngredient.type
+      );
+
+      if (matchedType) {
+        setSelectedType({
+          label: matchedType.typeName,
+          value: matchedType.id,
+        });
+      }
+    }
+  }, [selectedIngredient, type]);
+
+  useEffect(() => {
+    handleGetAllTypesAPI();
     if (selectedIngredient) {
       setEditForm(selectedIngredient);
     }
   }, [selectedIngredient]);
 
+  const handleGetAllTypesAPI = async () => {
+    const data = await getAllTypesAPI();
+    setType(data);
+  };
+
   const handleUpdateIngredientByIdAPI = async (id: number | undefined) => {
     if (!id) return;
     try {
+      if (
+        editForm.name === "" ||
+        editForm.type === "" ||
+        editForm.unit === "" ||
+        editForm.quantity === "" ||
+        editForm.lowStockThreshold === "" ||
+        editForm.lastImportDate === null
+      ) {
+        alert("Vui lòng điền đầy đủ thông tin");
+        return;
+      }
+
+      console.log("editForm", editForm.lowStockThreshold);
+      console.log("selectedIngredient", selectedIngredient?.lowStockThreshold);
+      // Kiểm tra xem có thay đổi nào không
+      if (
+        selectedIngredient?.quantity == editForm.quantity &&
+        selectedIngredient?.lowStockThreshold == editForm.lowStockThreshold &&
+        selectedIngredient?.lastImportDate == editForm.lastImportDate &&
+        selectedIngredient?.name == editForm.name &&
+        selectedIngredient?.type == editForm.type &&
+        selectedIngredient?.unit == editForm.unit &&
+        selectedIngredient?.notes == editForm.notes
+      ) {
+        alert("Không có thay đổi nào để cập nhật");
+        return;
+      }
       await updateIngredientByIdAPI(id, editForm);
 
       handleCloseUpdateModal();
@@ -45,13 +106,17 @@ export default function IngredientUpdateModal({
   };
 
   const fromDatetimeLocalValue = (value: string) => {
-    const date = new Date(value); // local
-    return date.toISOString(); // chuẩn UTC ISO-8601
+    if (!value || isNaN(Date.parse(value))) {
+      console.warn("Giá trị ngày giờ không hợp lệ:", value);
+      return null;
+    }
+    const date = new Date(value);
+    return date.toISOString();
   };
 
   return (
     <>
-      <Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
+      <Modal show={showUpdateModal} onHide={handleCloseUpdateModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Sửa nguyên liệu {selectedIngredient?.name}</Modal.Title>
         </Modal.Header>
@@ -60,7 +125,7 @@ export default function IngredientUpdateModal({
             <p>
               <strong>ID:</strong> {selectedIngredient?.id}
             </p>
-            <p>
+            <div>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Tên:</strong>
@@ -73,22 +138,34 @@ export default function IngredientUpdateModal({
                   }
                 />
               </Form.Group>
-            </p>
-            <p>
+            </div>
+            <div>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Loại:</strong>
                 </Form.Label>
-                <Form.Control
-                  placeholder="VD: malt"
-                  value={editForm?.type ?? ""}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, type: e.target.value })
-                  }
+                <Select
+                  className="basic-single"
+                  classNamePrefix="select"
+                  required
+                  name="type"
+                  options={type.map((t) => ({
+                    label: t.typeName,
+                    value: t.id,
+                  }))}
+                  value={selectedType}
+                  onChange={(option) => {
+                    setEditForm((prev) => ({
+                      ...prev,
+                      type: option?.label ?? "",
+                    })); // hoặc typeName nếu bạn dùng tên
+                    setSelectedType(option);
+                  }}
+                  placeholder="Chọn loại nguyên liệu"
                 />
               </Form.Group>
-            </p>
-            <p>
+            </div>
+            <div>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Đơn vị:</strong>
@@ -101,8 +178,8 @@ export default function IngredientUpdateModal({
                   }
                 />
               </Form.Group>
-            </p>
-            <p>
+            </div>
+            <div>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Số lượng:</strong>
@@ -114,13 +191,14 @@ export default function IngredientUpdateModal({
                   onChange={(e) =>
                     setEditForm({
                       ...editForm,
-                      quantity: Number(e.target.value),
+                      quantity:
+                        e.target.value === "" ? "" : Number(e.target.value),
                     })
                   }
                 />
               </Form.Group>
-            </p>
-            <p>
+            </div>
+            <div>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Giới hạn cảnh báo:</strong>
@@ -132,13 +210,14 @@ export default function IngredientUpdateModal({
                   onChange={(e) =>
                     setEditForm({
                       ...editForm,
-                      lowStockThreshold: Number(e.target.value),
+                      lowStockThreshold:
+                        e.target.value === "" ? "" : Number(e.target.value),
                     })
                   }
                 />
               </Form.Group>
-            </p>
-            <p>
+            </div>
+            <div>
               <Form.Group controlId="lastImportDate" className="mb-3">
                 <Form.Label>
                   <strong>Ngày nhập kho gần nhất:</strong>
@@ -157,6 +236,22 @@ export default function IngredientUpdateModal({
                     })
                   }
                   placeholder="VD: 2025-07-15T14:30"
+                />
+              </Form.Group>
+            </div>
+            <p>
+              <Form.Group controlId="" className="mb-3">
+                <Form.Label>
+                  <strong>Ghi chú:</strong>
+                </Form.Label>
+                <Form.Control
+                  as={"textarea"}
+                  rows={3}
+                  placeholder="VD: g"
+                  value={editForm?.notes ?? ""}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, notes: e.target.value })
+                  }
                 />
               </Form.Group>
             </p>

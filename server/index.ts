@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
@@ -10,7 +10,14 @@ import {
   deleteIngredientByIdController,
   getAllTypesController,
   createTypeController,
-} from "./routes/api";
+  deleteTypeController,
+  paginationController,
+} from "./routes/api_ingredient";
+
+import {
+  getAllBatchesController,
+  getBatchByIdController,
+} from "./routes/api_batch";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -28,6 +35,12 @@ app.use("/api", updateIngredientByIdController);
 app.use("/api", deleteIngredientByIdController);
 app.use("/api", getAllTypesController);
 app.use("/api", createTypeController);
+app.use("/api", deleteTypeController);
+app.use("/api", paginationController);
+
+//batch
+app.use("/api", getAllBatchesController);
+app.use("/api", getBatchByIdController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

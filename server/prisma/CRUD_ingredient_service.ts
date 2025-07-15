@@ -250,17 +250,65 @@ const createType = async (
   }
 };
 
-// createIngredient(
-//   "Pale Ale Malt",
-//   "malt",
-//   "kg",
-//   25,
-//   10,
-//   new Date("2025-07-08T00:00:00.000Z"),
-//   "Malt cơ bản cho bia vàng nhạt"
-// ).then(() => {
-//   console.log(`successfully`);
-// });
+const deleteType = async (
+  id: number
+): Promise<{ message: string; data: any }> => {
+  try {
+    const existing = await prisma.type.findUnique({ where: { id: id } });
+    if (!existing) {
+      return {
+        message: `Không tìm thấy loại nguyên liệu với ID = ${id}`,
+        data: null,
+      };
+    }
+
+    const deleted = await prisma.type.delete({
+      where: { id },
+    });
+
+    return {
+      message: "Xóa loại nguyên liệu thành công",
+      data: deleted,
+    };
+  } catch (e) {
+    console.error("Lỗi khi xóa loại nguyên liệu:", e);
+    throw new Error("Không thể xóa loại nguyên liệu");
+  }
+};
+
+const pagination = async (page: number, limit: number) => {
+  try {
+    const skip = (page - 1) * limit;
+
+    // Lấy tổng số lượng bản ghi
+    const total = await prisma.ingredient.count();
+
+    // Lấy danh sách bản ghi theo trang
+    const ingredients = await prisma.ingredient.findMany({
+      skip,
+      take: limit,
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    const result = await Promise.all(
+      ingredients.map(async (i) => ({
+        ...i,
+        status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
+      }))
+    );
+
+    return {
+      data: result,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
+    };
+  } catch (error) {
+    console.error("Phân trang lỗi:", error);
+  }
+};
 
 export {
   getAllIngredients,
@@ -271,4 +319,6 @@ export {
   logActivity,
   getAllTypes,
   createType,
+  deleteType,
+  pagination,
 };

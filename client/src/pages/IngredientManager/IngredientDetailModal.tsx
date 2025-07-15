@@ -1,8 +1,8 @@
 import { useState, type JSX } from "react";
-import { Modal, Button, Badge, Form } from "react-bootstrap";
+import { Modal, Button, Badge } from "react-bootstrap";
 import IngredientUpdateModal from "./IngredientUpdateModal";
 import type { Ingredient } from "./IngredientManager";
-
+import { deleteIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
 interface Props {
   showModal: boolean;
   setShowModal: (value: boolean) => void;
@@ -30,9 +30,23 @@ export default function IngredientDetail({
     setShowModal(false);
   };
 
+  const handleDeleteIngredientAPI = async (id: number) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa nguyên liệu này?")) {
+      const response = await deleteIngredientByIdAPI(id);
+      const errorMessage = response.message;
+      if (response.data == null) {
+        alert(`${errorMessage}`);
+        return;
+      }
+      alert(`${errorMessage}`);
+      handleGetAllIngredientsAPI();
+      handleClose();
+    }
+  };
+
   return (
     <>
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Chi tiết nguyên liệu</Modal.Title>
         </Modal.Header>
@@ -96,6 +110,11 @@ export default function IngredientDetail({
                   {
                     timeZone: "Asia/Ho_Chi_Minh",
                     hour12: false,
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
                   }
                 )}
             </p>
@@ -114,6 +133,9 @@ export default function IngredientDetail({
               <Button
                 className="m-2"
                 variant="danger"
+                onClick={() =>
+                  handleDeleteIngredientAPI(selectedIngredient?.id ?? 0)
+                }
                 style={{
                   padding: "5px 10px",
                   fontSize: "14px",

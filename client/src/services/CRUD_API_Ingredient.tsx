@@ -37,3 +37,8 @@ export const updateIngredientByIdAPI = async (
   const res = await axios.put(`${BASE_URL}/api/ingredient/${id}`, updatedData);
   return res.data; // thường là nguyên liệu đã được cập nhật
 };
+
+export const deleteIngredientByIdAPI = async (id: number) => {
+  const res = await axios.delete(`${BASE_URL}/api/ingredient/${id}`);
+  return res.data; // thường là thông báo thành công
+};

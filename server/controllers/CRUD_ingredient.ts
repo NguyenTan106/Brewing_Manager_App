@@ -8,7 +8,7 @@ import {
   updateIngredientById,
   deleteIngredientById,
   logActivity,
-} from "../prisma/seed";
+} from "../prisma/CRUD_ingredient_service";
 import { ingredientSchema } from "../middlewares/schema";
 import { compareAndLogChanges } from "../services/logActivityService";
 
@@ -61,10 +61,10 @@ const handleCreateIngredient = async (req: Request, res: Response) => {
       "create",
       "Ingredient",
       data.id,
-      `Thêm nguyên liệu "${data.name}" với số lượng ${data.quantity}`
+      `Thêm nguyên liệu "${data.name}" với số lượng ${data.quantity} ${data.unit} vào ngày ${data.lastImportDate}`
       // userId // nếu có
     );
-  } catch (e: unknown) {
+  } catch (e) {
     if (e instanceof ZodError) {
       const errMessage = e._zod.def;
       const err = errMessage.map((e) => e.message);

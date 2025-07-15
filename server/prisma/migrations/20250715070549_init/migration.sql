@@ -78,8 +78,19 @@ CREATE TABLE "ActivityLog" (
     CONSTRAINT "ActivityLog_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Type" (
+    "id" SERIAL NOT NULL,
+    "typeName" TEXT NOT NULL,
+
+    CONSTRAINT "Type_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Ingredient_name_key" ON "Ingredient"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Type_typeName_key" ON "Type"("typeName");
 
 -- AddForeignKey
 ALTER TABLE "Batch" ADD CONSTRAINT "Batch_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "Recipe"("id") ON DELETE SET NULL ON UPDATE CASCADE;

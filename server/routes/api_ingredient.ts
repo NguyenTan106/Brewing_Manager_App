@@ -8,7 +8,13 @@ import {
   handleUpdateIngredientById,
   handleDeleteIngredientById,
 } from "../controllers/CRUD_ingredient";
-import { handleGetAllTypes, handleCreateType } from "../controllers/CRUD_type";
+import {
+  handleGetAllTypes,
+  handleCreateType,
+  handleDeleteType,
+} from "../controllers/CRUD_type";
+
+import { handlePagination } from "../controllers/pagination";
 
 const getAllIngredientsController = router.get(
   "/ingredients",
@@ -37,6 +43,9 @@ const deleteIngredientByIdController = router.delete(
 
 const getAllTypesController = router.get("/types", handleGetAllTypes);
 const createTypeController = router.post("/type", handleCreateType);
+const deleteTypeController = router.delete("/type/:id", handleDeleteType);
+
+const paginationController = router.get("/pagination", handlePagination);
 
 export {
   getAllIngredientsController,
@@ -46,4 +55,6 @@ export {
   deleteIngredientByIdController,
   getAllTypesController,
   createTypeController,
+  deleteTypeController,
+  paginationController,
 };
