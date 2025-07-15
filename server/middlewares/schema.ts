@@ -12,3 +12,7 @@ export const ingredientSchema = z.object({
     .refine((val) => !isNaN(Date.parse(val)), "Ngày không hợp lệ"), // hoặc z.date()
   notes: z.string().optional(),
 });
+
+export const typeSchema = z.object({
+  typeName: z.string().min(1, "Tên không được để trống"),
+});

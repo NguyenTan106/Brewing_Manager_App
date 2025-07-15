@@ -8,7 +8,8 @@ import {
   createIngredientController,
   updateIngredientByIdController,
   deleteIngredientByIdController,
-  checkInventoryController,
+  getAllTypesController,
+  createTypeController,
 } from "./routes/api";
 
 const app = express();
@@ -25,7 +26,8 @@ app.use("/api", getAllIngredientByIdController);
 app.use("/api", createIngredientController);
 app.use("/api", updateIngredientByIdController);
 app.use("/api", deleteIngredientByIdController);
-app.use("/api", checkInventoryController);
+app.use("/api", getAllTypesController);
+app.use("/api", createTypeController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

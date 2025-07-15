@@ -3,15 +3,35 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 // use `prisma` in your application to read and write data in your DB
 
+const getIngredientStatus = async (
+  quantity: number,
+  threshold: number
+): Promise<string> => {
+  if (quantity <= 0) return "Hết";
+  if (quantity <= threshold) return "Sắp hết";
+  return "Đủ";
+};
+
+// CRUD ingredient
 const getAllIngredients = async (): Promise<{ message: string; data: any }> => {
   try {
-    const data = await prisma.ingredient.findMany();
+    const data = await prisma.ingredient.findMany({
+      orderBy: {
+        id: "asc", // hoặc "desc" cho giảm dần
+      },
+    });
     if (data.length === 0) {
       return { message: "Chưa có nguyên liệu nào", data: [] };
     }
+    const result = await Promise.all(
+      data.map(async (i) => ({
+        ...i,
+        status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
+      }))
+    );
     return {
       message: "Thành công",
-      data: data,
+      data: result,
     };
   } catch (e) {
     console.error(e);
@@ -27,11 +47,15 @@ const getIngredientById = async (
       where: { id: id },
     });
     if (!data) {
-      return { message: "Chưa có nguyên liệu nào", data: [] };
+      return { message: "Không tìm thấy nguyên liệu", data: [] };
     }
+    const result = {
+      ...data,
+      status: await getIngredientStatus(data.quantity, data.lowStockThreshold),
+    };
     return {
       message: "Thành công",
-      data: data,
+      data: result,
     };
   } catch (e) {
     console.error(e);
@@ -151,6 +175,7 @@ const deleteIngredientById = async (
   }
 };
 
+// log activity
 const logActivity = async (
   action: string,
   entity: string,
@@ -173,6 +198,58 @@ const logActivity = async (
   }
 };
 
+// CRUD type
+const getAllTypes = async (): Promise<{ message: string; data: any }> => {
+  try {
+    const data = await prisma.type.findMany();
+    if (data.length === 0) {
+      return { message: "Chưa có loại nào", data: [] };
+    }
+    return {
+      message: "Thành công",
+      data: data,
+    };
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
+};
+
+const createType = async (
+  typeName: string
+): Promise<{ message: string; data: any }> => {
+  try {
+    // ✅ Kiểm tra trùng tên
+    const existing = await prisma.type.findUnique({
+      where: {
+        typeName: typeName, // shorthand, tương đương typeName: typeName
+      },
+    });
+
+    if (existing) {
+      return {
+        message: `Loại nguyên liệu ${typeName} đã tồn tại`,
+        data: null,
+      };
+    }
+
+    // ✅ Tạo nguyên liệu mới nếu không trùng
+    const data = await prisma.type.create({
+      data: {
+        typeName,
+      },
+    });
+
+    return {
+      message: "Thêm loại nguyên liệu thành công",
+      data,
+    };
+  } catch (e) {
+    console.error("Lỗi khi tạo loại nguyên liệu:", e);
+    throw new Error("Không thể thêm loai nguyên liệu");
+  }
+};
+
 // createIngredient(
 //   "Pale Ale Malt",
 //   "malt",
@@ -192,4 +269,6 @@ export {
   updateIngredientById,
   deleteIngredientById,
   logActivity,
+  getAllTypes,
+  createType,
 };

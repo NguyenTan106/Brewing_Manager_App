@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    /* Output */
+    "target": "ES2022", // Mã JavaScript đầu ra
+    "module": "ESNext", // Hỗ trợ dynamic import
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+
+    /* JSX & React */
+    "jsx": "react-jsx", // JSX transform theo chuẩn React 17+
+
+    /* Module resolution */
+    "moduleResolution": "bundler", // Phù hợp với Vite
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+
+    /* Type checking */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Build */
+    "noEmit": true, // Vite sẽ lo chuyện build
+    "skipLibCheck": true, // Bỏ kiểm tra type lib của node_modules
+
+    /* Linting nâng cao (tùy chọn) */
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
+
+    /* Paths (tùy chỉnh nếu có alias) */
+    // "baseUrl": ".",
+    // "paths": {
+    //   "@/*": ["src/*"]
+    // }
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
+}

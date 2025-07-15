@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { ZodError, z } from "zod";
-import { checkInventoryService } from "../services/checkInventoryService";
 
 import {
   getAllIngredients,

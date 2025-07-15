@@ -94,3 +94,8 @@ model ActivityLog {
   timestamp   DateTime @default(now())
   userId      Int?     // tuỳ chọn nếu bạn có bảng User
 }
+
+model Type {
+  id Int @id @default(autoincrement())
+  typeName String @unique 
+}
