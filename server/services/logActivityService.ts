@@ -1,5 +1,5 @@
 // utils/compareAndLog.ts
-import { logActivity } from "../prisma/CRUD_ingredient_service";
+import { logActivity } from "../prisma/logActivity";
 
 type EntityData = Record<string, any>;
 
@@ -23,6 +23,16 @@ export const compareAndLogChanges = async (
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  const logUpdateDate = new Date().toLocaleString("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    hour12: false,
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
   for (const field of fieldsToCompare) {
     const oldValue = oldData[field];
     const newValue = newData[field];
@@ -52,7 +62,9 @@ export const compareAndLogChanges = async (
       "update",
       entity,
       entityId,
-      `Cập nhật ${entity} "${entityLabel}":\n` + logs.join("\n"),
+      `Cập nhật ${entity} "${entityLabel}":\n` +
+        logs.join("\n") +
+        ` ngày ${logUpdateDate}`,
       userId
     );
   }

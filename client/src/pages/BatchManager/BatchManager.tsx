@@ -6,38 +6,24 @@ import {
 import { useState, useEffect } from "react";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import BatchDetailModal from "./BatchDetailModal";
-
-// eslint-disable-next-line react-refresh/only-export-components
-export enum Status {
-  boiling = "boiling",
-  fermenting = "fermenting",
-  cold_crashing = "cold_crashing",
-  done = "done",
-}
-
-export interface Batch {
-  id: number;
-  code: string;
-  beerName: string;
-  status: Status;
-  volume: number;
-  notes?: string;
-  recipeId?: number;
-  createdAt?: string;
-}
+import AddNewBatchModal from "./AddNewBatchModal";
+import { paginationBatchAPI } from "../../services/pagination_API";
+import {
+  type Batch,
+  statusLabelMap,
+  Status,
+} from "../../services/CRUD_API_Batch";
 
 export default function BatchManager() {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
-  const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    handleGetAllBatchesAPI();
-  }, []);
-
-  const statusOptions = Object.values(Status).map((s) => ({
-    label: s.replace("_", " ").toUpperCase(), // "COLD CRASHING"
-    value: s,
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const statusOptions: { label: string; value: Status }[] = Object.entries(
+    statusLabelMap
+  ).map(([key, label]) => ({
+    label,
+    value: key as Status,
   }));
 
   const getStatusBadge = (status: Status) => {
@@ -55,30 +41,83 @@ export default function BatchManager() {
     }
   };
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(5);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false); // ✅
+
+  useEffect(() => {
+    const savedPage = localStorage.getItem("batch_page");
+    const savedLimit = localStorage.getItem("batch_limit");
+
+    if (savedPage) setCurrentPage(Number(savedPage));
+    if (savedLimit) setLimit(Number(savedLimit));
+
+    setIsInitialized(true); // ✅ cho phép gọi API sau khi đọc xong localStorage
+  }, []);
+
+  // 🔁 Gọi API chỉ khi dữ liệu khởi tạo xong
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem("batch_page", currentPage.toString());
+      localStorage.setItem("batch_limit", limit.toString());
+
+      handlePaginationAPI(currentPage, limit);
+    }
+  }, [currentPage, limit, isInitialized]);
+
+  const handlePaginationAPI = async (page: number, limit: number) => {
+    const data = await paginationBatchAPI(page, limit);
+    setBatches(data.data);
+    setCurrentPage(data.currentPage);
+    setTotalPages(data.totalPages);
+  };
+
+  // Xử lý chuyển trang
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page); // useEffect sẽ tự gọi handlePaginationAPI
+    }
+  };
+
   const handleGetAllBatchesAPI = async () => {
     const data = await getAllBatchesAPI();
+    console.log(data);
     setBatches(data);
   };
+
   const handleGetBatchesByIdAPI = async (id: number) => {
     const data = await getAllBatchByIdAPI(id);
     setSelectedBatch(data);
-    setShowModal(true);
+    setShowDetailModal(true);
   };
 
   return (
     <>
       <BatchDetailModal
-        showModal={showModal}
-        handleClose={() => setShowModal(false)}
-        statusOptions={statusOptions}
+        showDetailModal={showDetailModal}
+        handleClose={() => setShowDetailModal(false)}
         selectedBatch={selectedBatch}
+        setSelectedBatch={setSelectedBatch}
         getStatusBadge={getStatusBadge}
+        handleGetAllBatchesAPI={handleGetAllBatchesAPI}
+        statusOptions={statusOptions}
+        handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
+
+      <AddNewBatchModal
+        showAddModal={showAddModal}
+        handleClose={() => setShowAddModal(false)}
+        handleGetAllBatchesAPI={handleGetAllBatchesAPI}
+        statusOptions={statusOptions}
+      />
+
       <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
         <h3 className="mb-0">Danh sách mẻ:</h3>
         <Button
           title="Thêm nguyên liệu mới"
           variant="primary"
+          onClick={() => setShowAddModal(true)}
           className="d-flex align-items-center gap-2"
         >
           <FaPlus />
@@ -98,8 +137,9 @@ export default function BatchManager() {
           <tr>
             <th style={{ width: "5%" }}>Mã mẻ</th>
             <th style={{ width: "10%" }}>Tên mẻ</th>
-            <th style={{ width: "12%" }}>Trạng thái</th>
+            <th style={{ width: "8%" }}>Trạng thái</th>
             <th style={{ width: "10%" }}>Khối lượng (lít)</th>
+            <th style={{ width: "10%" }}>Mã công thức</th>
             <th style={{ width: "10%" }}>Ngày tạo</th>
             <th style={{ width: "10%" }}>Hành động</th>
           </tr>
@@ -108,7 +148,7 @@ export default function BatchManager() {
           {batches.length === 0 ? (
             <tr>
               <td colSpan={8} className="text-center text-muted">
-                Không có mẻ nào
+                <p>Không có mẻ nào</p>
               </td>
             </tr>
           ) : (
@@ -118,6 +158,7 @@ export default function BatchManager() {
                 <td>{i.beerName}</td>
                 <td>{getStatusBadge(i.status)}</td>
                 <td>{i.volume}</td>
+                <td>{i.recipeId || "Chưa có công thức nào"}</td>
                 <td>
                   {i.createdAt &&
                     new Date(i.createdAt).toLocaleString("vi-VN", {
@@ -146,6 +187,66 @@ export default function BatchManager() {
           )}
         </tbody>
       </Table>
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+          <Button
+            variant="outline-secondary"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
+            style={{ minWidth: "80px" }}
+          >
+            <FaAngleLeft className="me-1" />
+            Trước
+          </Button>
+
+          {[...Array(totalPages)].map((_, i) => {
+            const pageNum = i + 1;
+            if (
+              pageNum === 1 ||
+              pageNum === totalPages ||
+              Math.abs(currentPage - pageNum) <= 1
+            ) {
+              return (
+                <Button
+                  key={pageNum}
+                  variant={
+                    pageNum === currentPage ? "secondary" : "outline-secondary"
+                  }
+                  onClick={() => handlePageChange(pageNum)}
+                  className="rounded-circle fw-semibold"
+                  style={{ width: "40px", height: "40px" }}
+                >
+                  {pageNum}
+                </Button>
+              );
+            } else if (
+              (pageNum === currentPage - 2 && currentPage > 3) ||
+              (pageNum === currentPage + 2 && currentPage < totalPages - 2)
+            ) {
+              return (
+                <span
+                  key={pageNum}
+                  className="text-secondary mx-2"
+                  style={{ fontWeight: "bold" }}
+                >
+                  ...
+                </span>
+              );
+            }
+            return null;
+          })}
+          <Button
+            variant="outline-secondary"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
+            style={{ minWidth: "80px" }}
+          >
+            Sau <FaAngleRight className="ms-1" />
+          </Button>
+        </div>
+      )}
     </>
   );
 }

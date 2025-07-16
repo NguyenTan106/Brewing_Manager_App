@@ -73,11 +73,12 @@ export function AddIngredient({
       name: form.name,
       type: form.type,
       unit: form.unit,
-      quantity: Number(form.quantity), // ✅ ép về number
-      lowStockThreshold: Number(form.lowStockThreshold),
+      quantity: parseFloat(form.quantity), // ✅ ép về number
+      lowStockThreshold: parseFloat(form.lowStockThreshold),
       lastImportDate: form.lastImportDate,
       notes: form.notes,
     });
+    console.log(data);
     if (data.data == null) {
       alert(data.message);
       return;

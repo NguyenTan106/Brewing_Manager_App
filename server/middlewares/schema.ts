@@ -5,8 +5,8 @@ export const ingredientSchema = z.object({
   name: z.string().min(1, "Tên không được để trống"),
   type: z.string().min(1, "Loại không được để trống"),
   unit: z.string().min(1, "Đơn vị không được để trống"),
-  quantity: z.number().int().min(0, "Số lượng phải >= 0"),
-  lowStockThreshold: z.number().int().min(0, "Ngưỡng cảnh báo phải >= 0"),
+  quantity: z.number().min(0, "Số lượng phải >= 0"),
+  lowStockThreshold: z.number().min(0, "Ngưỡng cảnh báo phải >= 0"),
   lastImportDate: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)), "Ngày không hợp lệ"), // hoặc z.date()
@@ -15,4 +15,19 @@ export const ingredientSchema = z.object({
 
 export const typeSchema = z.object({
   typeName: z.string().min(1, "Tên không được để trống"),
+});
+
+export const batchSchema = z.object({
+  beerName: z.string().min(1, "Tên không được để trống"),
+  status: z.string().min(1, "Yêu cầu chọn trạng thái"),
+  volume: z.string().min(0, "Khối lượng mẻ không được để trống"),
+  notes: z.string().optional(),
+  recipeId: z.string().optional(),
+});
+
+export const recipeSchema = z.object({
+  name: z.string().min(1, "Tên không được để trống"),
+  description: z.string().optional(),
+  note: z.string().optional(),
+  instructions: z.string().optional(),
 });

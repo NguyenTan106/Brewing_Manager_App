@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+import { paginate } from "./pagination";
 const prisma = new PrismaClient();
 // use `prisma` in your application to read and write data in your DB
 
@@ -77,7 +77,9 @@ const createIngredient = async (
     const existing = await prisma.ingredient.findUnique({
       where: { name: name },
     });
-
+    const vnNow = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
+    );
     if (existing) {
       return {
         message: `Nguyên liệu ${name} đã tồn tại`,
@@ -91,9 +93,9 @@ const createIngredient = async (
         name,
         type,
         unit,
-        quantity,
-        lowStockThreshold,
-        lastImportDate,
+        quantity: Number(quantity),
+        lowStockThreshold: Number(lowStockThreshold),
+        lastImportDate: vnNow,
         notes,
       },
     });
@@ -175,29 +177,6 @@ const deleteIngredientById = async (
   }
 };
 
-// log activity
-const logActivity = async (
-  action: string,
-  entity: string,
-  entityId: number,
-  description: string,
-  userId?: number
-) => {
-  try {
-    await prisma.activityLog.create({
-      data: {
-        action,
-        entity,
-        entityId,
-        description,
-        userId,
-      },
-    });
-  } catch (e) {
-    console.error("Lỗi khi ghi log hoạt động:", e);
-  }
-};
-
 // CRUD type
 const getAllTypes = async (): Promise<{ message: string; data: any }> => {
   try {
@@ -276,38 +255,17 @@ const deleteType = async (
   }
 };
 
-const pagination = async (page: number, limit: number) => {
-  try {
-    const skip = (page - 1) * limit;
-
-    // Lấy tổng số lượng bản ghi
-    const total = await prisma.ingredient.count();
-
-    // Lấy danh sách bản ghi theo trang
-    const ingredients = await prisma.ingredient.findMany({
-      skip,
-      take: limit,
-      orderBy: {
-        id: "asc",
-      },
-    });
-
-    const result = await Promise.all(
-      ingredients.map(async (i) => ({
-        ...i,
-        status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
-      }))
-    );
-
-    return {
-      data: result,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-      totalItems: total,
-    };
-  } catch (error) {
-    console.error("Phân trang lỗi:", error);
-  }
+const getIngredientPage = async (page: number, limit: number) => {
+  return paginate({
+    page,
+    limit,
+    model: "ingredient",
+    orderBy: { id: "asc" },
+    enhanceItem: async (i) => ({
+      ...i,
+      status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
+    }),
+  });
 };
 
 export {
@@ -316,9 +274,8 @@ export {
   createIngredient,
   updateIngredientById,
   deleteIngredientById,
-  logActivity,
   getAllTypes,
   createType,
   deleteType,
-  pagination,
+  getIngredientPage,
 };

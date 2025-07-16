@@ -3,6 +3,8 @@ import { NavLink } from "react-router-dom";
 import { FaHome, FaBoxOpen, FaCog } from "react-icons/fa";
 import { IoMenu } from "react-icons/io5";
 import { GiBeerStein } from "react-icons/gi";
+import { MdMenuBook } from "react-icons/md";
+import "./styles.css";
 interface SidebarProps {
   isCollapsed: boolean;
   toggleSidebar: () => void;
@@ -11,7 +13,8 @@ interface SidebarProps {
 const navItems = [
   { path: "/", icon: <FaHome />, label: "Trang chủ" },
   { path: "/ingredients", icon: <FaBoxOpen />, label: "Nguyên liệu" },
-  { path: "/batch", icon: <GiBeerStein />, label: "Mẻ nấu" },
+  { path: "/batchs", icon: <GiBeerStein />, label: "Mẻ nấu" },
+  { path: "/recipes", icon: <MdMenuBook />, label: "Công thức" },
   { path: "/settings", icon: <FaCog />, label: "Cài đặt" },
 ];
 
@@ -38,6 +41,7 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
       >
         {!isCollapsed && <h5 className="fw-bold mb-0">Quản lý kho</h5>}
         <IoMenu
+          className="hover-bg-light"
           style={{ cursor: "pointer", fontSize: "1.5rem" }}
           onClick={toggleSidebar}
         />
@@ -46,22 +50,21 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
       {/* Nav items */}
 
       <Nav className="flex-column gap-2 ">
-        {navItems.map(({ path, icon, label }) => (
-          <OverlayTrigger
-            key={path}
-            placement="right"
-            overlay={isCollapsed ? <Tooltip>{label}</Tooltip> : <></>}
-          >
+        {navItems.map(({ path, icon, label }) => {
+          const link = (
             <NavLink
               to={path}
               className={({ isActive }) =>
-                `d-flex align-items-center px-2 py-2 rounded text-decoration-none ${
-                  isActive ? "bg-primary text-white" : "text-dark"
+                `d-flex align-items-center px-2 py-2 rounded text-decoration-none transition-all ${
+                  isActive
+                    ? "bg-primary text-white"
+                    : "text-dark hover-bg-light"
                 }`
               }
               style={{
                 whiteSpace: "nowrap",
-                transition: "background 0.2s ease",
+                transition: "all 0.2s ease-in-out",
+                borderRadius: "6px",
               }}
             >
               <div
@@ -70,14 +73,27 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
                   display: "flex",
                   justifyContent: "center",
                   fontSize: "1.1rem",
+                  transition: "transform 0.2s ease",
                 }}
               >
                 {icon}
               </div>
-              {!isCollapsed && <span className="">{label}</span>}
+              {!isCollapsed && <span>{label}</span>}
             </NavLink>
-          </OverlayTrigger>
-        ))}
+          );
+
+          return isCollapsed ? (
+            <OverlayTrigger
+              key={path}
+              placement="right"
+              overlay={<Tooltip id={`tooltip-${path}`}>{label}</Tooltip>}
+            >
+              {link}
+            </OverlayTrigger>
+          ) : (
+            <div key={path}>{link}</div>
+          );
+        })}
       </Nav>
     </div>
   );

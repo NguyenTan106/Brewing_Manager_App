@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ZodError, z } from "zod";
+import { ZodError } from "zod";
 
 import {
   getAllIngredients,
@@ -7,11 +7,10 @@ import {
   createIngredient,
   updateIngredientById,
   deleteIngredientById,
-  logActivity,
 } from "../prisma/CRUD_ingredient_service";
 import { ingredientSchema } from "../middlewares/schema";
 import { compareAndLogChanges } from "../services/logActivityService";
-
+import { logActivity } from "../prisma/logActivity";
 const handleGetAllIngredients = async (req: Request, res: Response) => {
   try {
     const handle = await getAllIngredients();
@@ -44,7 +43,18 @@ const handleCreateIngredient = async (req: Request, res: Response) => {
     const parsed = ingredientSchema.parse(req.body);
 
     const lastImportDate = new Date(parsed.lastImportDate);
-
+    const logLastImportDate = new Date(parsed.lastImportDate).toLocaleString(
+      "vi-VN",
+      {
+        timeZone: "Asia/Ho_Chi_Minh",
+        hour12: false,
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
     const result = await createIngredient(
       parsed.name,
       parsed.type,
@@ -61,7 +71,7 @@ const handleCreateIngredient = async (req: Request, res: Response) => {
       "create",
       "Ingredient",
       data.id,
-      `Thêm nguyên liệu "${data.name}" với số lượng ${data.quantity} ${data.unit} vào ngày ${data.lastImportDate}`
+      `Thêm nguyên liệu "${data.name}" với số lượng ${data.quantity} ${data.unit} vào ${logLastImportDate}`
       // userId // nếu có
     );
   } catch (e) {
@@ -98,8 +108,8 @@ const handleUpdateIngredientById = async (req: Request, res: Response) => {
       name: name,
       type: type,
       unit: unit,
-      quantity: quantity,
-      lowStockThreshold: lowStockThreshold,
+      quantity: Number(quantity),
+      lowStockThreshold: Number(lowStockThreshold),
       lastImportDate: lastImportDate,
       notes: notes,
     });
@@ -136,8 +146,25 @@ const handleUpdateIngredientById = async (req: Request, res: Response) => {
 const handleDeleteIngredientById = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
   try {
+    const logDeleteDate = new Date().toLocaleString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour12: false,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     const result = await deleteIngredientById(id);
     res.status(200).json(result);
+    const data = result.data;
+    await logActivity(
+      "delete",
+      "Ingredient",
+      data.id,
+      `Xóa nguyên liệu ${data.id}: "${data.name}" vào ${logDeleteDate}`
+      // userId // nếu có
+    );
   } catch (e) {
     console.error("Lỗi trong controller handleDeleteIngredientById:", e);
     res.status(500).json({

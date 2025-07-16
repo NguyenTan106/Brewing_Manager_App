@@ -1,38 +1,28 @@
-import { useState, type JSX } from "react";
 import { Modal, Button } from "react-bootstrap";
-import {
-  type Batch,
-  Status,
-  deleteBatchByIdAPI,
-} from "../../services/CRUD_API_Batch";
-import UpdateBatchModal from "./UpdateBatchModal";
-
+import type { Recipe } from "../../services/CRUD_API_Recipe";
+import { useState } from "react";
+import UpdateRecipeModal from "./UpdateRecipeModal";
+import { deleteRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
 interface Props {
-  showDetailModal: boolean;
   handleClose: () => void;
-  selectedBatch: Batch | null;
-  getStatusBadge: (type: Status) => JSX.Element;
-  handleGetAllBatchesAPI: () => Promise<void>;
-  statusOptions: { label: string; value: Status }[];
-  setSelectedBatch: React.Dispatch<React.SetStateAction<Batch | null>>;
-  handlePaginationAPI: () => void;
+  showDetailModal: boolean;
+  selectedRecipe: Recipe | null;
+  setSelectedRecipe: React.Dispatch<React.SetStateAction<Recipe | null>>;
+  handleGetAllRecipesAPI: () => Promise<void>;
 }
 
-export default function BatchDetailModal({
-  showDetailModal,
+export default function RecipeDetailModal({
   handleClose,
-  selectedBatch,
-  setSelectedBatch,
-  getStatusBadge,
-  handleGetAllBatchesAPI,
-  statusOptions,
-  handlePaginationAPI,
+  showDetailModal,
+  selectedRecipe,
+  setSelectedRecipe,
+  handleGetAllRecipesAPI,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
 
-  const handleDeleteBatchByIdAPI = async (id: number) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa mẻ này?")) {
-      const deleted = await deleteBatchByIdAPI(id);
+  const handleDeleteRecipeByIdAPI = async (id: number) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa công thức này?")) {
+      const deleted = await deleteRecipeByIdAPI(id);
       console.log(deleted);
       const errorMessage = deleted.message;
       if (deleted.data == null) {
@@ -40,52 +30,49 @@ export default function BatchDetailModal({
         return;
       }
       alert(`${errorMessage}`);
-      handlePaginationAPI();
+      //   handlePaginationAPI();
+      await handleGetAllRecipesAPI();
       handleClose();
     }
   };
   return (
     <>
-      <UpdateBatchModal
+      <UpdateRecipeModal
+        selectedRecipe={selectedRecipe}
         handleClose={() => setShowUpdateModal(false)}
         showUpdateModal={showUpdateModal}
-        handleGetAllBatchesAPI={handleGetAllBatchesAPI}
-        selectedBatch={selectedBatch}
-        statusOptions={statusOptions}
-        setSelectedBatch={setSelectedBatch}
-        handlePaginationAPI={handlePaginationAPI}
+        handleGetAllRecipesAPI={handleGetAllRecipesAPI}
+        setSelectedRecipe={setSelectedRecipe}
       />
       <Modal show={showDetailModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Chi tiết mẻ</Modal.Title>
+          <Modal.Title>Chi tiết công thức</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
             <p>
-              <strong>ID:</strong> {selectedBatch?.id}
+              <strong>ID:</strong> {selectedRecipe?.id}
             </p>
             <p>
-              <strong>Code:</strong> {selectedBatch?.code}
+              <strong>Tên công thức:</strong> {selectedRecipe?.name}
             </p>
             <p>
-              <strong>Tên:</strong> {selectedBatch?.beerName}
+              <strong>Mô tả:</strong> {selectedRecipe?.description}
             </p>
             <p>
-              <strong>Trạng thái: </strong>
-              {selectedBatch?.status
-                ? getStatusBadge(selectedBatch.status)
-                : "Không xác định"}
+              <strong>Ghi chú: </strong>
+              {selectedRecipe?.note}
             </p>
 
             <p>
-              <strong>Khối lượng: </strong>
-              {selectedBatch?.volume}L
+              <strong>Các bước thực hiện: </strong>
+              {selectedRecipe?.instructions}
             </p>
 
             <p>
               <strong>Ngày tạo: </strong>
-              {selectedBatch?.createdAt &&
-                new Date(selectedBatch.createdAt).toLocaleString("vi-VN", {
+              {selectedRecipe?.createdAt &&
+                new Date(selectedRecipe.createdAt).toLocaleString("vi-VN", {
                   timeZone: "Asia/Ho_Chi_Minh",
                   hour12: false,
                   day: "2-digit",
@@ -95,10 +82,6 @@ export default function BatchDetailModal({
                   minute: "2-digit",
                 })}
             </p>
-            <div>
-              <strong>Ghi chú: </strong>
-              <i>{selectedBatch?.notes}</i>
-            </div>
             <div className="mt-2">
               <Button
                 className=""
@@ -115,8 +98,8 @@ export default function BatchDetailModal({
                 className="m-2"
                 variant="danger"
                 onClick={() =>
-                  selectedBatch?.id &&
-                  handleDeleteBatchByIdAPI(selectedBatch?.id)
+                  selectedRecipe?.id &&
+                  handleDeleteRecipeByIdAPI(selectedRecipe?.id)
                 }
                 style={{
                   padding: "5px 10px",

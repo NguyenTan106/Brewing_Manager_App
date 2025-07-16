@@ -1,33 +1,33 @@
 import { useState, type JSX } from "react";
 import { Modal, Button, Badge } from "react-bootstrap";
 import IngredientUpdateModal from "./IngredientUpdateModal";
-import type { Ingredient } from "./IngredientManager";
+import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import { deleteIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
+
 interface Props {
-  showModal: boolean;
-  setShowModal: (value: boolean) => void;
+  showDetailModal: boolean;
+  setShowDetailModal: (value: boolean) => void;
   handleClose: () => void;
   selectedIngredient: Ingredient | null;
   getIngredientIcon: (type: string) => JSX.Element;
   handleGetAllIngredientsAPI: () => void;
+  handlePaginationAPI: () => void;
 }
 
-export default function IngredientDetail({
-  showModal,
-  setShowModal,
+export default function IngredientDetailModal({
+  showDetailModal,
+  setShowDetailModal,
   handleClose,
   selectedIngredient,
   getIngredientIcon,
   handleGetAllIngredientsAPI,
+  handlePaginationAPI,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const handleCloseUpdateModal = () => {
-    setShowUpdateModal(false);
-  };
 
   const handleOpenUpdateModal = () => {
     setShowUpdateModal(true);
-    setShowModal(false);
+    setShowDetailModal(false);
   };
 
   const handleDeleteIngredientAPI = async (id: number) => {
@@ -39,14 +39,21 @@ export default function IngredientDetail({
         return;
       }
       alert(`${errorMessage}`);
-      handleGetAllIngredientsAPI();
+      handlePaginationAPI();
       handleClose();
     }
   };
 
   return (
     <>
-      <Modal show={showModal} onHide={handleClose} centered>
+      <IngredientUpdateModal
+        handleClose={() => setShowUpdateModal(false)}
+        selectedIngredient={selectedIngredient}
+        showUpdateModal={showUpdateModal}
+        handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
+        handlePaginationAPI={handlePaginationAPI}
+      />
+      <Modal show={showDetailModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Chi tiết nguyên liệu</Modal.Title>
         </Modal.Header>
@@ -153,13 +160,6 @@ export default function IngredientDetail({
           </Button>
         </Modal.Footer>
       </Modal>
-
-      <IngredientUpdateModal
-        handleCloseUpdateModal={handleCloseUpdateModal}
-        selectedIngredient={selectedIngredient}
-        showUpdateModal={showUpdateModal}
-        handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
-      />
     </>
   );
 }

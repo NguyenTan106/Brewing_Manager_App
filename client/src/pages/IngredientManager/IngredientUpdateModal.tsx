@@ -1,26 +1,28 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { updateIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
-import type { Ingredient } from "./IngredientManager";
+import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import Select from "react-select";
 import { getAllTypesAPI } from "../../services/CRUD_API_type";
 type Props = {
-  handleCloseUpdateModal: () => void;
+  handleClose: () => void;
   selectedIngredient: Ingredient | null;
   showUpdateModal: boolean;
   handleGetAllIngredientsAPI: () => void;
+  handlePaginationAPI: () => void;
 };
 
-interface Type {
+export interface Type {
   id: number;
   typeName: string;
 }
 
 export default function IngredientUpdateModal({
-  handleCloseUpdateModal,
+  handleClose,
   selectedIngredient,
   showUpdateModal,
-  handleGetAllIngredientsAPI,
+  // handleGetAllIngredientsAPI,
+  handlePaginationAPI,
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<Ingredient>>({});
   const [type, setType] = useState<Type[]>([]);
@@ -72,9 +74,6 @@ export default function IngredientUpdateModal({
         alert("Vui lòng điền đầy đủ thông tin");
         return;
       }
-
-      console.log("editForm", editForm.lowStockThreshold);
-      console.log("selectedIngredient", selectedIngredient?.lowStockThreshold);
       // Kiểm tra xem có thay đổi nào không
       if (
         selectedIngredient?.quantity == editForm.quantity &&
@@ -90,11 +89,13 @@ export default function IngredientUpdateModal({
       }
       await updateIngredientByIdAPI(id, editForm);
 
-      handleCloseUpdateModal();
-      handleGetAllIngredientsAPI();
+      handleClose();
+      // handleGetAllIngredientsAPI();
+      handlePaginationAPI();
       alert("Thành công");
     } catch (err) {
       console.error("Lỗi khi cập nhật nguyên liệu:", err);
+      alert("Lỗi khi cập nhật nguyên liệu");
     }
   };
 
@@ -116,7 +117,7 @@ export default function IngredientUpdateModal({
 
   return (
     <>
-      <Modal show={showUpdateModal} onHide={handleCloseUpdateModal} centered>
+      <Modal show={showUpdateModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Sửa nguyên liệu {selectedIngredient?.name}</Modal.Title>
         </Modal.Header>
@@ -192,7 +193,7 @@ export default function IngredientUpdateModal({
                     setEditForm({
                       ...editForm,
                       quantity:
-                        e.target.value === "" ? "" : Number(e.target.value),
+                        e.target.value === "" ? "" : parseFloat(e.target.value),
                     })
                   }
                 />
@@ -211,7 +212,7 @@ export default function IngredientUpdateModal({
                     setEditForm({
                       ...editForm,
                       lowStockThreshold:
-                        e.target.value === "" ? "" : Number(e.target.value),
+                        e.target.value === "" ? "" : parseFloat(e.target.value),
                     })
                   }
                 />
@@ -270,7 +271,7 @@ export default function IngredientUpdateModal({
           >
             ✏️ <span className="d-none d-sm-inline">Cập nhật</span>
           </Button>
-          <Button variant="secondary" onClick={handleCloseUpdateModal}>
+          <Button variant="secondary" onClick={handleClose}>
             Đóng
           </Button>
         </Modal.Footer>

@@ -1,23 +1,23 @@
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-type Ingredient = {
+export interface Ingredient {
   id: number;
   name: string;
   type: string;
   unit: string;
-  quantity: number;
-  lowStockThreshold: number;
-  lastImportDate: string;
+  quantity: number | string;
+  lowStockThreshold: number | string;
+  lastImportDate: string | null;
   notes?: string;
   status: string;
-};
+}
 
 type IngredientInput = Omit<Ingredient, "id" | "status">;
 
 export const getAllIngredientsAPI = async () => {
   const res = await axios.get(`${BASE_URL}/api/ingredients`);
-  return res.data;
+  return res.data.data;
 };
 
 export const getIngredientByIdAPI = async (id: number) => {

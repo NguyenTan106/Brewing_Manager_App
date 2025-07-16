@@ -4,55 +4,46 @@ import {
   getAllIngredientsAPI,
   getIngredientByIdAPI,
 } from "../../services/CRUD_API_Ingredient";
-import IngredientDetail from "./IngredientDetailModal";
+import IngredientDetailModal from "./IngredientDetailModal";
 import { getIngredientIcon } from "./IngredientIcon";
 import { AddIngredient } from "./AddNewIngredient";
-import { paginationAPI } from "../../services/pagination_API";
+import { paginationIngredientAPI } from "../../services/pagination_API";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
-export interface Ingredient {
-  id: number;
-  name: string;
-  type: string;
-  unit: string;
-  quantity: number | string;
-  lowStockThreshold: number | string;
-  lastImportDate: string;
-  notes?: string;
-  status: string;
-}
+import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 
 export default function IngredientManager() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [selectedIngredient, setSelectedIngredient] =
     useState<Ingredient | null>(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [showAddIngredientModal, setShowAddIngredientModal] = useState(false);
+
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-
-  const handleClose = () => {
-    setShowModal(false);
-    setShowAddIngredientModal(false);
-    setSelectedIngredient(null);
-  };
-
+  const [limit, setLimit] = useState<number>(5);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false); // ✅ flag
   useEffect(() => {
-    handlePaginationAPI(currentPage);
-  }, [currentPage]);
+    const savedPage = localStorage.getItem("ingredient_page");
+    const savedLimit = localStorage.getItem("ingredient_limit");
 
-  const handleGetAllIngredientsAPI = async () => {
-    const data = await getAllIngredientsAPI();
-    setIngredients(data.data);
-  };
+    if (savedPage) setCurrentPage(Number(savedPage));
+    if (savedLimit) setLimit(Number(savedLimit));
 
-  const handleGetIngredientByIdAPI = async (id: number) => {
-    const data = await getIngredientByIdAPI(id);
-    setSelectedIngredient(data);
-    setShowModal(true);
-  };
+    setIsInitialized(true); // ✅ cho phép gọi API sau khi đọc xong localStorage
+  }, []);
 
-  const handlePaginationAPI = async (page: number = 1, limit: number = 10) => {
-    const data = await paginationAPI(page, limit);
+  // 🔁 Gọi API chỉ khi dữ liệu khởi tạo xong
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem("ingredient_page", currentPage.toString());
+      localStorage.setItem("ingredient_limit", limit.toString());
+
+      handlePaginationAPI(currentPage, limit);
+    }
+  }, [currentPage, limit, isInitialized]);
+
+  const handlePaginationAPI = async (page: number, limit: number) => {
+    const data = await paginationIngredientAPI(page, limit);
     setIngredients(data.data);
     setCurrentPage(data.currentPage);
     setTotalPages(data.totalPages);
@@ -63,6 +54,17 @@ export default function IngredientManager() {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page); // useEffect sẽ tự gọi handlePaginationAPI
     }
+  };
+
+  const handleGetAllIngredientsAPI = async () => {
+    const data = await getAllIngredientsAPI();
+    setIngredients(data);
+  };
+
+  const handleGetIngredientByIdAPI = async (id: number) => {
+    const data = await getIngredientByIdAPI(id);
+    setSelectedIngredient(data);
+    setShowDetailModal(true);
   };
 
   return (
@@ -83,7 +85,17 @@ export default function IngredientManager() {
       <AddIngredient
         handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
         showAddIngredientModal={showAddIngredientModal}
-        handleClose={handleClose}
+        handleClose={() => setShowAddIngredientModal(false)}
+      />
+
+      <IngredientDetailModal
+        showDetailModal={showDetailModal}
+        setShowDetailModal={setShowDetailModal}
+        handleClose={() => setShowDetailModal(false)}
+        selectedIngredient={selectedIngredient}
+        getIngredientIcon={getIngredientIcon}
+        handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
+        handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
       <hr />
       <Table
@@ -141,15 +153,16 @@ export default function IngredientManager() {
                   )}
                 </td>
                 <td>
-                  {new Date(i.lastImportDate).toLocaleString("vi-VN", {
-                    timeZone: "Asia/Ho_Chi_Minh",
-                    hour12: false,
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {i.lastImportDate &&
+                    new Date(i.lastImportDate).toLocaleString("vi-VN", {
+                      timeZone: "Asia/Ho_Chi_Minh",
+                      hour12: false,
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                 </td>
 
                 <td>
@@ -227,14 +240,6 @@ export default function IngredientManager() {
           </Button>
         </div>
       )}
-      <IngredientDetail
-        showModal={showModal}
-        setShowModal={setShowModal}
-        handleClose={handleClose}
-        selectedIngredient={selectedIngredient}
-        getIngredientIcon={getIngredientIcon}
-        handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
-      />
     </>
   );
 }
