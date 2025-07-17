@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Modal, Row, Col, Button, Form } from "react-bootstrap";
+import { Modal, Row, Col, Button, Form, Table } from "react-bootstrap";
 import { createRecipeAPI } from "../../services/CRUD_API_Recipe";
+import { FaPlus } from "react-icons/fa";
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
@@ -49,6 +50,11 @@ export default function AddNewRecipeModal({
     clearForm();
     await handleGetAllRecipesAPI();
   };
+
+  const [newIngredients, setNewIngredients] = useState([
+    { ingredientId: "", amountNeeded: "" },
+  ]);
+
   return (
     <>
       <Modal show={showAddModal} onHide={handleClose} size="xl" centered>
@@ -85,6 +91,94 @@ export default function AddNewRecipeModal({
                 />
               </Form.Group>
             </Col>
+            <Col>
+              <Form.Label>
+                <strong>Chọn nguyên liệu: </strong>
+              </Form.Label>
+              <Table hover size="sm">
+                <thead className="table-light">
+                  <tr>
+                    <th style={{ width: "40%" }}>Nguyên liệu</th>
+                    <th style={{ width: "30%" }}>Lượng cần dùng</th>
+                    <th style={{ width: "10%" }}>Đơn vị</th>
+                    <th style={{ width: "10%" }}>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {newIngredients.map((item, index) => {
+                    // const selectedIngredient = ingredientList.find(
+                    //   (ing) => ing.id === Number(item.ingredientId)
+                    // );
+
+                    return (
+                      <tr key={index}>
+                        <td>
+                          <Form.Select
+                            style={{ border: "none" }}
+                            value={item.ingredientId}
+                            onChange={(e) => {
+                              const updated = [...newIngredients];
+                              updated[index].ingredientId = e.target.value;
+                              setNewIngredients(updated);
+                            }}
+                          >
+                            <option value="">-- Chọn nguyên liệu --</option>
+                            {/* {ingredientList.map((ing) => (
+                              <option key={ing.id} value={ing.id}>
+                                {ing.name}
+                              </option>
+                            ))} */}
+                          </Form.Select>
+                        </td>
+                        <td>
+                          <Form.Control
+                            style={{ border: "none" }}
+                            type="number"
+                            placeholder="Số lượng"
+                            value={item.amountNeeded}
+                            onChange={(e) => {
+                              const updated = [...newIngredients];
+                              updated[index].amountNeeded = e.target.value;
+                              setNewIngredients(updated);
+                            }}
+                          />
+                        </td>
+                        <td className="text-center">
+                          {/* {selectedIngredient?.unit || "-"} */}
+                        </td>
+                        <td className="text-center">
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => {
+                              const updated = [...newIngredients];
+                              updated.splice(index, 1);
+                              setNewIngredients(updated);
+                            }}
+                          >
+                            ❌
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+
+              <Button
+                variant="outline-primary"
+                className="mb-3 al"
+                onClick={() =>
+                  setNewIngredients([
+                    ...newIngredients,
+                    { ingredientId: "", amountNeeded: "" },
+                  ])
+                }
+              >
+                ➕ Thêm nguyên liệu
+              </Button>
+            </Col>
+
             <Col xs={12} lg={12}>
               <Form.Group controlId="lowStockThreshold" className="mb-3">
                 <Form.Label>

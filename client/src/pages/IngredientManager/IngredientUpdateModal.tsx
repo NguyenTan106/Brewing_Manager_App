@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { updateIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import Select from "react-select";
@@ -117,16 +117,16 @@ export default function IngredientUpdateModal({
 
   return (
     <>
-      <Modal show={showUpdateModal} onHide={handleClose} centered>
+      <Modal show={showUpdateModal} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>Sửa nguyên liệu {selectedIngredient?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>
+          <Row>
             <p>
               <strong>ID:</strong> {selectedIngredient?.id}
             </p>
-            <div>
+            <Col lg={6}>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Tên:</strong>
@@ -139,8 +139,8 @@ export default function IngredientUpdateModal({
                   }
                 />
               </Form.Group>
-            </div>
-            <div>
+            </Col>
+            <Col lg={6}>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Loại:</strong>
@@ -165,8 +165,8 @@ export default function IngredientUpdateModal({
                   placeholder="Chọn loại nguyên liệu"
                 />
               </Form.Group>
-            </div>
-            <div>
+            </Col>
+            <Col lg={4}>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Đơn vị:</strong>
@@ -179,8 +179,8 @@ export default function IngredientUpdateModal({
                   }
                 />
               </Form.Group>
-            </div>
-            <div>
+            </Col>
+            <Col lg={4}>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Số lượng:</strong>
@@ -198,8 +198,8 @@ export default function IngredientUpdateModal({
                   }
                 />
               </Form.Group>
-            </div>
-            <div>
+            </Col>
+            <Col lg={4}>
               <Form.Group controlId="" className="mb-3">
                 <Form.Label>
                   <strong>Giới hạn cảnh báo:</strong>
@@ -217,7 +217,7 @@ export default function IngredientUpdateModal({
                   }
                 />
               </Form.Group>
-            </div>
+            </Col>
             <div>
               <Form.Group controlId="lastImportDate" className="mb-3">
                 <Form.Label>
@@ -256,7 +256,7 @@ export default function IngredientUpdateModal({
                 />
               </Form.Group>
             </p>
-          </div>
+          </Row>
         </Modal.Body>
         <Modal.Footer>
           <Button

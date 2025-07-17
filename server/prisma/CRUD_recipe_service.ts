@@ -3,6 +3,11 @@ import { format } from "date-fns-tz";
 import { paginate } from "./pagination";
 const prisma = new PrismaClient();
 
+export type IngredientInput = {
+  ingredientId: number;
+  amountNeeded: number;
+};
+
 // CRUD recipe
 const getAllRecipes = async (): Promise<{
   message: string;
@@ -39,6 +44,11 @@ const getRecipeById = async (
   try {
     const data = await prisma.recipe.findUnique({
       where: { id },
+      include: {
+        recipeIngredients: {
+          include: { ingredient: true },
+        },
+      },
     });
     if (!data) {
       return { message: "Chưa có công thức nào được tạo", data: [] };
@@ -55,6 +65,7 @@ const getRecipeById = async (
 
 const createRecipe = async (
   name: string,
+  recipeIngredients: IngredientInput[],
   description?: string,
   note?: string,
   instructions?: string
@@ -71,12 +82,37 @@ const createRecipe = async (
         data: null,
       };
     }
+
+    if (
+      !recipeIngredients ||
+      !Array.isArray(recipeIngredients) ||
+      recipeIngredients.length === 0
+    ) {
+      return {
+        message: "Danh sách nguyên liệu không hợp lệ",
+        data: null,
+      };
+    }
+
     const newRecipe = await prisma.recipe.create({
       data: {
         name,
         description: description || null,
         note: note || null,
         instructions: instructions || null,
+        recipeIngredients: {
+          create: recipeIngredients.map((ing: any) => ({
+            ingredientId: ing.ingredientId,
+            amountNeeded: ing.amountNeeded,
+          })),
+        },
+      },
+      include: {
+        recipeIngredients: {
+          include: {
+            ingredient: true, // nếu muốn trả cả tên nguyên liệu
+          },
+        },
       },
     });
 
@@ -92,23 +128,86 @@ const createRecipe = async (
 
 const updateRecipeById = async (
   id: number,
-  updateData: {
-    name?: string;
-    description?: string;
-    note?: string;
-    instructions?: string;
-  }
+  name?: string,
+  description?: string,
+  note?: string,
+  instructions?: string,
+  recipeIngredients?: IngredientInput[]
 ): Promise<{ message: string; data: any }> => {
   try {
     const existing = await prisma.recipe.findUnique({
       where: { id },
+      include: {
+        recipeIngredients: true,
+      },
     });
+
     if (!existing) {
-      return { message: "Không tim thấy công thức", data: [] };
+      return { message: "Không tìm thấy công thức", data: [] };
     }
+
+    // Nếu có truyền vào danh sách nguyên liệu mới
+    if (recipeIngredients && Array.isArray(recipeIngredients)) {
+      const currentIngredients = existing.recipeIngredients;
+      const newIds = recipeIngredients.map((ri) => ri.ingredientId);
+
+      // ✅ Xóa nguyên liệu không còn trong danh sách mới
+      const toDelete = currentIngredients.filter(
+        (ri) => !newIds.includes(ri.ingredientId)
+      );
+
+      for (const ri of toDelete) {
+        await prisma.recipeIngredient.delete({
+          where: { id: ri.id },
+        });
+      }
+
+      // ✅ Thêm mới hoặc cập nhật nguyên liệu
+      for (const newRI of recipeIngredients) {
+        const existingRI = currentIngredients.find(
+          (ri) => ri.ingredientId === newRI.ingredientId
+        );
+
+        if (existingRI) {
+          if (existingRI.amountNeeded !== newRI.amountNeeded) {
+            // ✅ Cập nhật số lượng nếu khác
+            await prisma.recipeIngredient.update({
+              where: { id: existingRI.id },
+              data: {
+                amountNeeded: Number(newRI.amountNeeded),
+              },
+            });
+          }
+        } else {
+          // ✅ Thêm mới nếu chưa có
+          await prisma.recipeIngredient.create({
+            data: {
+              recipeId: id,
+              ingredientId: newRI.ingredientId,
+              amountNeeded: Number(newRI.amountNeeded),
+            },
+          });
+        }
+      }
+    }
+
+    // ✅ Cập nhật thông tin chung của recipe
     const updated = await prisma.recipe.update({
       where: { id },
-      data: { ...updateData, updatedAt: new Date() },
+      data: {
+        name,
+        description,
+        note,
+        instructions,
+        updatedAt: new Date(),
+      },
+      include: {
+        recipeIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+      },
     });
 
     return {
@@ -131,6 +230,12 @@ const deleteRecipeById = async (
     if (!existing) {
       return { message: "Không tim thấy công thức", data: [] };
     }
+
+    // ✅ Xóa các liên kết nguyên liệu trước
+    await prisma.recipeIngredient.deleteMany({
+      where: { recipeId: id },
+    });
+
     const deleted = await prisma.recipe.delete({
       where: { id },
     });

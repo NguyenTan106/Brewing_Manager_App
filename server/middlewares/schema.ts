@@ -27,6 +27,15 @@ export const batchSchema = z.object({
 
 export const recipeSchema = z.object({
   name: z.string().min(1, "Tên không được để trống"),
+  recipeIngredients: z.array(
+    z.object({
+      ingredientId: z.preprocess((val) => Number(val), z.number()),
+      amountNeeded: z.preprocess(
+        (val) => Number(val),
+        z.number().nonnegative()
+      ),
+    })
+  ),
   description: z.string().optional(),
   note: z.string().optional(),
   instructions: z.string().optional(),

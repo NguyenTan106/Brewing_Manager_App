@@ -1,11 +1,11 @@
 import { Button, Table } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
-import { type Recipe } from "../../services/CRUD_API_Recipe";
+import type { Recipe, RecipeIngredient } from "../../services/CRUD_API_Recipe";
 import { useEffect, useState } from "react";
 import AddNewRecipeModal from "./AddNewRecipeModal";
 import {
   getAllRecipesAPI,
-  getAllRecipeByIdAPI,
+  getRecipeByIdAPI,
 } from "../../services/CRUD_API_Recipe";
 import RecipeDetailModal from "./RecipeDetailModal";
 export default function RecipeManager() {
@@ -13,7 +13,9 @@ export default function RecipeManager() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
-
+  const [selectedRecipeIngredient, setSelectedRecipeIngredient] = useState<
+    RecipeIngredient[] | null
+  >(null);
   useEffect(() => {
     handleGetAllRecipesAPI();
   }, []);
@@ -24,8 +26,9 @@ export default function RecipeManager() {
   };
 
   const handleGetRecipeByIdAPI = async (id: number) => {
-    const data = await getAllRecipeByIdAPI(id);
+    const data = await getRecipeByIdAPI(id);
     setSelectedRecipe(data);
+    setSelectedRecipeIngredient(data.recipeIngredients);
     setShowDetailModal(true);
   };
   return (
@@ -36,6 +39,8 @@ export default function RecipeManager() {
         selectedRecipe={selectedRecipe}
         handleGetAllRecipesAPI={handleGetAllRecipesAPI}
         setSelectedRecipe={setSelectedRecipe}
+        selectedRecipeIngredient={selectedRecipeIngredient}
+        setSelectedRecipeIngredient={setSelectedRecipeIngredient}
       />
       <AddNewRecipeModal
         showAddModal={showAddModal}

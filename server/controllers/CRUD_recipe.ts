@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Status } from "@prisma/client";
+import { Ingredient, Status } from "@prisma/client";
 import { ZodError } from "zod";
 import { compareAndLogChanges } from "../services/logActivityService";
 import { logActivity } from "../prisma/logActivity";
@@ -41,6 +41,7 @@ const handleCreateRecipe = async (req: Request, res: Response) => {
     const parsed = recipeSchema.parse(req.body);
     const handle = await createRecipe(
       parsed.name,
+      parsed.recipeIngredients,
       parsed.description,
       parsed.note,
       parsed.instructions
@@ -74,16 +75,18 @@ const handleCreateRecipe = async (req: Request, res: Response) => {
 const handleUpdateRecipeById = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const { name, description, note, instructions } = req.body;
 
     const oldResult = await getRecipeById(Number(id));
 
-    const result = await updateRecipeById(id, {
-      name: name,
-      description: description,
-      note: note,
-      instructions: instructions,
-    });
+    const parsed = recipeSchema.parse(req.body);
+    const result = await updateRecipeById(
+      id,
+      parsed.name,
+      parsed.description,
+      parsed.note,
+      parsed.instructions,
+      parsed.recipeIngredients
+    );
 
     const newData = result.data;
     const oldData = oldResult.data;
@@ -92,7 +95,7 @@ const handleUpdateRecipeById = async (req: Request, res: Response) => {
     await compareAndLogChanges(
       oldData,
       newData,
-      ["name", "description", "note", "instructions"],
+      ["name", "description", "note", "instructions", "ingredients"],
       "Recipe",
       newData.id,
       oldData.name

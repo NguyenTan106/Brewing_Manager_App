@@ -109,7 +109,7 @@ export default function BatchDetailModal({
                   fontSize: "14px",
                 }}
               >
-                ✏️ <span className="d-none d-sm-inline">Cập nhật</span>
+                ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
               </Button>
               <Button
                 className="m-2"
