@@ -148,7 +148,7 @@ export default function BatchManager() {
           {batches.length === 0 ? (
             <tr>
               <td colSpan={8} className="text-center text-muted">
-                <p>Không có mẻ nào</p>
+                Không có mẻ nào
               </td>
             </tr>
           ) : (

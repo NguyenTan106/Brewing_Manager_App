@@ -3,6 +3,7 @@ import { Modal, Form, Button, Table } from "react-bootstrap";
 import type { Recipe } from "../../services/CRUD_API_Recipe";
 import { updateRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
 import { type RecipeIngredient } from "../../services/CRUD_API_Recipe";
+
 interface Props {
   showUpdateModal: boolean;
   handleClose: () => void;
@@ -31,6 +32,7 @@ export default function UpdateRecipeModal({
       setEditForm(selectedRecipe);
     }
   }, [selectedRecipe]);
+
   useEffect(() => {
     if (showUpdateModal && selectedRecipe && selectedRecipeIngredient) {
       setEditForm({

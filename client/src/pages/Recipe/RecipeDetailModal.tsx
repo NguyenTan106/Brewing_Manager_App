@@ -3,7 +3,7 @@ import type { Recipe, RecipeIngredient } from "../../services/CRUD_API_Recipe";
 import { useState } from "react";
 import UpdateRecipeModal from "./UpdateRecipeModal";
 import { deleteRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
-// import { getIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
+
 interface Props {
   handleClose: () => void;
   showDetailModal: boolean;
@@ -26,8 +26,7 @@ export default function RecipeDetailModal({
   setSelectedRecipeIngredient,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  // const [showIngredientDetailModal, setShowIngredientDetailModal] =
-  //   useState(false);
+
   const handleDeleteRecipeByIdAPI = async (id: number) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa công thức này?")) {
       const deleted = await deleteRecipeByIdAPI(id);
@@ -94,7 +93,7 @@ export default function RecipeDetailModal({
                   </tr>
                 ) : (
                   selectedRecipeIngredient?.map((e) => (
-                    <tr>
+                    <tr key={e.ingredient.id}>
                       <td>{e.ingredient.id}</td>
                       <td>{e.ingredient.name}</td>
                       <td>{e.amountNeeded}</td>

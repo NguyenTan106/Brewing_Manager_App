@@ -4,15 +4,20 @@ import { type Ingredient } from "./CRUD_API_Ingredient";
 
 export interface RecipeIngredient {
   id: number;
-  ingredientId: number;
+  ingredientId: number | string;
   amountNeeded: number | string;
   ingredient: Ingredient;
+}
+
+export interface RecipeIngredientInput {
+  ingredientId: string | number;
+  amountNeeded: string | number;
 }
 
 export interface Recipe {
   id: number;
   name: string;
-  recipeIngredients: RecipeIngredient[];
+  recipeIngredients: RecipeIngredientInput[];
   description?: string;
   note?: string;
   instructions?: string;

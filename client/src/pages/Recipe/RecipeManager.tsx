@@ -4,6 +4,10 @@ import type { Recipe, RecipeIngredient } from "../../services/CRUD_API_Recipe";
 import { useEffect, useState } from "react";
 import AddNewRecipeModal from "./AddNewRecipeModal";
 import {
+  getAllIngredientsAPI,
+  type Ingredient,
+} from "../../services/CRUD_API_Ingredient";
+import {
   getAllRecipesAPI,
   getRecipeByIdAPI,
 } from "../../services/CRUD_API_Recipe";
@@ -16,8 +20,11 @@ export default function RecipeManager() {
   const [selectedRecipeIngredient, setSelectedRecipeIngredient] = useState<
     RecipeIngredient[] | null
   >(null);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+
   useEffect(() => {
     handleGetAllRecipesAPI();
+    handleGetAllIngredientsAPI();
   }, []);
 
   const handleGetAllRecipesAPI = async () => {
@@ -31,6 +38,12 @@ export default function RecipeManager() {
     setSelectedRecipeIngredient(data.recipeIngredients);
     setShowDetailModal(true);
   };
+
+  const handleGetAllIngredientsAPI = async () => {
+    const data = await getAllIngredientsAPI();
+    setIngredients(data);
+  };
+
   return (
     <>
       <RecipeDetailModal
@@ -46,6 +59,7 @@ export default function RecipeManager() {
         showAddModal={showAddModal}
         handleClose={() => setShowAddModal(false)}
         handleGetAllRecipesAPI={handleGetAllRecipesAPI}
+        ingredients={ingredients}
       />
       <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
         <h3 className="mb-0">Danh sách công thức:</h3>
@@ -83,7 +97,7 @@ export default function RecipeManager() {
           {recipes.length === 0 ? (
             <tr>
               <td colSpan={8} className="text-center text-muted">
-                <p>Không có mẻ nào</p>
+                Không có công thức nào
               </td>
             </tr>
           ) : (
