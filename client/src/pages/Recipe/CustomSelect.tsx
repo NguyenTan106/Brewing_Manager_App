@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const customStyles = {
-  control: (base: any, state: any) => ({
+  control: (base: any, _state: any) => ({
     ...base,
     backgroundColor: "#f8f9fa", // tương đương bg-light
     border: "none", // border-0

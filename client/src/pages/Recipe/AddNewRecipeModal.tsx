@@ -109,6 +109,7 @@ export default function AddNewRecipeModal({
                   <tr>
                     <th style={{ width: "40%" }}>Nguyên liệu</th>
                     <th style={{ width: "30%" }}>Lượng cần dùng</th>
+                    <th style={{ width: "10%" }}>Loại</th>
                     <th style={{ width: "10%" }}>Đơn vị</th>
                     <th style={{ width: "10%", textAlign: "center" }}>
                       Hành động
@@ -119,7 +120,7 @@ export default function AddNewRecipeModal({
                   {form.recipeIngredients.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td>
+                        <td style={{ padding: "2px 30px 2px 2px" }}>
                           <Select
                             styles={customStyles}
                             options={options}
@@ -139,13 +140,13 @@ export default function AddNewRecipeModal({
                             }}
                           />
                         </td>
-                        <td>
+                        <td style={{ padding: "2px 30px 2px 2px" }}>
                           <Form.Control
                             style={{
                               border: "none",
                               fontSize: "16px",
                               height: "100%",
-                              margin: "2px 0 2px 0",
+                              margin: "2px 0px 2px 0",
                             }}
                             type="number"
                             placeholder="Số lượng"
@@ -163,6 +164,11 @@ export default function AddNewRecipeModal({
                               }
                             }}
                           />
+                        </td>
+                        <td className="align-middle">
+                          {ingredients.find(
+                            (ing) => ing.id === item.ingredientId
+                          )?.type || "-"}
                         </td>
                         <td className="align-middle">
                           {ingredients.find(

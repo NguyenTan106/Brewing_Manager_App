@@ -92,7 +92,7 @@ export default function UpdateRecipeModal({
     <>
       <Modal show={showUpdateModal} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>Sửa nguyên liệu {selectedRecipe?.name}</Modal.Title>
+          <Modal.Title>Sửa công thức {selectedRecipe?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
