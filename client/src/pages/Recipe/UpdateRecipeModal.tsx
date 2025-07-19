@@ -29,7 +29,6 @@ export default function UpdateRecipeModal({
   ingredients,
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<RecipeUpate>>({});
-
   useEffect(() => {
     if (selectedRecipe) {
       setEditForm(selectedRecipe);
@@ -90,6 +89,8 @@ export default function UpdateRecipeModal({
       alert("Lỗi khi cập nhật mẻ");
     }
   };
+
+
 
   const options = ingredients.map((ing) => ({
     value: ing.id,

@@ -20,6 +20,7 @@ export default function AddNewBatchModal({
     volume: "",
     notes: "",
     recipeId: "",
+    recipe: null,
   });
   const [selectedStatus, setSelectedStatus] = useState<{
     label: string;
@@ -33,6 +34,7 @@ export default function AddNewBatchModal({
       volume: "",
       notes: "",
       recipeId: "",
+      recipe: null,
     });
   };
 

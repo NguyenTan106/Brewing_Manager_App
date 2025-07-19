@@ -150,6 +150,20 @@ const updateBatchById = async (
     }
     const updated = await prisma.batch.update({
       where: { id },
+      include: {
+        batchIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        recipe: {
+          include: {
+            recipeIngredients: {
+              include: { ingredient: true },
+            },
+          },
+        }, // nếu muốn lấy luôn thông tin công thức liên kết
+      },
       data: { ...updateData, updatedAt: new Date() },
     });
 
@@ -191,6 +205,20 @@ const getBatchPage = async (page: number, limit: number) => {
     page,
     limit,
     model: "batch",
+    include: {
+      batchIngredients: {
+        include: {
+          ingredient: true,
+        },
+      },
+      recipe: {
+        include: {
+          recipeIngredients: {
+            include: { ingredient: true },
+          },
+        },
+      }, // nếu muốn lấy luôn thông tin công thức liên kết
+    },
     orderBy: { id: "asc" },
     enhanceItem: async (i) => ({
       ...i,

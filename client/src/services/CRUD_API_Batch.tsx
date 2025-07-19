@@ -40,7 +40,7 @@ export interface Batch {
   volume: number | string;
   notes?: string;
   recipeId?: number | string;
-  recipe: Recipe;
+  recipe: Recipe | null;
   createdAt?: string;
 }
 type BatchInput = Omit<Batch, "id" | "code">;

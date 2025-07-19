@@ -1,11 +1,13 @@
 import { useState, type JSX } from "react";
-import { Modal, Button, Table } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import {
   type Batch,
+  // type Recipe,
   Status,
   deleteBatchByIdAPI,
 } from "../../services/CRUD_API_Batch";
 import UpdateBatchModal from "./UpdateBatchModal";
+import RecipeDetailModalFromBatch from "./RecipeDetailModalFromBatch";
 
 interface Props {
   showDetailModal: boolean;
@@ -29,7 +31,7 @@ export default function BatchDetailModal({
   handlePaginationAPI,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-
+  const [showDetailRecipeModal, setShowDetailRecipeModal] = useState(false);
   const handleDeleteBatchByIdAPI = async (id: number) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa mẻ này?")) {
       const deleted = await deleteBatchByIdAPI(id);
@@ -44,6 +46,7 @@ export default function BatchDetailModal({
       handleClose();
     }
   };
+
   return (
     <>
       <UpdateBatchModal
@@ -54,6 +57,11 @@ export default function BatchDetailModal({
         statusOptions={statusOptions}
         setSelectedBatch={setSelectedBatch}
         handlePaginationAPI={handlePaginationAPI}
+      />
+      <RecipeDetailModalFromBatch
+        showDetailRecipeModal={showDetailRecipeModal}
+        handleClose={() => setShowDetailRecipeModal(false)}
+        selectedBatch={selectedBatch}
       />
       <Modal show={showDetailModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
@@ -84,37 +92,22 @@ export default function BatchDetailModal({
 
             <p>
               <strong>Công thức: </strong>
-              {selectedBatch?.recipe && selectedBatch.recipe.name}{" "}
-              <Button
-                title="Xem chi tiết nguyên liệu"
-                variant="info"
-                // onClick={() => handleGetBatchesByIdAPI(i.id)}
-                style={{ padding: "5px 10px", fontSize: "14px" }}
-              >
-                📋 <span className="d-none d-sm-inline">Chi tiết</span>
-              </Button>
-              {/* <Table>
-                <thead>
-                  <tr>
-                    <th>ID</th> 
-                    <th>Nguyên liệu</th>
-                    <th>Số lượng cần</th>
-                    <th>Đơn vị</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedBatch?.recipe.recipeIngredients.map((e, idx) => (
-                    <tr key={idx}>
-                      <td>{e.ingredient.id}</td>
-                      <td>{e.ingredient.name}</td>
-                      <td>{e.amountNeeded}</td>
-                      <td>{e.ingredient.unit}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table> */}
+              {selectedBatch?.recipe === null
+                ? "Chưa có công thức"
+                : selectedBatch?.recipe?.name && (
+                    <>
+                      {selectedBatch?.recipe.name}{" "}
+                      <Button
+                        title="Xem chi tiết nguyên liệu"
+                        variant="info"
+                        onClick={() => setShowDetailRecipeModal(true)}
+                        style={{ padding: "5px 10px", fontSize: "14px" }}
+                      >
+                        📋 <span className="d-none d-sm-inline">Chi tiết</span>
+                      </Button>
+                    </>
+                  )}
             </p>
-
             <p>
               <strong>Ngày tạo: </strong>
               {selectedBatch?.createdAt &&

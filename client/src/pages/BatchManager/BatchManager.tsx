@@ -139,7 +139,7 @@ export default function BatchManager() {
             <th style={{ width: "10%" }}>Tên mẻ</th>
             <th style={{ width: "8%" }}>Trạng thái</th>
             <th style={{ width: "10%" }}>Khối lượng (lít)</th>
-            <th style={{ width: "10%" }}>Mã công thức</th>
+            <th style={{ width: "10%" }}>Công thức</th>
             <th style={{ width: "10%" }}>Ngày tạo</th>
             <th style={{ width: "10%" }}>Hành động</th>
           </tr>
@@ -158,7 +158,7 @@ export default function BatchManager() {
                 <td>{i.beerName}</td>
                 <td>{getStatusBadge(i.status)}</td>
                 <td>{i.volume}</td>
-                <td>{i.recipeId || "Chưa có công thức nào"}</td>
+                <td>{i.recipe?.name || "Chưa có công thức nào"}</td>
                 <td>
                   {i.createdAt &&
                     new Date(i.createdAt).toLocaleString("vi-VN", {

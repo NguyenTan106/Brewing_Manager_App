@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import {
-  type Batch,
-  Status,
-  updateBatchByIdAPI,
-} from "../../services/CRUD_API_Batch";
+import { getAllRecipesAPI } from "../../services/CRUD_API_Recipe";
+import type { Batch, Recipe, Status } from "../../services/CRUD_API_Batch";
+import { updateBatchByIdAPI } from "../../services/CRUD_API_Batch";
 import Select from "react-select";
 interface Props {
   showUpdateModal: boolean;
@@ -30,7 +28,7 @@ export default function UpdateBatchModal({
     label: string;
     value: Status;
   } | null>(null);
-
+  const [recipeFromBatch, setRecipeFromBatch] = useState<Recipe[]>([]);
   const handleUpdateBatchByIdAPI = async (id: number) => {
     if (!id) return;
     try {
@@ -56,6 +54,7 @@ export default function UpdateBatchModal({
         return;
       }
       const data = await updateBatchByIdAPI(id, editForm);
+      console.log(data);
       handleClose();
       handlePaginationAPI();
       setSelectedBatch(data.data);
@@ -65,6 +64,7 @@ export default function UpdateBatchModal({
     }
   };
   useEffect(() => {
+    handleGetAllRecipeAPI();
     if (editForm.status) {
       const found = statusOptions.find((opt) => opt.value === editForm.status);
       if (found) setSelectedStatus(found);
@@ -79,6 +79,15 @@ export default function UpdateBatchModal({
       setEditForm(selectedBatch);
     }
   }, [selectedBatch]);
+
+  const handleGetAllRecipeAPI = async () => {
+    const recipe = await getAllRecipesAPI();
+    setRecipeFromBatch(recipe);
+  };
+  const recipeOptions = recipeFromBatch.map((re) => ({
+    value: re.id,
+    label: re.name,
+  }));
 
   return (
     <>
@@ -131,6 +140,33 @@ export default function UpdateBatchModal({
               </Form.Group>
             </div>
             <div>
+              <Form.Group controlId="status" className="mb-3">
+                <Form.Label>
+                  <strong>Chọn công thức: </strong>
+                </Form.Label>
+                <Select
+                  className="basic-single"
+                  classNamePrefix="select"
+                  required
+                  name="recipe"
+                  options={recipeOptions}
+                  value={
+                    recipeOptions.find(
+                      (opt) => opt.value === editForm.recipeId
+                    ) || null
+                  }
+                  onChange={(option) => {
+                    setEditForm((prev) => ({
+                      ...prev,
+                      recipeId: option ? option.value : "",
+                    }));
+                  }}
+                  placeholder="Chọn công thức"
+                  isClearable
+                />
+              </Form.Group>
+            </div>
+            <div>
               <Form.Group controlId="volume" className="mb-3">
                 <Form.Label>
                   <strong>Khối lượng mẻ (lít):</strong>
@@ -158,24 +194,6 @@ export default function UpdateBatchModal({
                     setEditForm({
                       ...editForm,
                       notes: e.target.value,
-                    })
-                  }
-                />
-              </Form.Group>
-            </div>
-            <div>
-              <Form.Group controlId="" className="mb-3">
-                <Form.Label>
-                  <strong>Chọn công thức nấu:</strong>
-                </Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="VD: 20"
-                  value={editForm?.recipeId ?? ""}
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      recipeId: e.target.value,
                     })
                   }
                 />
