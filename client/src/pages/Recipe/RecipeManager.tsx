@@ -1,6 +1,10 @@
 import { Button, Table } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
-import type { Recipe, RecipeIngredient } from "../../services/CRUD_API_Recipe";
+import type {
+  Recipe,
+  RecipeIngredient,
+  RecipeUpate,
+} from "../../services/CRUD_API_Recipe";
 import { useEffect, useState } from "react";
 import AddNewRecipeModal from "./AddNewRecipeModal";
 import {
@@ -15,7 +19,9 @@ import RecipeDetailModal from "./RecipeDetailModal";
 export default function RecipeManager() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [selectedRecipe, setSelectedRecipe] = useState<RecipeUpate | null>(
+    null
+  );
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedRecipeIngredient, setSelectedRecipeIngredient] = useState<
     RecipeIngredient[] | null
@@ -54,6 +60,7 @@ export default function RecipeManager() {
         setSelectedRecipe={setSelectedRecipe}
         selectedRecipeIngredient={selectedRecipeIngredient}
         setSelectedRecipeIngredient={setSelectedRecipeIngredient}
+        ingredients={ingredients}
       />
       <AddNewRecipeModal
         showAddModal={showAddModal}
@@ -61,6 +68,7 @@ export default function RecipeManager() {
         handleGetAllRecipesAPI={handleGetAllRecipesAPI}
         ingredients={ingredients}
       />
+
       <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
         <h3 className="mb-0">Danh sách công thức:</h3>
         <Button

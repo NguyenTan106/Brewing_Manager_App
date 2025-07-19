@@ -1,5 +1,5 @@
 import { useState, type JSX } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Table } from "react-bootstrap";
 import {
   type Batch,
   Status,
@@ -80,6 +80,39 @@ export default function BatchDetailModal({
             <p>
               <strong>Khối lượng: </strong>
               {selectedBatch?.volume}L
+            </p>
+
+            <p>
+              <strong>Công thức: </strong>
+              {selectedBatch?.recipe && selectedBatch.recipe.name}{" "}
+              <Button
+                title="Xem chi tiết nguyên liệu"
+                variant="info"
+                // onClick={() => handleGetBatchesByIdAPI(i.id)}
+                style={{ padding: "5px 10px", fontSize: "14px" }}
+              >
+                📋 <span className="d-none d-sm-inline">Chi tiết</span>
+              </Button>
+              {/* <Table>
+                <thead>
+                  <tr>
+                    <th>ID</th> 
+                    <th>Nguyên liệu</th>
+                    <th>Số lượng cần</th>
+                    <th>Đơn vị</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedBatch?.recipe.recipeIngredients.map((e, idx) => (
+                    <tr key={idx}>
+                      <td>{e.ingredient.id}</td>
+                      <td>{e.ingredient.name}</td>
+                      <td>{e.amountNeeded}</td>
+                      <td>{e.ingredient.unit}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table> */}
             </p>
 
             <p>

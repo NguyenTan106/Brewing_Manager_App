@@ -17,7 +17,13 @@ const getAllBatches = async (): Promise<{
             ingredient: true,
           },
         },
-        recipe: true, // nếu muốn lấy luôn thông tin công thức liên kết
+        recipe: {
+          include: {
+            recipeIngredients: {
+              include: { ingredient: true },
+            },
+          },
+        }, // nếu muốn lấy luôn thông tin công thức liên kết
       },
     });
     if (data.length === 0) {
@@ -42,6 +48,20 @@ const getBatchById = async (
   try {
     const data = await prisma.batch.findUnique({
       where: { id },
+      include: {
+        batchIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        recipe: {
+          include: {
+            recipeIngredients: {
+              include: { ingredient: true },
+            },
+          },
+        }, // nếu muốn lấy luôn thông tin công thức liên kết
+      },
     });
     if (!data) {
       return { message: "Chưa có mẻ nào được tạo", data: [] };

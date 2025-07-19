@@ -1,6 +1,6 @@
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-
+import { type Ingredient } from "./CRUD_API_Ingredient";
 export enum Status {
   boiling = "boiling",
   fermenting = "fermenting",
@@ -15,6 +15,23 @@ export const statusLabelMap: Record<Status, string> = {
   done: "Hoàn tất",
 };
 
+export interface RecipeIngredient {
+  id: number;
+  ingredientId: number | string;
+  amountNeeded: number | string;
+  ingredient: Ingredient;
+}
+
+export interface Recipe {
+  id: number;
+  name: string;
+  recipeIngredients: RecipeIngredient[];
+  description?: string;
+  note?: string;
+  instructions?: string;
+  createdAt: string;
+}
+
 export interface Batch {
   id: number;
   code: string;
@@ -23,6 +40,7 @@ export interface Batch {
   volume: number | string;
   notes?: string;
   recipeId?: number | string;
+  recipe: Recipe;
   createdAt?: string;
 }
 type BatchInput = Omit<Batch, "id" | "code">;

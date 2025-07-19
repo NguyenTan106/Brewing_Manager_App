@@ -95,7 +95,7 @@ const handleUpdateRecipeById = async (req: Request, res: Response) => {
     await compareAndLogChanges(
       oldData,
       newData,
-      ["name", "description", "note", "instructions", "ingredients"],
+      ["name", "description", "note", "instructions", "recipeIngredients"],
       "Recipe",
       newData.id,
       oldData.name

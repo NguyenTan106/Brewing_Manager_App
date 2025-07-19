@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import { Modal, Form, Button, Table } from "react-bootstrap";
-import type { Recipe } from "../../services/CRUD_API_Recipe";
+import type { RecipeUpate } from "../../services/CRUD_API_Recipe";
 import { updateRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
 import { type RecipeIngredient } from "../../services/CRUD_API_Recipe";
-
+import Select from "react-select";
+import type { Ingredient } from "../../services/CRUD_API_Ingredient";
 interface Props {
   showUpdateModal: boolean;
   handleClose: () => void;
-  selectedRecipe: Recipe | null;
+  selectedRecipe: RecipeUpate | null;
   handleGetAllRecipesAPI: () => Promise<void>;
-  setSelectedRecipe: React.Dispatch<React.SetStateAction<Recipe | null>>;
+  setSelectedRecipe: React.Dispatch<React.SetStateAction<RecipeUpate | null>>;
   selectedRecipeIngredient: RecipeIngredient[] | null;
   setSelectedRecipeIngredient: React.Dispatch<
     React.SetStateAction<RecipeIngredient[] | null>
   >;
+  ingredients: Ingredient[];
 }
 
 export default function UpdateRecipeModal({
@@ -24,8 +26,9 @@ export default function UpdateRecipeModal({
   handleGetAllRecipesAPI,
   selectedRecipeIngredient,
   setSelectedRecipeIngredient,
+  ingredients,
 }: Props) {
-  const [editForm, setEditForm] = useState<Partial<Recipe>>({});
+  const [editForm, setEditForm] = useState<Partial<RecipeUpate>>({});
 
   useEffect(() => {
     if (selectedRecipe) {
@@ -88,6 +91,11 @@ export default function UpdateRecipeModal({
     }
   };
 
+  const options = ingredients.map((ing) => ({
+    value: ing.id,
+    label: ing.name,
+  }));
+
   return (
     <>
       <Modal show={showUpdateModal} onHide={handleClose} size="lg" centered>
@@ -115,8 +123,30 @@ export default function UpdateRecipeModal({
             </div>
             <div>
               <Form.Group controlId="" className="mb-3">
-                <Form.Label>
+                <Form.Label className="d-flex justify-content-between align-items-center">
                   <strong>Nguyên liệu cần dùng:</strong>
+                  <Button
+                    style={{
+                      fontSize: "15px",
+                    }}
+                    variant="outline-primary"
+                    className=""
+                    onClick={() => {
+                      setEditForm({
+                        ...editForm,
+                        recipeIngredients: [
+                          ...(editForm.recipeIngredients ?? []),
+                          {
+                            ingredientId: "",
+                            amountNeeded: "",
+                            ingredient: { id: 0, name: "", unit: "" },
+                          },
+                        ],
+                      });
+                    }}
+                  >
+                    ➕ Thêm nguyên liệu
+                  </Button>
                 </Form.Label>
                 <Table>
                   <thead>
@@ -125,61 +155,104 @@ export default function UpdateRecipeModal({
                       <th>Tên</th>
                       <th>Số lượng cần</th>
                       <th>Đơn vị</th>
-                      <th>Hành động</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(selectedRecipeIngredient) &&
-                    selectedRecipeIngredient.length === 0 ? (
+                    {editForm.recipeIngredients &&
+                    editForm.recipeIngredients.length === 0 ? (
                       <tr>
                         <td colSpan={8} className="text-center text-muted">
                           <p>Không có nguyên liệu</p>
                         </td>
                       </tr>
                     ) : (
-                      selectedRecipeIngredient?.map((e) => (
-                        <tr key={e.ingredient.id}>
-                          <td>{e.ingredient.id}</td>
-                          <td>{e.ingredient.name}</td>
-                          <td>
-                            <Form.Control
-                              type="number"
-                              value={
-                                editForm.recipeIngredients?.find(
-                                  (ri) => ri.ingredientId === e.ingredient.id
-                                )?.amountNeeded ?? ""
-                              }
-                              onChange={(event) => {
-                                const newAmount = event.target.value;
+                      editForm.recipeIngredients?.map((e, index) => {
+                        return (
+                          <tr key={e.ingredient.id}>
+                            <td className="align-middle">{e.ingredient.id}</td>
+                            <td className="align-middle">
+                              {/* {e.ingredient.name} */}
+                              <Select<{ value: number; label: string }>
+                                options={options}
+                                placeholder="Chọn nguyên liệu"
+                                className="basic-single "
+                                classNamePrefix="select"
+                                value={
+                                  options.find(
+                                    (opt) => opt.value === e.ingredient.id
+                                  ) || null
+                                }
+                                onChange={(selected) => {
+                                  if (!selected) return;
+                                  const updated = [
+                                    ...(editForm.recipeIngredients ?? []),
+                                  ];
+                                  const target = updated[index];
+                                  if (target) {
+                                    target.ingredientId = selected.value;
+                                    target.ingredient = ingredients.find(
+                                      (ing) => ing.id === selected.value
+                                    ) || { id: 0, name: "", unit: "" };
+                                    setEditForm({
+                                      ...editForm,
+                                      recipeIngredients: updated,
+                                    });
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td className="align-middle">
+                              <Form.Control
+                                type="number"
+                                value={
+                                  editForm.recipeIngredients?.find(
+                                    (ri) => ri.ingredientId === e.ingredient.id
+                                  )?.amountNeeded ?? ""
+                                }
+                                onChange={(event) => {
+                                  const newAmount = event.target.value;
 
-                                setEditForm((prev) => ({
-                                  ...prev,
-                                  recipeIngredients: (
-                                    prev.recipeIngredients ?? []
-                                  ).map((ri) =>
-                                    ri.ingredientId === e.ingredient.id
-                                      ? { ...ri, amountNeeded: newAmount }
-                                      : ri
-                                  ),
-                                }));
-                              }}
-                            />
-                          </td>
-                          <td>{e.ingredient.unit}</td>
-                          <td>
-                            <Button
-                              title="Xem chi tiết nguyên liệu"
-                              variant="info"
-                              style={{ padding: "5px 10px", fontSize: "14px" }}
-                            >
-                              📋{" "}
-                              <span className="d-none d-sm-inline">
-                                Chi tiết
-                              </span>
-                            </Button>
-                          </td>
-                        </tr>
-                      ))
+                                  setEditForm((prev) => ({
+                                    ...prev,
+                                    recipeIngredients: (
+                                      prev.recipeIngredients ?? []
+                                    ).map((ri) =>
+                                      ri.ingredientId === e.ingredient.id
+                                        ? { ...ri, amountNeeded: newAmount }
+                                        : ri
+                                    ),
+                                  }));
+                                }}
+                              />
+                            </td>
+                            <td className="align-middle">
+                              {e.ingredient.unit}
+                            </td>
+                            <td className="align-middle">
+                              <Button
+                                variant="danger"
+                                style={{
+                                  padding: "5px 10px",
+                                  fontSize: "14px",
+                                }}
+                                onClick={() => {
+                                  const updated =
+                                    editForm.recipeIngredients?.filter(
+                                      (_, i) => i !== index
+                                    ) ?? [];
+                                  setEditForm({
+                                    ...editForm,
+                                    recipeIngredients: updated,
+                                  });
+                                }}
+                              >
+                                X
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })
                     )}
                   </tbody>
                 </Table>
@@ -206,7 +279,7 @@ export default function UpdateRecipeModal({
                 </Form.Label>
                 <Form.Control
                   as={"textarea"}
-                  rows={4}
+                  rows={3}
                   placeholder="VD: 20"
                   value={editForm?.note ?? ""}
                   onChange={(e) =>
@@ -225,7 +298,7 @@ export default function UpdateRecipeModal({
                 </Form.Label>
                 <Form.Control
                   as={"textarea"}
-                  rows={4}
+                  rows={3}
                   placeholder="VD: 20"
                   value={editForm?.instructions ?? ""}
                   onChange={(e) =>

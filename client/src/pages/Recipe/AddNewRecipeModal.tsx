@@ -4,7 +4,6 @@ import { createRecipeAPI } from "../../services/CRUD_API_Recipe";
 import Select from "react-select";
 import type { Ingredient } from "../../services/CRUD_API_Ingredient";
 import { type RecipeIngredientInput } from "../../services/CRUD_API_Recipe";
-import { customStyles } from "./CustomSelect";
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
@@ -111,21 +110,18 @@ export default function AddNewRecipeModal({
                     <th style={{ width: "30%" }}>Lượng cần dùng</th>
                     <th style={{ width: "10%" }}>Loại</th>
                     <th style={{ width: "10%" }}>Đơn vị</th>
-                    <th style={{ width: "10%", textAlign: "center" }}>
-                      Hành động
-                    </th>
+                    <th style={{ width: "10%" }}></th>
                   </tr>
                 </thead>
                 <tbody>
                   {form.recipeIngredients.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td style={{ padding: "2px 30px 2px 2px" }}>
+                        <td style={{ padding: "9px 30px 10px 2px" }}>
                           <Select
-                            styles={customStyles}
                             options={options}
                             placeholder="Chọn nguyên liệu"
-                            className="basic-single "
+                            className="basic-single"
                             classNamePrefix="select"
                             onChange={(selected) => {
                               const updated = [...form.recipeIngredients];
@@ -140,17 +136,13 @@ export default function AddNewRecipeModal({
                             }}
                           />
                         </td>
-                        <td style={{ padding: "2px 30px 2px 2px" }}>
+                        <td style={{ padding: "7px 30px 6px 2px" }}>
                           <Form.Control
                             style={{
-                              border: "none",
-                              fontSize: "16px",
-                              height: "100%",
                               margin: "2px 0px 2px 0",
                             }}
                             type="number"
                             placeholder="Số lượng"
-                            className="form-control-sm rounded shadow-sm bg-light border-0 align-middle"
                             value={item.amountNeeded}
                             onChange={(e) => {
                               const updated = [...form.recipeIngredients];
@@ -176,7 +168,7 @@ export default function AddNewRecipeModal({
                           )?.unit || "-"}
                         </td>
 
-                        <td className="text-center align-middle">
+                        <td className="align-middle">
                           <Button
                             variant="danger"
                             size="sm"
@@ -198,6 +190,9 @@ export default function AddNewRecipeModal({
 
               <Button
                 variant="outline-primary"
+                style={{
+                  fontSize: "15px",
+                }}
                 className="mb-3 al"
                 onClick={() =>
                   setForm({

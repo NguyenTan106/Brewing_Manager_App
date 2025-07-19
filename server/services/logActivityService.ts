@@ -37,23 +37,89 @@ export const compareAndLogChanges = async (
     const oldValue = oldData[field];
     const newValue = newData[field];
 
+    if (Array.isArray(oldValue) && Array.isArray(newValue)) {
+      for (let i = 0; i < Math.max(oldValue.length, newValue.length); i++) {
+        const oldItem = oldValue[i];
+        const newItem = newValue[i];
+
+        // Thêm hoặc xóa toàn bộ phần tử
+        if (!oldItem || !newItem) {
+          logs.push(
+            `🔄 Mục [${field} #${i + 1}]: ${
+              oldItem ? "🗑️ Đã xóa" : "🆕 Đã thêm"
+            }`
+          );
+          continue;
+        }
+
+        // So sánh từng trường trong mỗi item
+        for (const key of Object.keys(newItem)) {
+          const oldItemValue = oldItem[key];
+          const newItemValue = newItem[key];
+
+          // Nếu là object con như ingredient
+          if (
+            typeof oldItemValue === "object" &&
+            typeof newItemValue === "object"
+          ) {
+            for (const subKey of Object.keys(newItemValue)) {
+              const oldSubValue = oldItemValue[subKey];
+              const newSubValue = newItemValue[subKey];
+
+              if (oldSubValue instanceof Date || newSubValue instanceof Date) {
+                const oldTime = new Date(oldSubValue).getTime();
+                const newTime = new Date(newSubValue).getTime();
+                if (oldTime !== newTime) {
+                  logs.push(
+                    `🕒 ${field} #${
+                      i + 1
+                    } > ${key}.${subKey}:\n   📅 Trước: ${formatDate(
+                      oldSubValue
+                    )}\n   📅 Sau:   ${formatDate(newSubValue)}`
+                  );
+                }
+              } else if (oldSubValue !== newSubValue) {
+                logs.push(
+                  `✏️ ${field} #${
+                    i + 1
+                  } > ${key}.${subKey}:\n   🧾 Trước: ${oldSubValue}\n   🧾 Sau:   ${newSubValue}`
+                );
+              }
+            }
+          } else if (oldItemValue !== newItemValue) {
+            logs.push(
+              `✏️ ${field} #${
+                i + 1
+              } > ${key}:\n   🧾 Trước: ${oldItemValue}\n   🧾 Sau:   ${newItemValue}`
+            );
+          }
+        }
+      }
+    }
+
     // Nếu là ngày thì so sánh kiểu getTime()
-    if (
+    // Các trường đơn giản khác
+    else if (
       oldValue instanceof Date ||
       newValue instanceof Date ||
       field.toLowerCase().includes("date")
     ) {
       const oldTime = new Date(oldValue).getTime();
       const newTime = new Date(newValue).getTime();
+
       if (oldTime !== newTime) {
         logs.push(
-          `${field}: ${formatDate(oldValue)} → ${formatDate(newValue)}`
+          `🕒 ${formatFieldName(field)}:\n   📅 Trước: ${formatDate(
+            oldValue
+          )}\n   📅 Sau:   ${formatDate(newValue)}`
         );
       }
-    } else {
-      if (oldValue !== newValue) {
-        logs.push(`${field}: ${oldValue} → ${newValue}`);
-      }
+    } else if (oldValue !== newValue) {
+      logs.push(
+        `✏️ ${formatFieldName(
+          field
+        )}:\n   🧾 Trước: ${oldValue}\n   🧾 Sau:   ${newValue}`
+      );
     }
   }
 
@@ -64,13 +130,20 @@ export const compareAndLogChanges = async (
       entityId,
       `Cập nhật ${entity} "${entityLabel}":\n` +
         logs.join("\n") +
-        ` ngày ${logUpdateDate}`,
+        ` vào ${logUpdateDate}`,
       userId
     );
   }
 
   return logs.length > 0;
 };
+
+function formatFieldName(field: string): string {
+  return field
+    .replace(/([a-z])([A-Z])/g, "$1 $2") // camelCase → camel Case
+    .replace(/_/g, " ") // snake_case → snake case
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // viết hoa chữ cái đầu mỗi từ
+}
 
 function format(val: any): string {
   if (val === null || val === undefined) return "null";

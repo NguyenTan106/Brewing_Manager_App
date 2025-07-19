@@ -1,19 +1,25 @@
 import { Modal, Button, Table } from "react-bootstrap";
-import type { Recipe, RecipeIngredient } from "../../services/CRUD_API_Recipe";
+import type {
+  RecipeIngredient,
+  RecipeUpate,
+} from "../../services/CRUD_API_Recipe";
 import { useState } from "react";
 import UpdateRecipeModal from "./UpdateRecipeModal";
 import { deleteRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
-
+import type { Ingredient } from "../../services/CRUD_API_Ingredient";
+import IngredientDetailModalFromRecipe from "./IngredientDetailModalFromRecipe";
+import { getIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
 interface Props {
   handleClose: () => void;
   showDetailModal: boolean;
-  selectedRecipe: Recipe | null;
-  setSelectedRecipe: React.Dispatch<React.SetStateAction<Recipe | null>>;
+  selectedRecipe: RecipeUpate | null;
+  setSelectedRecipe: React.Dispatch<React.SetStateAction<RecipeUpate | null>>;
   handleGetAllRecipesAPI: () => Promise<void>;
   selectedRecipeIngredient: RecipeIngredient[] | null;
   setSelectedRecipeIngredient: React.Dispatch<
     React.SetStateAction<RecipeIngredient[] | null>
   >;
+  ingredients: Ingredient[];
 }
 
 export default function RecipeDetailModal({
@@ -24,9 +30,13 @@ export default function RecipeDetailModal({
   handleGetAllRecipesAPI,
   selectedRecipeIngredient,
   setSelectedRecipeIngredient,
+  ingredients,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-
+  const [showDetailIngredientModal, setShowDetailIngredientModal] =
+    useState(false);
+  const [selectedIngredient, setSelectedIngredient] =
+    useState<Ingredient | null>(null);
   const handleDeleteRecipeByIdAPI = async (id: number) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa công thức này?")) {
       const deleted = await deleteRecipeByIdAPI(id);
@@ -43,8 +53,19 @@ export default function RecipeDetailModal({
     }
   };
 
+  const handleGetIngredientByIdAPI = async (id: number) => {
+    const ingredient = await getIngredientByIdAPI(id);
+    setSelectedIngredient(ingredient);
+    setShowDetailIngredientModal(true);
+  };
+
   return (
     <>
+      <IngredientDetailModalFromRecipe
+        showDetailIngredientModal={showDetailIngredientModal}
+        handleClose={() => setShowDetailIngredientModal(false)}
+        selectedIngredient={selectedIngredient as Ingredient}
+      />
       <UpdateRecipeModal
         selectedRecipe={selectedRecipe}
         handleClose={() => {
@@ -55,6 +76,7 @@ export default function RecipeDetailModal({
         setSelectedRecipe={setSelectedRecipe}
         selectedRecipeIngredient={selectedRecipeIngredient}
         setSelectedRecipeIngredient={setSelectedRecipeIngredient}
+        ingredients={ingredients}
       />
       <Modal show={showDetailModal} onHide={handleClose} size="lg" centered>
         <Modal.Header closeButton>
@@ -77,10 +99,11 @@ export default function RecipeDetailModal({
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Tên</th>
-                  <th>Số lượng cần</th>
-                  <th>Đơn vị</th>
-                  <th>Hành động</th>
+                  <th style={{ width: "20%" }}>Tên</th>
+                  <th style={{ width: "20%" }}>Số lượng cần</th>
+                  <th style={{ width: "20%" }}>Loại</th>
+                  <th style={{ width: "15%" }}>Đơn vị</th>
+                  <th style={{ width: "15%" }}></th>
                 </tr>
               </thead>
               <tbody>
@@ -93,16 +116,19 @@ export default function RecipeDetailModal({
                   </tr>
                 ) : (
                   selectedRecipeIngredient?.map((e) => (
-                    <tr key={e.ingredient.id}>
+                    <tr className="align-middle" key={e.ingredient.id}>
                       <td>{e.ingredient.id}</td>
                       <td>{e.ingredient.name}</td>
                       <td>{e.amountNeeded}</td>
+                      <td>{e.ingredient.type}</td>
                       <td>{e.ingredient.unit}</td>
                       <td>
                         <Button
                           title="Xem chi tiết nguyên liệu"
                           variant="info"
-                          // onClick={() => handleGetRecipeByIdAPI(i.id)}
+                          onClick={() =>
+                            handleGetIngredientByIdAPI(e.ingredient.id)
+                          }
                           style={{ padding: "5px 10px", fontSize: "14px" }}
                         >
                           📋{" "}
