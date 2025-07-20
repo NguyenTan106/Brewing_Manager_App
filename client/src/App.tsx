@@ -4,6 +4,7 @@ import IngredientManager from "./pages/IngredientManager/IngredientManager";
 import BatchManager from "./pages/BatchManager/BatchManager";
 import RecipeManager from "./pages/Recipe/RecipeManager";
 import MainLayout from "./layout/MainLayout";
+import ActivityLogManager from "./pages/ActivityLogManager/ActivityLogManager";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="ingredients" element={<IngredientManager />} />
           <Route path="batchs" element={<BatchManager />} />
           <Route path="recipes" element={<RecipeManager />} />
+          <Route path="activity-logs" element={<ActivityLogManager />} />
         </Route>
       </Routes>
     </Router>

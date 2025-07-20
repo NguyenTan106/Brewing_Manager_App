@@ -32,6 +32,8 @@ import {
   paginationRecipeAPIController,
 } from "./routes/api_recipe";
 
+import { getAllActivityLogsController } from "./routes/api_activity_log";
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -64,6 +66,9 @@ app.use("/api", getRecipeByIdController);
 app.use("/api", updateRecipesByIdController);
 app.use("/api", deleteRecipesByIdController);
 app.use("/api", paginationRecipeAPIController);
+
+//activity log
+app.use("/api", getAllActivityLogsController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

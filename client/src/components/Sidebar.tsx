@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { FaHome, FaBoxOpen, FaCog } from "react-icons/fa";
 import { IoMenu } from "react-icons/io5";
 import { GiBeerStein } from "react-icons/gi";
-import { MdMenuBook } from "react-icons/md";
+import { MdMenuBook, MdHistory } from "react-icons/md";
 import "./styles.css";
 interface SidebarProps {
   isCollapsed: boolean;
@@ -15,6 +15,7 @@ const navItems = [
   { path: "/ingredients", icon: <FaBoxOpen />, label: "Nguyên liệu" },
   { path: "/batchs", icon: <GiBeerStein />, label: "Mẻ nấu" },
   { path: "/recipes", icon: <MdMenuBook />, label: "Công thức" },
+  { path: "/activity-logs", icon: <MdHistory />, label: "Nhật kí hoạt động" },
   { path: "/settings", icon: <FaCog />, label: "Cài đặt" },
 ];
 
