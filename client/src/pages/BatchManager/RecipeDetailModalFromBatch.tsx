@@ -4,12 +4,14 @@ interface Props {
   handleClose: () => void;
   showDetailRecipeModal: boolean;
   selectedBatch: Batch | null;
+  usedIngredients: [];
 }
 
 export default function RecipeDetailModalFromBatch({
   handleClose,
   showDetailRecipeModal,
   selectedBatch,
+  usedIngredients,
 }: Props) {
   return (
     <>
@@ -42,10 +44,9 @@ export default function RecipeDetailModalFromBatch({
               <thead>
                 <tr>
                   <th style={{ width: "10%" }}>ID</th>
-                  <th style={{ width: "30%" }}>Tên</th>
-                  <th style={{ width: "20%" }}>Số lượng cần</th>
-                  <th style={{ width: "20%" }}>Đơn vị</th>
-                  <th style={{ width: "20%" }}>Loại</th>
+                  <th style={{ width: "25%" }}>Tên</th>
+                  <th style={{ width: "25%" }}>Số lượng cần</th>
+                  <th style={{ width: "15%" }}>Loại</th>
                 </tr>
               </thead>
               <tbody>
@@ -58,12 +59,15 @@ export default function RecipeDetailModalFromBatch({
                   </tr>
                 ) : (
                   selectedBatch?.recipe &&
-                  selectedBatch?.recipe.recipeIngredients.map((e) => (
+                  selectedBatch?.recipe.recipeIngredients.map((e, index) => (
                     <tr className="align-middle" key={e.ingredient.id}>
                       <td>{e.ingredient.id}</td>
                       <td>{e.ingredient.name}</td>
-                      <td>{e.amountNeeded}</td>
-                      <td>{e.ingredient.unit}</td>
+                      <td>
+                        {usedIngredients?.[index] ?? "-"}
+                        {e.ingredient.unit} / {selectedBatch.volume}L
+                      </td>
+
                       <td>{e.ingredient.type}</td>
                     </tr>
                   ))

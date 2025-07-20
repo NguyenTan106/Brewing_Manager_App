@@ -7,14 +7,14 @@ import { type RecipeIngredientInput } from "../../services/CRUD_API_Recipe";
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
-  handleGetAllRecipesAPI: () => Promise<void>;
   ingredients: Ingredient[];
+  handlePaginationAPI: () => void;
 }
 
 export default function AddNewRecipeModal({
   showAddModal,
   handleClose,
-  handleGetAllRecipesAPI,
+  handlePaginationAPI,
   ingredients,
 }: Props) {
   const [form, setForm] = useState({
@@ -55,7 +55,7 @@ export default function AddNewRecipeModal({
       alert(data.message);
     }
     clearForm();
-    await handleGetAllRecipesAPI();
+    handlePaginationAPI();
   };
 
   const options = ingredients.map((ing) => ({

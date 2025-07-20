@@ -40,10 +40,11 @@ export default function BatchManager() {
         return <Badge bg="secondary">{status}</Badge>;
     }
   };
+  const [usedIngredients, setUsedIngredients] = useState<[]>([]);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(5);
+  const [limit, setLimit] = useState<number>(9);
   const [isInitialized, setIsInitialized] = useState<boolean>(false); // ✅
 
   useEffect(() => {
@@ -68,6 +69,12 @@ export default function BatchManager() {
 
   const handlePaginationAPI = async (page: number, limit: number) => {
     const data = await paginationBatchAPI(page, limit);
+
+    // Nếu không có dữ liệu và không phải trang đầu → quay về trang trước
+    if (data.data.length === 0 && page > 1) {
+      setCurrentPage(page - 1);
+      return;
+    }
     setBatches(data.data);
     setCurrentPage(data.currentPage);
     setTotalPages(data.totalPages);
@@ -82,12 +89,20 @@ export default function BatchManager() {
 
   const handleGetAllBatchesAPI = async () => {
     const data = await getAllBatchesAPI();
-    console.log(data);
     setBatches(data);
   };
 
   const handleGetBatchesByIdAPI = async (id: number) => {
     const data = await getAllBatchByIdAPI(id);
+    const defaultVolume = 60;
+    const amountNeeded = data.recipe.recipeIngredients.map((e: any) => {
+      const volume = data.volume;
+      const scaleRatio = parseFloat(volume) / defaultVolume;
+      const amountToUse = scaleRatio * e.amountNeeded;
+      return amountToUse;
+    });
+    setUsedIngredients(amountNeeded);
+    // console.log(amountNeeded);
     setSelectedBatch(data);
     setShowDetailModal(true);
   };
@@ -103,13 +118,14 @@ export default function BatchManager() {
         handleGetAllBatchesAPI={handleGetAllBatchesAPI}
         statusOptions={statusOptions}
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
+        usedIngredients={usedIngredients}
       />
 
       <AddNewBatchModal
         showAddModal={showAddModal}
         handleClose={() => setShowAddModal(false)}
-        handleGetAllBatchesAPI={handleGetAllBatchesAPI}
         statusOptions={statusOptions}
+        handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
       <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">

@@ -8,6 +8,7 @@ import {
   handleUpdateRecipeById,
   handleDeleteRecipeById,
 } from "../controllers/CRUD_recipe";
+import { handlePaginationRecipe } from "../controllers/pagination";
 
 const getAllRecipesController = router.get("/recipes", handleGetAllRecipes);
 const getRecipeByIdController = router.get("/recipe/:id", handleGetRecipeById);
@@ -21,10 +22,16 @@ const deleteRecipesByIdController = router.delete(
   handleDeleteRecipeById
 );
 
+const paginationRecipeAPIController = router.get(
+  "/pagination-recipe",
+  handlePaginationRecipe
+);
+
 export {
   getAllRecipesController,
   createRecipesController,
   getRecipeByIdController,
   updateRecipesByIdController,
   deleteRecipesByIdController,
+  paginationRecipeAPIController,
 };

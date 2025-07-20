@@ -1,5 +1,4 @@
 import { Button, Table } from "react-bootstrap";
-import { FaPlus } from "react-icons/fa";
 import type {
   Recipe,
   RecipeIngredient,
@@ -7,15 +6,14 @@ import type {
 } from "../../services/CRUD_API_Recipe";
 import { useEffect, useState } from "react";
 import AddNewRecipeModal from "./AddNewRecipeModal";
+import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import {
   getAllIngredientsAPI,
   type Ingredient,
 } from "../../services/CRUD_API_Ingredient";
-import {
-  getAllRecipesAPI,
-  getRecipeByIdAPI,
-} from "../../services/CRUD_API_Recipe";
+import { getRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
 import RecipeDetailModal from "./RecipeDetailModal";
+import { paginationRecipeAPI } from "../../services/pagination_API";
 export default function RecipeManager() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -29,13 +27,52 @@ export default function RecipeManager() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
   useEffect(() => {
-    handleGetAllRecipesAPI();
     handleGetAllIngredientsAPI();
   }, []);
 
-  const handleGetAllRecipesAPI = async () => {
-    const data = await getAllRecipesAPI();
-    setRecipes(data);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(5);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false); // ✅
+
+  useEffect(() => {
+    const savedPage = localStorage.getItem("recipe_page");
+    const savedLimit = localStorage.getItem("reicipe_limit");
+
+    if (savedPage) setCurrentPage(Number(savedPage));
+    if (savedLimit) setLimit(Number(savedLimit));
+
+    setIsInitialized(true); // ✅ cho phép gọi API sau khi đọc xong localStorage
+  }, []);
+
+  // 🔁 Gọi API chỉ khi dữ liệu khởi tạo xong
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem("recipe_page", currentPage.toString());
+      localStorage.setItem("recipe_limit", limit.toString());
+
+      handlePaginationAPI(currentPage, limit);
+    }
+  }, [currentPage, limit, isInitialized]);
+
+  const handlePaginationAPI = async (page: number, limit: number) => {
+    const data = await paginationRecipeAPI(page, limit);
+
+    // Nếu không có dữ liệu và không phải trang đầu → quay về trang trước
+    if (data.data.length === 0 && page > 1) {
+      setCurrentPage(page - 1);
+      return;
+    }
+    setRecipes(data.data);
+    setCurrentPage(data.currentPage);
+    setTotalPages(data.totalPages);
+  };
+
+  // Xử lý chuyển trang
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page); // useEffect sẽ tự gọi handlePaginationAPI
+    }
   };
 
   const handleGetRecipeByIdAPI = async (id: number) => {
@@ -56,17 +93,17 @@ export default function RecipeManager() {
         showDetailModal={showDetailModal}
         handleClose={() => setShowDetailModal(false)}
         selectedRecipe={selectedRecipe}
-        handleGetAllRecipesAPI={handleGetAllRecipesAPI}
         setSelectedRecipe={setSelectedRecipe}
         selectedRecipeIngredient={selectedRecipeIngredient}
         setSelectedRecipeIngredient={setSelectedRecipeIngredient}
         ingredients={ingredients}
+        handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
       <AddNewRecipeModal
         showAddModal={showAddModal}
         handleClose={() => setShowAddModal(false)}
-        handleGetAllRecipesAPI={handleGetAllRecipesAPI}
         ingredients={ingredients}
+        handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
       <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
@@ -144,6 +181,66 @@ export default function RecipeManager() {
           )}
         </tbody>
       </Table>
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+          <Button
+            variant="outline-secondary"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
+            style={{ minWidth: "80px" }}
+          >
+            <FaAngleLeft className="me-1" />
+            Trước
+          </Button>
+
+          {[...Array(totalPages)].map((_, i) => {
+            const pageNum = i + 1;
+            if (
+              pageNum === 1 ||
+              pageNum === totalPages ||
+              Math.abs(currentPage - pageNum) <= 1
+            ) {
+              return (
+                <Button
+                  key={pageNum}
+                  variant={
+                    pageNum === currentPage ? "secondary" : "outline-secondary"
+                  }
+                  onClick={() => handlePageChange(pageNum)}
+                  className="rounded-circle fw-semibold"
+                  style={{ width: "40px", height: "40px" }}
+                >
+                  {pageNum}
+                </Button>
+              );
+            } else if (
+              (pageNum === currentPage - 2 && currentPage > 3) ||
+              (pageNum === currentPage + 2 && currentPage < totalPages - 2)
+            ) {
+              return (
+                <span
+                  key={pageNum}
+                  className="text-secondary mx-2"
+                  style={{ fontWeight: "bold" }}
+                >
+                  ...
+                </span>
+              );
+            }
+            return null;
+          })}
+          <Button
+            variant="outline-secondary"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
+            style={{ minWidth: "80px" }}
+          >
+            Sau <FaAngleRight className="ms-1" />
+          </Button>
+        </div>
+      )}
     </>
   );
 }

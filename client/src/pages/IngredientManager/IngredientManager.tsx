@@ -20,7 +20,7 @@ export default function IngredientManager() {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(5);
+  const [limit, setLimit] = useState<number>(10);
   const [isInitialized, setIsInitialized] = useState<boolean>(false); // ✅ flag
   useEffect(() => {
     const savedPage = localStorage.getItem("ingredient_page");
@@ -44,6 +44,11 @@ export default function IngredientManager() {
 
   const handlePaginationAPI = async (page: number, limit: number) => {
     const data = await paginationIngredientAPI(page, limit);
+    // Nếu không có dữ liệu và không phải trang đầu → quay về trang trước
+    if (data.data.length === 0 && page > 1) {
+      setCurrentPage(page - 1);
+      return;
+    }
     setIngredients(data.data);
     setCurrentPage(data.currentPage);
     setTotalPages(data.totalPages);
@@ -70,7 +75,7 @@ export default function IngredientManager() {
   return (
     <>
       <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
-        <h3 className="mb-0">Danh sách nguyên liệu:</h3>
+        <h3 className="mb-0">Kho nguyên liệu:</h3>
         <Button
           title="Thêm nguyên liệu mới"
           variant="primary"

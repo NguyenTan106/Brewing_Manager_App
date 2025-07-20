@@ -14,12 +14,12 @@ interface Props {
   showDetailModal: boolean;
   selectedRecipe: RecipeUpate | null;
   setSelectedRecipe: React.Dispatch<React.SetStateAction<RecipeUpate | null>>;
-  handleGetAllRecipesAPI: () => Promise<void>;
   selectedRecipeIngredient: RecipeIngredient[] | null;
   setSelectedRecipeIngredient: React.Dispatch<
     React.SetStateAction<RecipeIngredient[] | null>
   >;
   ingredients: Ingredient[];
+  handlePaginationAPI: () => void;
 }
 
 export default function RecipeDetailModal({
@@ -27,9 +27,9 @@ export default function RecipeDetailModal({
   showDetailModal,
   selectedRecipe,
   setSelectedRecipe,
-  handleGetAllRecipesAPI,
   selectedRecipeIngredient,
   setSelectedRecipeIngredient,
+  handlePaginationAPI,
   ingredients,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -47,8 +47,7 @@ export default function RecipeDetailModal({
         return;
       }
       alert(`${errorMessage}`);
-      //   handlePaginationAPI();
-      await handleGetAllRecipesAPI();
+      handlePaginationAPI();
       handleClose();
     }
   };
@@ -72,7 +71,7 @@ export default function RecipeDetailModal({
           setShowUpdateModal(false);
         }}
         showUpdateModal={showUpdateModal}
-        handleGetAllRecipesAPI={handleGetAllRecipesAPI}
+        handlePaginationAPI={handlePaginationAPI}
         setSelectedRecipe={setSelectedRecipe}
         selectedRecipeIngredient={selectedRecipeIngredient}
         setSelectedRecipeIngredient={setSelectedRecipeIngredient}
@@ -98,11 +97,10 @@ export default function RecipeDetailModal({
             <Table>
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th style={{ width: "10%" }}>ID</th>
                   <th style={{ width: "20%" }}>Tên</th>
                   <th style={{ width: "20%" }}>Số lượng cần</th>
                   <th style={{ width: "20%" }}>Loại</th>
-                  <th style={{ width: "15%" }}>Đơn vị</th>
                   <th style={{ width: "15%" }}></th>
                 </tr>
               </thead>
@@ -119,9 +117,11 @@ export default function RecipeDetailModal({
                     <tr className="align-middle" key={e.ingredient.id}>
                       <td>{e.ingredient.id}</td>
                       <td>{e.ingredient.name}</td>
-                      <td>{e.amountNeeded}</td>
+                      <td>
+                        {e.amountNeeded}
+                        {e.ingredient.unit} / 60L
+                      </td>
                       <td>{e.ingredient.type}</td>
-                      <td>{e.ingredient.unit}</td>
                       <td>
                         <Button
                           title="Xem chi tiết nguyên liệu"

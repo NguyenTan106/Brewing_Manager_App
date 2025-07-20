@@ -29,6 +29,7 @@ import {
   getRecipeByIdController,
   updateRecipesByIdController,
   deleteRecipesByIdController,
+  paginationRecipeAPIController,
 } from "./routes/api_recipe";
 
 const app = express();
@@ -62,6 +63,7 @@ app.use("/api", createRecipesController);
 app.use("/api", getRecipeByIdController);
 app.use("/api", updateRecipesByIdController);
 app.use("/api", deleteRecipesByIdController);
+app.use("/api", paginationRecipeAPIController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

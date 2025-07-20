@@ -22,7 +22,7 @@ export const batchSchema = z.object({
   status: z.string().min(1, "Yêu cầu chọn trạng thái"),
   volume: z.string().min(0, "Khối lượng mẻ không được để trống"),
   notes: z.string().optional(),
-  recipeId: z.string().optional(),
+  recipeId: z.number().optional(),
 });
 
 export const recipeSchema = z.object({

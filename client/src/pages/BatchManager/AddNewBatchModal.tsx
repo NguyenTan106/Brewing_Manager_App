@@ -1,18 +1,24 @@
 import { Modal, Button, Row, Col, Form } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
-import { createBatchAPI, Status } from "../../services/CRUD_API_Batch";
+import {
+  createBatchAPI,
+  Status,
+  type Recipe,
+} from "../../services/CRUD_API_Batch";
+import { getAllRecipesAPI } from "../../services/CRUD_API_Recipe";
+
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
-  handleGetAllBatchesAPI: () => Promise<void>;
   statusOptions: { label: string; value: Status }[];
+  handlePaginationAPI: () => void;
 }
 export default function AddNewBatchModal({
   showAddModal,
   handleClose,
-  handleGetAllBatchesAPI,
   statusOptions,
+  handlePaginationAPI,
 }: Props) {
   const [form, setForm] = useState({
     beerName: "",
@@ -26,7 +32,7 @@ export default function AddNewBatchModal({
     label: string;
     value: Status;
   } | null>(null);
-
+  const [recipeFromBatch, setRecipeFromBatch] = useState<Recipe[]>([]);
   const clearForm = () => {
     setForm({
       beerName: "",
@@ -57,10 +63,22 @@ export default function AddNewBatchModal({
       alert(data.message);
     }
 
-    await handleGetAllBatchesAPI();
+    handlePaginationAPI();
     clearForm();
   };
 
+  useEffect(() => {
+    handleGetAllRecipeAPI();
+  }, []);
+
+  const handleGetAllRecipeAPI = async () => {
+    const recipe = await getAllRecipesAPI();
+    setRecipeFromBatch(recipe);
+  };
+  const recipeOptions = recipeFromBatch.map((re) => ({
+    value: re.id,
+    label: re.name,
+  }));
   return (
     <>
       <Modal show={showAddModal} onHide={handleClose} size="xl" centered>
@@ -128,21 +146,28 @@ export default function AddNewBatchModal({
               </Form.Group>
             </Col>
             <Col xs={12} lg={6}>
-              <Form.Group controlId="lowStockThreshold" className="mb-3">
+              <Form.Group controlId="recipe" className="mb-3">
                 <Form.Label>
-                  <strong>Chọn công thức nấu:</strong>
+                  <strong>Chọn công thức: </strong>
                 </Form.Label>
-                <Form.Control
+                <Select
+                  className="basic-single"
+                  classNamePrefix="select"
                   required
-                  type="number"
-                  value={form.recipeId}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      recipeId: e.target.value,
-                    })
+                  name="recipe"
+                  options={recipeOptions}
+                  value={
+                    recipeOptions.find((opt) => opt.value === form.recipeId) ||
+                    null
                   }
-                  placeholder="VD: 10"
+                  onChange={(option) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      recipeId: option ? option.value : "",
+                    }));
+                  }}
+                  placeholder="Chọn công thức"
+                  isClearable
                 />
               </Form.Group>
             </Col>

@@ -49,7 +49,9 @@ const handleCreateBatch = async (req: Request, res: Response) => {
     );
     const data = result.data;
     res.status(201).json(result);
-
+    if (data.length === 0) {
+      return "Mẻ đang chưa được tạo";
+    }
     const logCreatedAt = new Date(data.createdAt).toLocaleString("vi-VN", {
       timeZone: "Asia/Ho_Chi_Minh",
       hour12: false,
@@ -82,16 +84,14 @@ const handleUpdateBatchById = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
 
-    const { beerName, status, volume, notes, recipeId } = req.body;
+    const { beerName, status, notes } = req.body;
 
     const oldResult = await getBatchById(Number(id));
 
     const result = await updateBatchById(id, {
       beerName: beerName,
       status: status,
-      volume: Number(volume),
       notes: notes,
-      recipeId: Number(recipeId) || null,
     });
 
     const oldData = oldResult.data;

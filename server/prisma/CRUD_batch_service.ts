@@ -1,4 +1,5 @@
 import { PrismaClient, Status } from "@prisma/client";
+
 import { format } from "date-fns-tz";
 import { paginate } from "./pagination";
 const prisma = new PrismaClient();
@@ -109,6 +110,51 @@ const createBatch = async (
     const serial = String(countToday).padStart(2, "0"); // NN: 01, 02, ...
     const newCode = `B${datePrefix}${serial}`; // B16072501
 
+    // 1. Lấy công thức và nguyên liệu
+    const recipe = await prisma.recipe.findUnique({
+      where: { id: recipeId },
+      include: {
+        recipeIngredients: {
+          include: { ingredient: true },
+        },
+      },
+    });
+
+    if (!recipe) return { message: "Không có công thức đã chọn", data: [] };
+    const defaultVolume = 60; // giá trị mặc định công thức dùng cho 20
+
+    // 2. Tính scale ratio
+    const scaleRatio = volume / defaultVolume;
+    const insufficientIngredients: string[] = [];
+    // 3. Cập nhật lại số lượng nguyên liệu (trừ đi)
+    for (const ri of recipe.recipeIngredients) {
+      const amountToUse = ri.amountNeeded * scaleRatio;
+
+      if (ri.ingredient.quantity < amountToUse) {
+        insufficientIngredients.push(ri.ingredient.name);
+      }
+    }
+
+    if (insufficientIngredients.length > 0) {
+      return {
+        message: `Nguyên liệu không đủ: ${insufficientIngredients.join(", ")}`,
+        data: [],
+      };
+    }
+
+    // Nếu đủ nguyên liệu thì tiến hành cập nhật số lượng
+    for (const ri of recipe.recipeIngredients) {
+      const amountToUse = ri.amountNeeded * scaleRatio;
+      const quantityUpdate = ri.ingredient.quantity - amountToUse;
+
+      await prisma.ingredient.update({
+        where: { id: ri.ingredientId },
+        data: {
+          quantity: quantityUpdate,
+        },
+      });
+    }
+
     // Giờ tạo batch mới
     const newBatch = await prisma.batch.create({
       data: {
@@ -136,9 +182,7 @@ const updateBatchById = async (
   updateData: {
     beerName?: string;
     status?: Status;
-    volume?: number;
     notes?: string;
-    recipeId?: number | null;
   }
 ): Promise<{ message: string; data: any }> => {
   try {

@@ -9,7 +9,7 @@ interface Props {
   showUpdateModal: boolean;
   handleClose: () => void;
   selectedRecipe: RecipeUpate | null;
-  handleGetAllRecipesAPI: () => Promise<void>;
+  handlePaginationAPI: () => void;
   setSelectedRecipe: React.Dispatch<React.SetStateAction<RecipeUpate | null>>;
   selectedRecipeIngredient: RecipeIngredient[] | null;
   setSelectedRecipeIngredient: React.Dispatch<
@@ -23,7 +23,7 @@ export default function UpdateRecipeModal({
   handleClose,
   selectedRecipe,
   setSelectedRecipe,
-  handleGetAllRecipesAPI,
+  handlePaginationAPI,
   selectedRecipeIngredient,
   setSelectedRecipeIngredient,
   ingredients,
@@ -81,7 +81,7 @@ export default function UpdateRecipeModal({
       const data = await updateRecipeByIdAPI(id, editForm);
       console.log(data);
       handleClose();
-      handleGetAllRecipesAPI();
+      handlePaginationAPI();
       setSelectedRecipe(data.data);
       setSelectedRecipeIngredient(data.data.recipeIngredients);
     } catch (err) {
@@ -89,8 +89,6 @@ export default function UpdateRecipeModal({
       alert("Lỗi khi cập nhật mẻ");
     }
   };
-
-
 
   const options = ingredients.map((ing) => ({
     value: ing.id,

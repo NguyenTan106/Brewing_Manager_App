@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { getAllRecipesAPI } from "../../services/CRUD_API_Recipe";
-import type { Batch, Recipe, Status } from "../../services/CRUD_API_Batch";
+import type { Batch, Status } from "../../services/CRUD_API_Batch";
 import { updateBatchByIdAPI } from "../../services/CRUD_API_Batch";
 import Select from "react-select";
 interface Props {
@@ -18,7 +17,6 @@ export default function UpdateBatchModal({
   showUpdateModal,
   setSelectedBatch,
   handleClose,
-  //handleGetAllBatchesAPI,
   selectedBatch,
   statusOptions,
   handlePaginationAPI,
@@ -28,16 +26,13 @@ export default function UpdateBatchModal({
     label: string;
     value: Status;
   } | null>(null);
-  const [recipeFromBatch, setRecipeFromBatch] = useState<Recipe[]>([]);
   const handleUpdateBatchByIdAPI = async (id: number) => {
     if (!id) return;
     try {
       if (
         editForm.beerName === "" ||
         editForm.status === ("" as Status) ||
-        editForm.volume === "" ||
-        editForm.notes === "" ||
-        editForm.recipeId === ""
+        editForm.notes === ""
       ) {
         alert("Vui lòng điền đầy đủ thông tin");
         return;
@@ -46,15 +41,12 @@ export default function UpdateBatchModal({
       if (
         selectedBatch?.beerName == editForm.beerName &&
         selectedBatch?.status == editForm.status &&
-        selectedBatch?.volume == editForm.volume &&
-        selectedBatch?.notes == editForm.notes &&
-        selectedBatch?.recipeId == editForm.recipeId
+        selectedBatch?.notes == editForm.notes
       ) {
         alert("Không có thay đổi nào để cập nhật");
         return;
       }
       const data = await updateBatchByIdAPI(id, editForm);
-      console.log(data);
       handleClose();
       handlePaginationAPI();
       setSelectedBatch(data.data);
@@ -64,7 +56,6 @@ export default function UpdateBatchModal({
     }
   };
   useEffect(() => {
-    handleGetAllRecipeAPI();
     if (editForm.status) {
       const found = statusOptions.find((opt) => opt.value === editForm.status);
       if (found) setSelectedStatus(found);
@@ -79,15 +70,6 @@ export default function UpdateBatchModal({
       setEditForm(selectedBatch);
     }
   }, [selectedBatch]);
-
-  const handleGetAllRecipeAPI = async () => {
-    const recipe = await getAllRecipesAPI();
-    setRecipeFromBatch(recipe);
-  };
-  const recipeOptions = recipeFromBatch.map((re) => ({
-    value: re.id,
-    label: re.name,
-  }));
 
   return (
     <>
@@ -142,27 +124,12 @@ export default function UpdateBatchModal({
             <div>
               <Form.Group controlId="status" className="mb-3">
                 <Form.Label>
-                  <strong>Chọn công thức: </strong>
+                  <strong>Công thức: </strong>
                 </Form.Label>
-                <Select
-                  className="basic-single"
-                  classNamePrefix="select"
-                  required
-                  name="recipe"
-                  options={recipeOptions}
-                  value={
-                    recipeOptions.find(
-                      (opt) => opt.value === editForm.recipeId
-                    ) || null
-                  }
-                  onChange={(option) => {
-                    setEditForm((prev) => ({
-                      ...prev,
-                      recipeId: option ? option.value : "",
-                    }));
-                  }}
-                  placeholder="Chọn công thức"
-                  isClearable
+                <Form.Control
+                  disabled
+                  placeholder="VD: g"
+                  value={editForm?.recipe?.name ?? ""}
                 />
               </Form.Group>
             </div>
@@ -172,11 +139,9 @@ export default function UpdateBatchModal({
                   <strong>Khối lượng mẻ (lít):</strong>
                 </Form.Label>
                 <Form.Control
+                  disabled
                   placeholder="VD: g"
                   value={editForm?.volume ?? ""}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, volume: e.target.value })
-                  }
                 />
               </Form.Group>
             </div>

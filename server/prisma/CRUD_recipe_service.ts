@@ -249,10 +249,28 @@ const deleteRecipeById = async (
   }
 };
 
+const getRecipePage = async (page: number, limit: number) => {
+  return paginate({
+    page,
+    limit,
+    model: "recipe",
+    include: {
+      recipeIngredients: {
+        include: { ingredient: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    enhanceItem: async (i) => ({
+      ...i,
+    }),
+  });
+};
+
 export {
   getAllRecipes,
   createRecipe,
   getRecipeById,
   updateRecipeById,
   deleteRecipeById,
+  getRecipePage,
 };
