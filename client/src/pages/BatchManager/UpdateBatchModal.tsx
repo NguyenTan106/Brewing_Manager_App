@@ -101,8 +101,10 @@ export default function UpdateBatchModal({
         onOpenChange={(open) => !open && handleClose()}
       >
         <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="text-2xl font-bold">
-            <DialogTitle>Sửa nguyên liệu {selectedBatch?.beerName}</DialogTitle>
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">
+              Sửa nguyên liệu {selectedBatch?.beerName}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4">
             <p>

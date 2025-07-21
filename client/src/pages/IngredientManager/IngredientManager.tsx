@@ -180,7 +180,7 @@ export default function IngredientManager() {
                 <TableCell>
                   <Button
                     title="Xem chi tiết nguyên liệu"
-                    variant="secondary"
+                    variant="outline"
                     onClick={() => handleGetIngredientByIdAPI(i.id)}
                     style={{ padding: "5px 10px", fontSize: "14px" }}
                   >

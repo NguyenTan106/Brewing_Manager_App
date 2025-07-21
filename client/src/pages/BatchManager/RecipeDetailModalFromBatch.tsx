@@ -42,7 +42,7 @@ export default function RecipeDetailModalFromBatch({
         open={showDetailRecipeModal}
         onOpenChange={(open) => !open && handleClose()}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl w-[480px]">
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl w-[600px]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-800">
               Chi tiết công thức

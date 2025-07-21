@@ -1,6 +1,28 @@
-import { Modal, Button, Row, Col, Form } from "react-bootstrap";
+import { Modal, Row, Col, Form } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import Select from "react-select";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 import {
   createBatchAPI,
   Status,
@@ -81,18 +103,26 @@ export default function AddNewBatchModal({
   }));
   return (
     <>
-      <Modal show={showAddModal} onHide={handleClose} size="xl" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Thêm nguyên mẻ</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row className="">
-            <Col lg={6}>
-              <Form.Group controlId="name" className="mb-3">
-                <Form.Label>
+      <Dialog
+        open={showAddModal}
+        onOpenChange={(open) => !open && handleClose()}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">
+              Thêm nguyên mẻ
+            </DialogTitle>
+          </DialogHeader>
+          <Separator />
+
+          <div className="grid gap-4">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
                   <strong>Tên mẻ:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
                   required
                   value={form.beerName}
                   onChange={(e) =>
@@ -100,107 +130,109 @@ export default function AddNewBatchModal({
                   }
                   placeholder="VD: "
                 />
-              </Form.Group>
-            </Col>
-            <Col lg={6}>
-              <Form.Group controlId="type" className="mb-3">
-                <Form.Label>
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
                   <strong>Trạng thái: </strong>
-                </Form.Label>
-                <div className="d-flex gap-2 align-items-center">
-                  <div style={{ flex: 1 }}>
-                    <Select
-                      className="basic-single"
-                      classNamePrefix="select"
-                      required
-                      name="status"
-                      options={statusOptions}
-                      value={selectedStatus}
-                      onChange={(option) => {
-                        if (!option) return;
-                        setForm((prev) => ({
-                          ...prev,
-                          status: option.value, // đây là Status enum
-                        }));
-                        setSelectedStatus(option);
-                      }}
-                      placeholder="Chọn trạng thái mẻ"
-                      isClearable
-                    />
-                  </div>
-                </div>
-              </Form.Group>
-            </Col>
-            <Col xs={12} lg={6}>
-              <Form.Group controlId="volume" className="mb-3">
-                <Form.Label>
+                </Label>
+                <Select
+                  value={form.status ?? ""}
+                  onValueChange={(value) =>
+                    setForm({ ...form, status: value as Status })
+                  }
+                >
+                  <SelectTrigger
+                    className="w-full"
+                    style={{ fontSize: "0.95rem" }}
+                  >
+                    <SelectValue placeholder="Chọn trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOptions.map((option) => (
+                      <SelectItem
+                        style={{ fontSize: "0.95rem" }}
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
                   <strong>Khối lượng mẻ (Lít): </strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
                   required
+                  style={{ fontSize: "0.95rem" }}
                   type="numer"
                   value={form.volume}
                   onChange={(e) => setForm({ ...form, volume: e.target.value })}
                   placeholder="VD: g, kg"
                 />
-              </Form.Group>
-            </Col>
-            <Col xs={12} lg={6}>
-              <Form.Group controlId="recipe" className="mb-3">
-                <Form.Label>
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
                   <strong>Chọn công thức: </strong>
-                </Form.Label>
+                </Label>
                 <Select
-                  className="basic-single"
-                  classNamePrefix="select"
-                  required
-                  name="recipe"
-                  options={recipeOptions}
-                  value={
-                    recipeOptions.find((opt) => opt.value === form.recipeId) ||
-                    null
+                  value={form.recipeId}
+                  onValueChange={(value) =>
+                    setForm((prev) => ({ ...prev, recipeId: value }))
                   }
-                  onChange={(option) => {
-                    setForm((prev) => ({
-                      ...prev,
-                      recipeId: option ? option.value : "",
-                    }));
-                  }}
-                  placeholder="Chọn công thức"
-                  isClearable
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} lg={12}>
-              <Form.Group controlId="notes" className="mb-3">
-                <Form.Label>
-                  <strong>Ghi chú:</strong>
-                </Form.Label>
-                <Form.Control
-                  required
-                  rows={4}
-                  as={"textarea"}
-                  value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  placeholder="VD: "
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            className=""
-            variant="primary"
-            onClick={() => handleCreateBatchAPI()}
-          >
-            <span className="d-none d-sm-inline">Thêm</span>
-          </Button>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                >
+                  <SelectTrigger
+                    className="w-full"
+                    style={{ fontSize: "0.95rem" }}
+                  >
+                    <SelectValue placeholder="Chọn công thức" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {recipeOptions.map((option) => (
+                      <SelectItem
+                        style={{ fontSize: "0.95rem" }}
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1 w-full min-w-0">
+              <Label className="text-base">
+                <strong>Ghi chú:</strong>
+              </Label>
+              <Textarea
+                required
+                style={{ fontSize: "0.95rem" }}
+                rows={4}
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                placeholder="VD: "
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className=""
+              variant="outline"
+              onClick={() => handleCreateBatchAPI()}
+            >
+              <span className="d-none d-sm-inline">Thêm</span>
+            </Button>
+            <Button variant="outline" onClick={handleClose}>
+              Đóng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

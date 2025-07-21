@@ -1,5 +1,4 @@
 import { useState, type JSX } from "react";
-import { Modal } from "react-bootstrap";
 import IngredientUpdateModal from "./IngredientUpdateModal";
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import { deleteIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";

@@ -1,6 +1,19 @@
-import { Modal, Button, Badge } from "react-bootstrap";
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import { getIngredientIcon } from "../IngredientManager/IngredientIcon";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
 interface Props {
   showDetailIngredientModal: boolean;
   handleClose: () => void;
@@ -14,11 +27,14 @@ export default function IngredientDetailModalFromRecipe({
 }: Props) {
   return (
     <>
-      <Modal show={showDetailIngredientModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Chi tiết nguyên liệu</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <Dialog
+        open={showDetailIngredientModal}
+        onOpenChange={(open) => !open && handleClose()}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Chi tiết nguyên liệu</DialogTitle>
+          </DialogHeader>
           <div>
             <p>
               <strong>ID:</strong> {selectedIngredient?.id}
@@ -40,7 +56,7 @@ export default function IngredientDetailModalFromRecipe({
               <strong>Trạng thái: </strong>
               {selectedIngredient?.status === "Đủ" && (
                 <Badge
-                  bg="success"
+                  variant="outline"
                   className="me-1"
                   key={selectedIngredient?.id}
                 >
@@ -49,7 +65,7 @@ export default function IngredientDetailModalFromRecipe({
               )}
               {selectedIngredient?.status === "Sắp hết" && (
                 <Badge
-                  bg="warning"
+                  variant="outline"
                   className="me-1"
                   key={selectedIngredient?.id}
                 >
@@ -58,7 +74,7 @@ export default function IngredientDetailModalFromRecipe({
               )}
               {selectedIngredient?.status === "Hết" && (
                 <Badge
-                  bg="danger"
+                  variant="outline"
                   className="me-1"
                   key={selectedIngredient?.id}
                 >
@@ -87,13 +103,13 @@ export default function IngredientDetailModalFromRecipe({
                 )}
             </p>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleClose}>
+              Đóng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

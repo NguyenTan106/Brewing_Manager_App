@@ -40,13 +40,13 @@ export default function BatchManager() {
   const getStatusBadge = (status: Status) => {
     switch (status) {
       case Status.boiling:
-        return <Badge variant="primary">Nấu sôi</Badge>;
+        return <Badge variant="outline">Nấu sôi</Badge>;
       case Status.fermenting:
-        return <Badge variant="warning">Lên men</Badge>;
+        return <Badge variant="outline">Lên men</Badge>;
       case Status.cold_crashing:
-        return <Badge variant="info">Làm lạnh</Badge>;
+        return <Badge variant="outline">Làm lạnh</Badge>;
       case Status.done:
-        return <Badge variant="success">Hoàn tất</Badge>;
+        return <Badge variant="outline">Hoàn tất</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -161,7 +161,8 @@ export default function BatchManager() {
             <TableHead>Trạng thái</TableHead>
             <TableHead>Khối lượng (lít)</TableHead>
             <TableHead>Công thức</TableHead>
-            <TableHead>Hành động</TableHead>
+            <TableHead>Ngày tạo</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -197,7 +198,7 @@ export default function BatchManager() {
                 <TableCell>
                   <Button
                     title="Xem chi tiết nguyên liệu"
-                    variant="info"
+                    variant="outline"
                     onClick={() => handleGetBatchesByIdAPI(i.id)}
                     style={{ padding: "5px 10px", fontSize: "14px" }}
                   >
@@ -212,7 +213,7 @@ export default function BatchManager() {
       {totalPages > 1 && (
         <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
           <Button
-            variant="outline-secondary"
+            variant="outline"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
@@ -232,9 +233,7 @@ export default function BatchManager() {
               return (
                 <Button
                   key={pageNum}
-                  variant={
-                    pageNum === currentPage ? "secondary" : "outline-secondary"
-                  }
+                  variant={pageNum === currentPage ? "secondary" : "outline"}
                   onClick={() => handlePageChange(pageNum)}
                   className="rounded-circle fw-semibold"
                   style={{ width: "40px", height: "40px" }}
@@ -259,7 +258,7 @@ export default function BatchManager() {
             return null;
           })}
           <Button
-            variant="outline-secondary"
+            variant="outline"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"

@@ -1,4 +1,3 @@
-import { Button, Table } from "react-bootstrap";
 import type {
   Recipe,
   RecipeIngredient,
@@ -14,6 +13,19 @@ import {
 import { getRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
 import RecipeDetailModal from "./RecipeDetailModal";
 import { paginationRecipeAPI } from "../../services/pagination_API";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
 export default function RecipeManager() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -106,54 +118,47 @@ export default function RecipeManager() {
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
-      <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
-        <h3 className="mb-0">Danh sách công thức:</h3>
+      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
+        <p className="text-2xl font-bold">Danh sách công thức:</p>
         <Button
-          title="Thêm nguyên liệu mới"
-          variant="primary"
           onClick={() => setShowAddModal(true)}
-          className="d-flex align-items-center gap-2"
+          title="Thêm nguyên liệu mới"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
         >
           <FaPlus />
-          <span className="d-none d-sm-inline">Thêm</span>
+          <span className="hidden sm:inline">Thêm</span>
         </Button>
       </div>
-
-      <hr />
-      <Table
-        striped
-        bordered
-        hover
-        responsive
-        style={{ verticalAlign: "middle", marginTop: "20px" }}
-      >
-        <thead>
-          <tr>
-            <th style={{ width: "5%" }}>ID</th>
-            <th style={{ width: "10%" }}>Tên công thức</th>
-            <th style={{ width: "8%" }}>Mô tả</th>
-            <th style={{ width: "10%" }}>Ghi chú</th>
-            <th style={{ width: "10%" }}>Các bước thực hiện</th>
-            <th style={{ width: "10%" }}>Ngày tạo</th>
-            <th style={{ width: "10%" }}>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Separator className="my-2" />
+      <Table className="text-base">
+        <TableCaption>- - - Danh sách công thức - - -</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead style={{ width: "5%" }}>ID</TableHead>
+            <TableHead style={{ width: "10%" }}>Tên công thức</TableHead>
+            <TableHead style={{ width: "8%" }}>Mô tả</TableHead>
+            <TableHead style={{ width: "10%" }}>Ghi chú</TableHead>
+            <TableHead style={{ width: "10%" }}>Các bước thực hiện</TableHead>
+            <TableHead style={{ width: "10%" }}>Ngày tạo</TableHead>
+            <TableHead style={{ width: "10%" }}></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {recipes.length === 0 ? (
-            <tr>
-              <td colSpan={8} className="text-center text-muted">
+            <TableRow>
+              <TableCell colSpan={8} className="text-center text-muted">
                 Không có công thức nào
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             recipes.map((i) => (
-              <tr key={i.id}>
-                <td>{i.id}</td>
-                <td>{i.name}</td>
-                <td>{i.description}</td>
-                <td>{i.note}</td>
-                <td>{i.instructions}</td>
-                <td>
+              <TableRow key={i.id}>
+                <TableCell>{i.id}</TableCell>
+                <TableCell>{i.name}</TableCell>
+                <TableCell>{i.description}</TableCell>
+                <TableCell>{i.note}</TableCell>
+                <TableCell>{i.instructions}</TableCell>
+                <TableCell>
                   {i.createdAt &&
                     new Date(i.createdAt).toLocaleString("vi-VN", {
                       timeZone: "Asia/Ho_Chi_Minh",
@@ -164,27 +169,27 @@ export default function RecipeManager() {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                </td>
+                </TableCell>
 
-                <td>
+                <TableCell>
                   <Button
                     title="Xem chi tiết nguyên liệu"
-                    variant="info"
+                    variant="outline"
                     onClick={() => handleGetRecipeByIdAPI(i.id)}
                     style={{ padding: "5px 10px", fontSize: "14px" }}
                   >
                     📋 <span className="d-none d-sm-inline">Chi tiết</span>
                   </Button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))
           )}
-        </tbody>
+        </TableBody>
       </Table>
       {totalPages > 1 && (
         <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
           <Button
-            variant="outline-secondary"
+            variant="outline"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
@@ -204,9 +209,7 @@ export default function RecipeManager() {
               return (
                 <Button
                   key={pageNum}
-                  variant={
-                    pageNum === currentPage ? "secondary" : "outline-secondary"
-                  }
+                  variant={pageNum === currentPage ? "secondary" : "outline"}
                   onClick={() => handlePageChange(pageNum)}
                   className="rounded-circle fw-semibold"
                   style={{ width: "40px", height: "40px" }}
@@ -231,7 +234,7 @@ export default function RecipeManager() {
             return null;
           })}
           <Button
-            variant="outline-secondary"
+            variant="outline"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
