@@ -8,6 +8,10 @@
     /* JSX & React */
     "jsx": "react-jsx", // JSX transform theo chuẩn React 17+
 
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     /* Module resolution */
     "moduleResolution": "bundler", // Phù hợp với Vite
     "allowImportingTsExtensions": true,

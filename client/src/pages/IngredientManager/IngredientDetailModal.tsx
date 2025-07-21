@@ -1,8 +1,21 @@
 import { useState, type JSX } from "react";
-import { Modal, Button, Badge } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import IngredientUpdateModal from "./IngredientUpdateModal";
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import { deleteIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   showDetailModal: boolean;
@@ -53,11 +66,14 @@ export default function IngredientDetailModal({
         handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
         handlePaginationAPI={handlePaginationAPI}
       />
-      <Modal show={showDetailModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Chi tiết nguyên liệu</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+      <Dialog
+        open={showDetailModal}
+        onOpenChange={(open) => !open && handleClose()}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Chi tiết nguyên liệu</DialogTitle>
+          </DialogHeader>
           <div>
             <p>
               <strong>ID:</strong> {selectedIngredient?.id}
@@ -79,7 +95,7 @@ export default function IngredientDetailModal({
               <strong>Trạng thái: </strong>
               {selectedIngredient?.status === "Đủ" && (
                 <Badge
-                  bg="success"
+                  variant="secondary"
                   className="me-1"
                   key={selectedIngredient?.id}
                 >
@@ -88,7 +104,7 @@ export default function IngredientDetailModal({
               )}
               {selectedIngredient?.status === "Sắp hết" && (
                 <Badge
-                  bg="warning"
+                  variant="outline"
                   className="me-1"
                   key={selectedIngredient?.id}
                 >
@@ -97,7 +113,7 @@ export default function IngredientDetailModal({
               )}
               {selectedIngredient?.status === "Hết" && (
                 <Badge
-                  bg="danger"
+                  variant="destructive"
                   className="me-1"
                   key={selectedIngredient?.id}
                 >
@@ -125,41 +141,37 @@ export default function IngredientDetailModal({
                   }
                 )}
             </p>
-            <p>
-              <Button
-                className=""
-                variant="success"
-                onClick={() => handleOpenUpdateModal()}
-                style={{
-                  padding: "5px 10px",
-                  fontSize: "14px",
-                }}
-              >
-                ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
-              </Button>
-              <Button
-                className="m-2"
-                variant="danger"
-                onClick={() =>
-                  handleDeleteIngredientAPI(selectedIngredient?.id ?? 0)
-                }
-                style={{
-                  padding: "5px 10px",
-                  fontSize: "14px",
-                }}
-              >
-                🗑️ <span className="d-none d-sm-inline">Xóa</span>
-              </Button>
-            </p>
-            <p></p>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          <DialogFooter>
+            <Button
+              className="bg-blue-500 text-white dark:bg-blue-600"
+              onClick={() => handleOpenUpdateModal()}
+              style={{
+                padding: "5px 10px",
+                fontSize: "14px",
+              }}
+            >
+              ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
+            </Button>
+            <Button
+              className=""
+              variant="destructive"
+              onClick={() =>
+                handleDeleteIngredientAPI(selectedIngredient?.id ?? 0)
+              }
+              style={{
+                padding: "5px 10px",
+                fontSize: "14px",
+              }}
+            >
+              🗑️ <span className="d-none d-sm-inline">Xóa</span>
+            </Button>
+            <DialogClose asChild>
+              <Button variant="outline">Huỷ</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

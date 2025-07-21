@@ -3,14 +3,13 @@ import Home from "./pages/Home";
 import IngredientManager from "./pages/IngredientManager/IngredientManager";
 import BatchManager from "./pages/BatchManager/BatchManager";
 import RecipeManager from "./pages/Recipe/RecipeManager";
-import MainLayout from "./layout/MainLayout";
 import ActivityLogManager from "./pages/ActivityLogManager/ActivityLogManager";
-
+import Layout from "./layout/MainLayout";
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<MainLayout />}>
+        <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="ingredients" element={<IngredientManager />} />
           <Route path="batchs" element={<BatchManager />} />

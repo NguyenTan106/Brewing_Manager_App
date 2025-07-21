@@ -1,9 +1,29 @@
 import { useState, useEffect } from "react";
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { updateIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
-import Select from "react-select";
+// import Select from "react-select";
 import { getAllTypesAPI } from "../../services/CRUD_API_type";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 type Props = {
   handleClose: () => void;
   selectedIngredient: Ingredient | null;
@@ -26,10 +46,7 @@ export default function IngredientUpdateModal({
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<Ingredient>>({});
   const [type, setType] = useState<Type[]>([]);
-  const [selectedType, setSelectedType] = useState<{
-    label: string;
-    value: number;
-  } | null>(null);
+  const [selectedTypeId, setSelectedTypeId] = useState<string>("");
 
   useEffect(() => {
     if (selectedIngredient) {
@@ -40,10 +57,7 @@ export default function IngredientUpdateModal({
       );
 
       if (matchedType) {
-        setSelectedType({
-          label: matchedType.typeName,
-          value: matchedType.id,
-        });
+        setSelectedTypeId(matchedType.id.toString());
       }
     }
   }, [selectedIngredient, type]);
@@ -117,165 +131,178 @@ export default function IngredientUpdateModal({
 
   return (
     <>
-      <Modal show={showUpdateModal} onHide={handleClose} size="lg" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Sửa nguyên liệu {selectedIngredient?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row>
-            <p>
-              <strong>ID:</strong> {selectedIngredient?.id}
-            </p>
-            <Col lg={6}>
-              <Form.Group controlId="" className="mb-3">
-                <Form.Label>
-                  <strong>Tên:</strong>
-                </Form.Label>
-                <Form.Control
-                  placeholder="VD: Crystal 60L"
-                  value={editForm?.name ?? ""}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, name: e.target.value })
-                  }
-                />
-              </Form.Group>
-            </Col>
-            <Col lg={6}>
-              <Form.Group controlId="" className="mb-3">
-                <Form.Label>
-                  <strong>Loại:</strong>
-                </Form.Label>
-                <Select
-                  className="basic-single"
-                  classNamePrefix="select"
-                  required
-                  name="type"
-                  options={type.map((t) => ({
-                    label: t.typeName,
-                    value: t.id,
-                  }))}
-                  value={selectedType}
-                  onChange={(option) => {
-                    setEditForm((prev) => ({
-                      ...prev,
-                      type: option?.label ?? "",
-                    })); // hoặc typeName nếu bạn dùng tên
-                    setSelectedType(option);
-                  }}
-                  placeholder="Chọn loại nguyên liệu"
-                />
-              </Form.Group>
-            </Col>
-            <Col lg={4}>
-              <Form.Group controlId="" className="mb-3">
-                <Form.Label>
-                  <strong>Đơn vị:</strong>
-                </Form.Label>
-                <Form.Control
-                  placeholder="VD: g"
-                  value={editForm?.unit ?? ""}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, unit: e.target.value })
-                  }
-                />
-              </Form.Group>
-            </Col>
-            <Col lg={4}>
-              <Form.Group controlId="" className="mb-3">
-                <Form.Label>
-                  <strong>Số lượng:</strong>
-                </Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="VD: 20"
-                  value={editForm?.quantity ?? ""}
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      quantity:
-                        e.target.value === "" ? "" : parseFloat(e.target.value),
-                    })
-                  }
-                />
-              </Form.Group>
-            </Col>
-            <Col lg={4}>
-              <Form.Group controlId="" className="mb-3">
-                <Form.Label>
-                  <strong>Giới hạn cảnh báo:</strong>
-                </Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="VD: 20"
-                  value={editForm?.lowStockThreshold ?? ""}
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      lowStockThreshold:
-                        e.target.value === "" ? "" : parseFloat(e.target.value),
-                    })
-                  }
-                />
-              </Form.Group>
-            </Col>
-            <div>
-              <Form.Group controlId="lastImportDate" className="mb-3">
-                <Form.Label>
-                  <strong>Ngày nhập kho gần nhất:</strong>
-                </Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  value={
-                    editForm?.lastImportDate
-                      ? toDatetimeLocalValue(editForm.lastImportDate)
-                      : ""
-                  }
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      lastImportDate: fromDatetimeLocalValue(e.target.value),
-                    })
-                  }
-                  placeholder="VD: 2025-07-15T14:30"
-                />
-              </Form.Group>
+      <Dialog
+        open={showUpdateModal}
+        onOpenChange={(open) => !open && handleClose()}
+      >
+        <form>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                Sửa nguyên liệu {selectedIngredient?.name}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="grid gap-4">
+              <Label>
+                <strong>ID:</strong> {selectedIngredient?.id}
+              </Label>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                  <Label>
+                    <strong>Tên:</strong>
+                  </Label>
+                  <Input
+                    placeholder="VD: Crystal 60L"
+                    value={editForm?.name ?? ""}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, name: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                  <Label>
+                    <strong>Loại:</strong>
+                  </Label>
+                  <Select
+                    value={selectedTypeId}
+                    onValueChange={(value) => {
+                      setSelectedTypeId(value);
+                      const selected = type.find(
+                        (t) => t.id.toString() === value
+                      );
+                      setEditForm((prev) => ({
+                        ...prev,
+                        type: selected?.typeName ?? "",
+                      }));
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Chọn loại nguyên liệu" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {type.map((t) => (
+                        <SelectItem key={t.id} value={t.id.toString()}>
+                          {t.typeName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                  <Label>
+                    <strong>Đơn vị:</strong>
+                  </Label>
+                  <Input
+                    placeholder="VD: g"
+                    value={editForm?.unit ?? ""}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, unit: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                  <Label>
+                    <strong>Số lượng:</strong>
+                  </Label>
+                  <Input
+                    type="number"
+                    placeholder="VD: 20"
+                    value={editForm?.quantity ?? ""}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        quantity:
+                          e.target.value === ""
+                            ? ""
+                            : parseFloat(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                  <Label>
+                    <strong>Giới hạn cảnh báo:</strong>
+                  </Label>
+                  <Input
+                    type="number"
+                    placeholder="VD: 20"
+                    value={editForm?.lowStockThreshold ?? ""}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        lowStockThreshold:
+                          e.target.value === ""
+                            ? ""
+                            : parseFloat(e.target.value),
+                      })
+                    }
+                  />
+                </div>
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                  <Label>
+                    <strong>Ngày nhập kho gần nhất:</strong>
+                  </Label>
+                  <Input
+                    type="datetime-local"
+                    value={
+                      editForm?.lastImportDate
+                        ? toDatetimeLocalValue(editForm.lastImportDate)
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        lastImportDate: fromDatetimeLocalValue(e.target.value),
+                      })
+                    }
+                    placeholder="VD: 2025-07-15T14:30"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
+                  <Label>
+                    <strong>Ghi chú:</strong>
+                  </Label>
+                  <Textarea
+                    placeholder="Nhập ghi chú..."
+                    value={editForm?.notes ?? ""}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, notes: e.target.value })
+                    }
+                    rows={4} // có thể chỉnh số dòng
+                  />
+                </div>
+              </div>
             </div>
-            <p>
-              <Form.Group controlId="" className="mb-3">
-                <Form.Label>
-                  <strong>Ghi chú:</strong>
-                </Form.Label>
-                <Form.Control
-                  as={"textarea"}
-                  rows={3}
-                  placeholder="VD: g"
-                  value={editForm?.notes ?? ""}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, notes: e.target.value })
-                  }
-                />
-              </Form.Group>
-            </p>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            className=""
-            variant="success"
-            onClick={() =>
-              handleUpdateIngredientByIdAPI(selectedIngredient?.id)
-            }
-            style={{
-              padding: "5px 10px",
-            }}
-          >
-            ✏️ <span className="d-none d-sm-inline">Cập nhật</span>
-          </Button>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            <DialogFooter>
+              <Button
+                className=""
+                variant="outline"
+                onClick={() =>
+                  handleUpdateIngredientByIdAPI(selectedIngredient?.id)
+                }
+                style={{
+                  padding: "5px 10px",
+                }}
+              >
+                ✏️ <span className="d-none d-sm-inline">Cập nhật</span>
+              </Button>
+              <DialogClose asChild>
+                <Button variant="outline">Huỷ</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </form>
+      </Dialog>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Badge, Button } from "react-bootstrap";
+// import { Table, Badge, Button } from "react-bootstrap";
 import {
   getAllIngredientsAPI,
   getIngredientByIdAPI,
@@ -10,6 +10,18 @@ import { AddIngredient } from "./AddNewIngredient";
 import { paginationIngredientAPI } from "../../services/pagination_API";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function IngredientManager() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -73,20 +85,7 @@ export default function IngredientManager() {
   };
 
   return (
-    <>
-      <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
-        <h3 className="mb-0">Kho nguyên liệu:</h3>
-        <Button
-          title="Thêm nguyên liệu mới"
-          variant="primary"
-          onClick={() => setShowAddIngredientModal(true)}
-          className="d-flex align-items-center gap-2"
-        >
-          <FaPlus />
-          <span className="d-none d-sm-inline">Thêm</span>
-        </Button>
-      </div>
-
+    <div className="">
       <AddIngredient
         handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
         showAddIngredientModal={showAddIngredientModal}
@@ -102,62 +101,69 @@ export default function IngredientManager() {
         handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
-      <hr />
-      <Table
-        striped
-        bordered
-        hover
-        responsive
-        style={{ verticalAlign: "middle", marginTop: "20px" }}
-      >
-        <thead>
-          <tr>
-            <th style={{ width: "5%" }}>ID</th>
-            <th style={{ width: "15%" }}>Tên nguyên liệu</th>
-            <th style={{ width: "10%" }}>Loại</th>
-            <th style={{ width: "12%" }}>Số lượng tồn</th>
-            <th style={{ width: "8%" }}>Đơn vị</th>
-            <th style={{ width: "10%" }}>Trạng thái</th>
-            <th style={{ width: "20%" }}>Ngày nhập kho gần nhất</th>
-            <th style={{ width: "15%" }}>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
+
+      <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
+        <h1 className="mb-0">Kho nguyên liệu:</h1>
+        <Button
+          title="Thêm nguyên liệu mới"
+          onClick={() => setShowAddIngredientModal(true)}
+          className="d-flex align-items-center gap-2"
+        >
+          <FaPlus />
+          <span className="d-none d-sm-inline">Thêm</span>
+        </Button>
+      </div>
+      <Separator className="my-2" />
+      <Table>
+        <TableCaption> - - - Kho nguyên liệu - - - </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Tên nguyên liệu</TableHead>
+            <TableHead>Loại</TableHead>
+            <TableHead>Số lượng tồn</TableHead>
+            <TableHead>Đơn vị</TableHead>
+            <TableHead>Trạng thái</TableHead>
+            <TableHead>Ngày nhập kho gần nhất</TableHead>
+            <TableHead>Hành động</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {ingredients.length === 0 ? (
-            <tr>
-              <td colSpan={8} className="text-center text-muted">
+            <TableRow>
+              <TableCell colSpan={8} className="text-center text-muted">
                 Không có nguyên liệu nào
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             ingredients.map((i, idx) => (
-              <tr key={i.id}>
-                <td>{i.id}</td>
-                <td>{i.name}</td>
-                <td>
+              <TableRow key={i.id}>
+                <TableCell>{i.id}</TableCell>
+                <TableCell>{i.name}</TableCell>
+                <TableCell>
                   {getIngredientIcon(i.type)}
                   {i.type}
-                </td>
-                <td>{i.quantity}</td>
-                <td>{i.unit}</td>
-                <td>
+                </TableCell>
+                <TableCell>{i.quantity}</TableCell>
+                <TableCell>{i.unit}</TableCell>
+                <TableCell>
                   {i.status === "Đủ" && (
-                    <Badge bg="success" className="me-1" key={idx}>
+                    <Badge variant="secondary" className="me-1" key={idx}>
                       {i.status}
                     </Badge>
                   )}
                   {i.status === "Sắp hết" && (
-                    <Badge bg="warning" className="me-1" key={idx}>
+                    <Badge variant="outline" className="me-1" key={idx}>
                       {i.status}
                     </Badge>
                   )}
                   {i.status === "Hết" && (
-                    <Badge bg="danger" className="me-1" key={idx}>
+                    <Badge variant="destructive" className="me-1" key={idx}>
                       {i.status}
                     </Badge>
                   )}
-                </td>
-                <td>
+                </TableCell>
+                <TableCell>
                   {i.lastImportDate &&
                     new Date(i.lastImportDate).toLocaleString("vi-VN", {
                       timeZone: "Asia/Ho_Chi_Minh",
@@ -168,27 +174,27 @@ export default function IngredientManager() {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                </td>
+                </TableCell>
 
-                <td>
+                <TableCell>
                   <Button
                     title="Xem chi tiết nguyên liệu"
-                    variant="info"
+                    variant="secondary"
                     onClick={() => handleGetIngredientByIdAPI(i.id)}
                     style={{ padding: "5px 10px", fontSize: "14px" }}
                   >
                     📋 <span className="d-none d-sm-inline">Chi tiết</span>
                   </Button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))
           )}
-        </tbody>
+        </TableBody>
       </Table>
       {totalPages > 1 && (
         <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
           <Button
-            variant="outline-secondary"
+            variant="outline"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
@@ -208,9 +214,7 @@ export default function IngredientManager() {
               return (
                 <Button
                   key={pageNum}
-                  variant={
-                    pageNum === currentPage ? "secondary" : "outline-secondary"
-                  }
+                  variant={pageNum === currentPage ? "secondary" : "outline"}
                   onClick={() => handlePageChange(pageNum)}
                   className="rounded-circle fw-semibold"
                   style={{ width: "40px", height: "40px" }}
@@ -235,7 +239,7 @@ export default function IngredientManager() {
             return null;
           })}
           <Button
-            variant="outline-secondary"
+            variant="outline"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
@@ -245,6 +249,6 @@ export default function IngredientManager() {
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 }
