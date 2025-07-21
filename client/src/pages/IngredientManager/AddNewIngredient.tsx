@@ -1,9 +1,29 @@
-import { Form, Button, Row, Col, Modal } from "react-bootstrap";
-import Select from "react-select";
 import { getAllTypesAPI } from "../../services/CRUD_API_type";
 import { useState, useEffect } from "react";
 import { createIngredientAPI } from "../../services/CRUD_API_Ingredient";
 import { AddNewType } from "./AddNewType";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 interface Type {
   id: number;
   typeName: string;
@@ -21,10 +41,7 @@ export function AddIngredient({
 }: Props) {
   const [showTypeModal, setShowTypeModal] = useState(false);
   const [type, setType] = useState<Type[]>([]);
-  const [selectedType, setSelectedType] = useState<{
-    label: string;
-    value: number;
-  } | null>(null);
+  const [selectedTypeId, setSelectedTypeId] = useState<string>("");
   const [form, setForm] = useState({
     name: "",
     type: "",
@@ -89,7 +106,7 @@ export function AddIngredient({
 
     handleGetAllIngredientsAPI();
     clearForm();
-    setSelectedType(null);
+    setSelectedTypeId("");
   };
 
   const showModalType = () => {
@@ -98,82 +115,77 @@ export function AddIngredient({
 
   return (
     <>
-      <Modal
-        show={showAddIngredientModal}
-        onHide={handleClose}
-        size="xl"
-        centered
+      <AddNewType
+        showTypeModal={showTypeModal}
+        handleClose={() => setShowTypeModal(false)}
+        type={type}
+        handleGetAllTypesAPI={handleGetAllTypesAPI}
+      />
+      <Dialog
+        open={showAddIngredientModal}
+        onOpenChange={(open) => !open && handleClose()}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>Thêm nguyên liệu</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row className="">
-            <Col lg={12}>
-              <Form.Group controlId="name" className="mb-3">
-                <Form.Label>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Thêm nguyên liệu</DialogTitle>
+          </DialogHeader>
+          <Separator />
+          <div className="grid gap-4">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full min-w-0">
+                <Label>
                   <strong>Tên:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   placeholder="VD: Crystal 60L"
                 />
-              </Form.Group>
-            </Col>
-            <Col lg={12}>
-              <Form.Group controlId="type" className="mb-3">
-                <Form.Label>
-                  <strong>Loại nguyên liệu: </strong>
-                </Form.Label>
-                <div className="d-flex gap-2 align-items-center">
-                  <div style={{ flex: 1 }}>
-                    <Select
-                      className="basic-single"
-                      classNamePrefix="select"
-                      required
-                      name="type"
-                      options={type.map((t) => ({
-                        label: t.typeName,
-                        value: t.id,
-                      }))}
-                      value={selectedType}
-                      onChange={(option) => {
-                        setForm((prev) => ({
-                          ...prev,
-                          type: option?.label ?? "",
-                        }));
-                        setSelectedType(option);
-                      }}
-                      placeholder="Chọn loại nguyên liệu"
-                    />
-                  </div>
-                  <Button variant="outline-primary" onClick={showModalType}>
-                    📚 Chi tiết
-                  </Button>
-                </div>
-              </Form.Group>
-            </Col>
-            <Col xs={12} lg={6}>
-              <Form.Group controlId="unit" className="mb-3">
-                <Form.Label>
-                  <strong>Đơn vị: </strong>
-                </Form.Label>
-                <Form.Control
-                  required
-                  value={form.unit}
-                  onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                  placeholder="VD: g, kg"
-                />
-              </Form.Group>
-            </Col>
-            <Col xs={12} lg={6}>
-              <Form.Group controlId="quantity" className="mb-3">
-                <Form.Label>
+              </div>
+            </div>
+            <Label>
+              <strong>Loại nguyên liệu: </strong>
+            </Label>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full md:w-[74%] min-w-0">
+                <Select
+                  value={selectedTypeId}
+                  onValueChange={(value) => {
+                    setSelectedTypeId(value);
+                    const selected = type.find(
+                      (t) => t.id.toString() === value
+                    );
+                    setForm((prev) => ({
+                      ...prev,
+                      type: selected?.typeName ?? "",
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Chọn loại nguyên liệu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {type.map((t) => (
+                      <SelectItem key={t.id} value={t.id.toString()}>
+                        {t.typeName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1 min-w-0">
+                <Button variant="outline" onClick={showModalType}>
+                  📚 Chi tiết
+                </Button>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label>
                   <strong>Số lượng:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
                   required
                   type="number"
                   value={form.quantity}
@@ -182,15 +194,26 @@ export function AddIngredient({
                   }
                   placeholder="VD: 20"
                 />
-              </Form.Group>
-            </Col>
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label>
+                  <strong>Đơn vị: </strong>
+                </Label>
+                <Input
+                  required
+                  value={form.unit}
+                  onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                  placeholder="VD: g, kg"
+                />
+              </div>
+            </div>
 
-            <Col xs={12} lg={6}>
-              <Form.Group controlId="lowStockThreshold" className="mb-3">
-                <Form.Label>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label>
                   <strong>Giới hạn cảnh báo:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
                   required
                   type="number"
                   value={form.lowStockThreshold}
@@ -199,15 +222,13 @@ export function AddIngredient({
                   }
                   placeholder="VD: 10"
                 />
-              </Form.Group>
-            </Col>
+              </div>
 
-            <Col xs={12} lg={6}>
-              <Form.Group controlId="lastImportDate" className="mb-3">
-                <Form.Label>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label>
                   <strong>Ngày nhập kho gần nhất:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
                   required
                   type="datetime-local"
                   value={form.lastImportDate}
@@ -216,45 +237,37 @@ export function AddIngredient({
                   }
                   placeholder="VD: 2025-07-15T14:30"
                 />
-              </Form.Group>
-            </Col>
+              </div>
+            </div>
 
-            <Col lg={12}>
-              <Form.Group controlId="notes" className="mb-3">
-                <Form.Label>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
+                <Label>
                   <strong>Ghi chú:</strong>
-                </Form.Label>
-                <Form.Control
-                  as="textarea"
+                </Label>
+                <Textarea
                   rows={4}
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
                   placeholder="VD: 10"
                 />
-              </Form.Group>
-            </Col>
-            <Col xs={12} className="d-flex justify-content-end"></Col>
-          </Row>
-          <AddNewType
-            showTypeModal={showTypeModal}
-            handleClose={() => setShowTypeModal(false)}
-            type={type}
-            handleGetAllTypesAPI={handleGetAllTypesAPI}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            className=""
-            variant="primary"
-            onClick={() => handleCreateIngredientAPI()}
-          >
-            <span className="d-none d-sm-inline">Thêm</span>
-          </Button>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className=""
+              variant="outline"
+              onClick={() => handleCreateIngredientAPI()}
+            >
+              <span className="d-none d-sm-inline">Thêm</span>
+            </Button>
+            <Button variant="secondary" onClick={handleClose}>
+              Đóng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

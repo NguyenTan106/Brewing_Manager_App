@@ -1,4 +1,3 @@
-import { Button, Table, Badge } from "react-bootstrap";
 import {
   getAllBatchesAPI,
   getAllBatchByIdAPI,
@@ -13,6 +12,18 @@ import {
   statusLabelMap,
   Status,
 } from "../../services/CRUD_API_Batch";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function BatchManager() {
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -29,15 +40,15 @@ export default function BatchManager() {
   const getStatusBadge = (status: Status) => {
     switch (status) {
       case Status.boiling:
-        return <Badge bg="primary">Đun sôi</Badge>;
+        return <Badge variant="primary">Nấu sôi</Badge>;
       case Status.fermenting:
-        return <Badge bg="warning">Lên men</Badge>;
+        return <Badge variant="warning">Lên men</Badge>;
       case Status.cold_crashing:
-        return <Badge bg="info">Làm lạnh</Badge>;
+        return <Badge variant="info">Làm lạnh</Badge>;
       case Status.done:
-        return <Badge bg="success">Hoàn thành</Badge>;
+        return <Badge variant="success">Hoàn tất</Badge>;
       default:
-        return <Badge bg="secondary">{status}</Badge>;
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
   const [usedIngredients, setUsedIngredients] = useState<[]>([]);
@@ -128,54 +139,49 @@ export default function BatchManager() {
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
-      <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
-        <h3 className="mb-0">Danh sách mẻ:</h3>
+      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
+        <p className="text-2xl font-bold">Danh sách mẻ: </p>
         <Button
-          title="Thêm nguyên liệu mới"
-          variant="primary"
           onClick={() => setShowAddModal(true)}
-          className="d-flex align-items-center gap-2"
+          title="Thêm nguyên liệu mới"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
         >
           <FaPlus />
-          <span className="d-none d-sm-inline">Thêm</span>
+          <span className="hidden sm:inline">Thêm</span>
         </Button>
       </div>
 
-      <hr />
-      <Table
-        striped
-        bordered
-        hover
-        responsive
-        style={{ verticalAlign: "middle", marginTop: "20px" }}
-      >
-        <thead>
-          <tr>
-            <th style={{ width: "5%" }}>Mã mẻ</th>
-            <th style={{ width: "10%" }}>Tên mẻ</th>
-            <th style={{ width: "8%" }}>Trạng thái</th>
-            <th style={{ width: "10%" }}>Khối lượng (lít)</th>
-            <th style={{ width: "10%" }}>Công thức</th>
-            <th style={{ width: "10%" }}>Ngày tạo</th>
-            <th style={{ width: "10%" }}>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Separator className="my-2" />
+      <Table className="text-base">
+        <TableCaption>- - - Danh sách mẻ - - -</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Mã mẻ</TableHead>
+            <TableHead>Tên mẻ</TableHead>
+            <TableHead>Trạng thái</TableHead>
+            <TableHead>Khối lượng (lít)</TableHead>
+            <TableHead>Công thức</TableHead>
+            <TableHead>Hành động</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {batches.length === 0 ? (
-            <tr>
-              <td colSpan={8} className="text-center text-muted">
+            <TableRow>
+              <TableCell colSpan={8} className="text-center text-muted">
                 Không có mẻ nào
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             batches.map((i) => (
-              <tr key={i.id}>
-                <td>{i.code}</td>
-                <td>{i.beerName}</td>
-                <td>{getStatusBadge(i.status)}</td>
-                <td>{i.volume}</td>
-                <td>{i.recipe?.name || "Chưa có công thức nào"}</td>
-                <td>
+              <TableRow key={i.id}>
+                <TableCell>{i.code}</TableCell>
+                <TableCell>{i.beerName}</TableCell>
+                <TableCell>{getStatusBadge(i.status)}</TableCell>
+                <TableCell>{i.volume}</TableCell>
+                <TableCell>
+                  {i.recipe?.name || "Chưa có công thức nào"}
+                </TableCell>
+                <TableCell>
                   {i.createdAt &&
                     new Date(i.createdAt).toLocaleString("vi-VN", {
                       timeZone: "Asia/Ho_Chi_Minh",
@@ -186,9 +192,9 @@ export default function BatchManager() {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                </td>
+                </TableCell>
 
-                <td>
+                <TableCell>
                   <Button
                     title="Xem chi tiết nguyên liệu"
                     variant="info"
@@ -197,11 +203,11 @@ export default function BatchManager() {
                   >
                     📋 <span className="d-none d-sm-inline">Chi tiết</span>
                   </Button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))
           )}
-        </tbody>
+        </TableBody>
       </Table>
       {totalPages > 1 && (
         <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">

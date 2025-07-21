@@ -13,7 +13,7 @@ export const SidebarItem = ({ icon: Icon, label, to }: SidebarItemProps) => (
     to={to}
     className={({ isActive }) =>
       cn(
-        "flex items-center gap-3 px-4 py-2 w-full text-left text-sm rounded-md transition-all",
+        "flex items-center gap-3 px-4 py-2 w-full text-left text-md rounded-md transition-all",
         isActive
           ? "bg-primary text-primary-foreground font-semibold"
           : "text-muted-foreground hover:bg-muted"

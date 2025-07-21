@@ -1,5 +1,5 @@
 import { useState, type JSX } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import {
   type Batch,
   // type Recipe,
@@ -8,6 +8,19 @@ import {
 } from "../../services/CRUD_API_Batch";
 import UpdateBatchModal from "./UpdateBatchModal";
 import RecipeDetailModalFromBatch from "./RecipeDetailModalFromBatch";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   showDetailModal: boolean;
@@ -66,103 +79,117 @@ export default function BatchDetailModal({
         selectedBatch={selectedBatch}
         usedIngredients={usedIngredients}
       />
-      <Modal show={showDetailModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Chi tiết mẻ</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>
-            <p>
-              <strong>ID:</strong> {selectedBatch?.id}
-            </p>
-            <p>
-              <strong>Code:</strong> {selectedBatch?.code}
-            </p>
-            <p>
-              <strong>Tên:</strong> {selectedBatch?.beerName}
-            </p>
-            <p>
-              <strong>Trạng thái: </strong>
-              {selectedBatch?.status
-                ? getStatusBadge(selectedBatch.status)
-                : "Không xác định"}
-            </p>
+      <Dialog
+        open={showDetailModal}
+        onOpenChange={(open) => !open && handleClose()}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Chi tiết mẻ
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Chi tiết về mẻ hiện tại.
+            </DialogDescription>
+          </DialogHeader>
+          <Separator />
 
-            <p>
-              <strong>Khối lượng: </strong>
-              {selectedBatch?.volume}L
-            </p>
+          <div className="grid gap-4 pt-2 ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">ID</p>
+                <p className="text-base font-medium">{selectedBatch?.id}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Mã mẻ</p>
+                <p className="text-base font-medium">{selectedBatch?.code}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Tên nguyên liệu</p>
+                <p className="text-base ">{selectedBatch?.beerName}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Khối lượng</p>
+                <p className="text-base">{selectedBatch?.volume}L</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground pt-1">Trạng thái</p>
+                <p className="text-base pt-1">
+                  {selectedBatch?.status
+                    ? getStatusBadge(selectedBatch.status)
+                    : "Không xác định"}
+                </p>
+              </div>
 
-            <p>
-              <strong>Công thức: </strong>
-              {selectedBatch?.recipe === null
-                ? "Chưa có công thức"
-                : selectedBatch?.recipe?.name && (
-                    <>
-                      {selectedBatch?.recipe.name}{" "}
-                      <Button
-                        title="Xem chi tiết nguyên liệu"
-                        variant="info"
-                        onClick={() => setShowDetailRecipeModal(true)}
-                        style={{ padding: "5px 10px", fontSize: "14px" }}
-                      >
-                        📋 <span className="d-none d-sm-inline">Chi tiết</span>
-                      </Button>
-                    </>
+              <div>
+                <p className="text-sm text-muted-foreground">Công thức</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-base m-0">{selectedBatch?.recipe?.name}</p>
+                  {selectedBatch?.recipe && (
+                    <Button
+                      title="Xem chi tiết nguyên liệu"
+                      onClick={() => setShowDetailRecipeModal(true)}
+                      className="text-sm"
+                      style={{ padding: "0px 10px" }}
+                    >
+                      📋 <span className="hidden sm:inline">Chi tiết</span>
+                    </Button>
                   )}
-            </p>
-            <p>
-              <strong>Ngày tạo: </strong>
-              {selectedBatch?.createdAt &&
-                new Date(selectedBatch.createdAt).toLocaleString("vi-VN", {
-                  timeZone: "Asia/Ho_Chi_Minh",
-                  hour12: false,
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-            </p>
-            <div>
-              <strong>Ghi chú: </strong>
-              <i>{selectedBatch?.notes}</i>
-            </div>
-            <div className="mt-2">
-              <Button
-                className=""
-                variant="success"
-                onClick={() => setShowUpdateModal(true)}
-                style={{
-                  padding: "5px 10px",
-                  fontSize: "14px",
-                }}
-              >
-                ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
-              </Button>
-              <Button
-                className="m-2"
-                variant="danger"
-                onClick={() =>
-                  selectedBatch?.id &&
-                  handleDeleteBatchByIdAPI(selectedBatch?.id)
-                }
-                style={{
-                  padding: "5px 10px",
-                  fontSize: "14px",
-                }}
-              >
-                🗑️ <span className="d-none d-sm-inline">Xóa</span>
-              </Button>
+                </div>
+              </div>
+
+              <div className="col-span-full">
+                <p className="text-sm text-muted-foreground">Ghi chú</p>
+                <p className="text-base whitespace-pre-line">
+                  {selectedBatch?.notes}
+                </p>
+              </div>
+              <div className="col-span-full">
+                <p className="text-sm text-muted-foreground">Ngày tạo</p>
+                <p className="text-base">
+                  {selectedBatch?.createdAt &&
+                    new Date(selectedBatch.createdAt).toLocaleString("vi-VN", {
+                      timeZone: "Asia/Ho_Chi_Minh",
+                      hour12: false,
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                </p>
+              </div>
             </div>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          <DialogFooter className="mt-3">
+            <Button
+              className="bg-blue-500 text-white dark:bg-blue-600"
+              onClick={() => setShowUpdateModal(true)}
+              style={{
+                padding: "5px 10px",
+                fontSize: "14px",
+              }}
+            >
+              ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() =>
+                selectedBatch?.id && handleDeleteBatchByIdAPI(selectedBatch?.id)
+              }
+              style={{
+                padding: "5px 10px",
+                fontSize: "14px",
+              }}
+            >
+              🗑️ <span className="d-none d-sm-inline">Xóa</span>
+            </Button>
+            <Button variant="secondary" onClick={handleClose}>
+              Đóng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

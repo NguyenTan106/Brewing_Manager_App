@@ -102,20 +102,21 @@ export default function IngredientManager() {
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
-      <div className="d-flex justify-content-start align-items-center mt-3 flex-wrap gap-2">
-        <h1 className="mb-0">Kho nguyên liệu:</h1>
+      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
+        <p className="text-2xl font-bold">Kho nguyên liệu:</p>
         <Button
-          title="Thêm nguyên liệu mới"
           onClick={() => setShowAddIngredientModal(true)}
-          className="d-flex align-items-center gap-2"
+          title="Thêm nguyên liệu mới"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
         >
           <FaPlus />
-          <span className="d-none d-sm-inline">Thêm</span>
+          <span className="hidden sm:inline">Thêm</span>
         </Button>
       </div>
+
       <Separator className="my-2" />
-      <Table>
-        <TableCaption> - - - Kho nguyên liệu - - - </TableCaption>
+      <Table className="text-base ">
+        <TableCaption>- - - Kho nguyên liệu - - -</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>ID</TableHead>
@@ -125,7 +126,7 @@ export default function IngredientManager() {
             <TableHead>Đơn vị</TableHead>
             <TableHead>Trạng thái</TableHead>
             <TableHead>Ngày nhập kho gần nhất</TableHead>
-            <TableHead>Hành động</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -163,7 +164,7 @@ export default function IngredientManager() {
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell>
+                <TableCell className="">
                   {i.lastImportDate &&
                     new Date(i.lastImportDate).toLocaleString("vi-VN", {
                       timeZone: "Asia/Ho_Chi_Minh",

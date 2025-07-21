@@ -1,6 +1,31 @@
 import React, { useState } from "react";
-import { Modal, Button, Table, Form } from "react-bootstrap";
+import { Modal, Form } from "react-bootstrap";
 import { createTypeAPI, deleteTypeAPI } from "../../services/CRUD_API_type";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 type Props = {
   showTypeModal: boolean;
   handleClose: () => void;
@@ -46,18 +71,23 @@ export function AddNewType({
   };
   return (
     <>
-      <Modal show={showTypeModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Chi tiết nguyên liệu</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            <b>Thêm loại nguyên liệu mới:</b>
-          </p>
-          <Form.Group controlId="formTypeName" className="mb-3">
-            <div className="d-flex gap-2 align-items-center">
-              <Form.Control
+      <Dialog
+        open={showTypeModal}
+        onOpenChange={(open) => !open && handleClose()}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Chi tiết nguyên liệu</DialogTitle>
+          </DialogHeader>
+          <Separator />
+          <>
+            <p>
+              <b>Thêm loại nguyên liệu mới:</b>
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Input
                 type="text"
+                className="flex flex-col gap-1 w-full md:w-[48%] min-w-0"
                 placeholder="Nhập tên loại nguyên liệu"
                 value={newTypeName}
                 onChange={(e) => {
@@ -65,49 +95,49 @@ export function AddNewType({
                 }}
               />
               <Button
-                variant="primary"
+                className="flex flex-col gap-1  min-w-0"
+                variant="secondary"
                 onClick={() => handleCreateTypeAPI(newTypeName)}
               >
                 <span className="d-none d-sm-inline">Thêm</span>
               </Button>
             </div>
-          </Form.Group>
-
-          <h5>Danh sách các loại nguyên liệu:</h5>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Tên loại</th>
-                <th>Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {type.map((t) => (
-                <tr key={t.id}>
-                  <td>{t.id}</td>
-                  <td>{t.typeName}</td>
-                  <td style={{ width: "25%" }}>
-                    <Button
-                      variant="danger"
-                      onClick={() => {
-                        handleDeleteTypeAPI(t.id);
-                      }}
-                    >
-                      Xóa
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            <h5 className="mt-3">Danh sách các loại nguyên liệu:</h5>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Tên loại</TableHead>
+                  <TableHead>Hành động</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {type.map((t) => (
+                  <TableRow key={t.id}>
+                    <TableCell>{t.id}</TableCell>
+                    <TableCell>{t.typeName}</TableCell>
+                    <TableCell style={{ width: "25%" }}>
+                      <Button
+                        variant="destructive"
+                        onClick={() => {
+                          handleDeleteTypeAPI(t.id);
+                        }}
+                      >
+                        Xóa
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </>
+          <DialogFooter>
+            <Button variant="secondary" onClick={handleClose}>
+              Đóng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

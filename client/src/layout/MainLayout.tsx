@@ -7,8 +7,8 @@ export default function Layout() {
       <SidebarProvider>
         {/* Container ngang, chiếm toàn màn hình */}
         <AppSidebar />
-        <main className="flex-1 p-4 overflow-auto">
-          <SidebarTrigger className="w-10 h-10" />
+        <SidebarTrigger className="w-10 h-10" />
+        <main className="flex-1 pl-1 pt-14 p-10 overflow-auto ">
           <Outlet />
         </main>
       </SidebarProvider>

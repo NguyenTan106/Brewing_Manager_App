@@ -1,8 +1,30 @@
 import { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Form } from "react-bootstrap";
 import type { Batch, Status } from "../../services/CRUD_API_Batch";
 import { updateBatchByIdAPI } from "../../services/CRUD_API_Batch";
-import Select from "react-select";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 interface Props {
   showUpdateModal: boolean;
   handleClose: () => void;
@@ -55,6 +77,7 @@ export default function UpdateBatchModal({
       alert("Lỗi khi cập nhật mẻ");
     }
   };
+
   useEffect(() => {
     if (editForm.status) {
       const found = statusOptions.find((opt) => opt.value === editForm.status);
@@ -73,117 +96,131 @@ export default function UpdateBatchModal({
 
   return (
     <>
-      <Modal show={showUpdateModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Sửa nguyên liệu {selectedBatch?.beerName}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>
+      <Dialog
+        open={showUpdateModal}
+        onOpenChange={(open) => !open && handleClose()}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="text-2xl font-bold">
+            <DialogTitle>Sửa nguyên liệu {selectedBatch?.beerName}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4">
             <p>
               <strong>ID:</strong> {selectedBatch?.id}
             </p>
-            <div>
-              <Form.Group controlId="" className="mb-3">
-                <Form.Label>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
                   <strong>Tên mẻ:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
                   placeholder="VD: Crystal 60L"
                   value={editForm?.beerName ?? ""}
                   onChange={(e) =>
                     setEditForm({ ...editForm, beerName: e.target.value })
                   }
                 />
-              </Form.Group>
-            </div>
-            <div>
-              <Form.Group controlId="status" className="mb-3">
-                <Form.Label>
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
                   <strong>Trạng thái:</strong>
-                </Form.Label>
+                </Label>
                 <Select
-                  className="basic-single"
-                  classNamePrefix="select"
-                  required
-                  name="status"
-                  options={statusOptions}
-                  value={selectedStatus}
-                  onChange={(option) => {
-                    if (!option) return;
-                    setEditForm((prev) => ({
-                      ...prev,
-                      status: option.value, // đây là Status enum
-                    }));
-                    setSelectedStatus(option);
-                  }}
-                  placeholder="Chọn trạng thái mẻ"
-                  isClearable
-                />
-              </Form.Group>
+                  value={editForm.status ?? ""}
+                  onValueChange={(value) =>
+                    setEditForm({ ...editForm, status: value as Status })
+                  }
+                >
+                  <SelectTrigger
+                    className="w-full"
+                    style={{ fontSize: "0.95rem" }}
+                  >
+                    <SelectValue placeholder="Chọn trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOptions.map((option) => (
+                      <SelectItem
+                        style={{ fontSize: "0.95rem" }}
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Form.Group controlId="status" className="mb-3">
-                <Form.Label>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
                   <strong>Công thức: </strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
+                  style={{
+                    fontSize: "0.95rem",
+                    backgroundColor: "gray",
+                    fontWeight: "bold",
+                  }}
                   disabled
                   placeholder="VD: g"
                   value={editForm?.recipe?.name ?? ""}
                 />
-              </Form.Group>
-            </div>
-            <div>
-              <Form.Group controlId="volume" className="mb-3">
-                <Form.Label>
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
                   <strong>Khối lượng mẻ (lít):</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
                   disabled
+                  style={{
+                    fontSize: "0.95rem",
+                    backgroundColor: "gray",
+                    fontWeight: "bold",
+                  }}
                   placeholder="VD: g"
                   value={editForm?.volume ?? ""}
                 />
-              </Form.Group>
+              </div>
             </div>
             <div>
-              <Form.Group controlId="notes" className="mb-3">
-                <Form.Label>
-                  <strong>Ghi chú:</strong>
-                </Form.Label>
-                <Form.Control
-                  as={"textarea"}
-                  rows={4}
-                  placeholder="VD: 20"
-                  value={editForm?.notes ?? ""}
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      notes: e.target.value,
-                    })
-                  }
-                />
-              </Form.Group>
+              <Label className="text-base">
+                <strong>Ghi chú:</strong>
+              </Label>
+              <Textarea
+                style={{ fontSize: "0.95rem" }}
+                rows={4}
+                placeholder="VD: 20"
+                value={editForm?.notes ?? ""}
+                onChange={(e) =>
+                  setEditForm({
+                    ...editForm,
+                    notes: e.target.value,
+                  })
+                }
+              />
             </div>
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            className=""
-            variant="success"
-            onClick={() =>
-              selectedBatch?.id && handleUpdateBatchByIdAPI(selectedBatch?.id)
-            }
-            style={{
-              padding: "5px 10px",
-            }}
-          >
-            ✏️ <span className="d-none d-sm-inline">Cập nhật</span>
-          </Button>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          <DialogFooter>
+            <Button
+              className=""
+              variant="outline"
+              onClick={() =>
+                selectedBatch?.id && handleUpdateBatchByIdAPI(selectedBatch?.id)
+              }
+              style={{
+                padding: "5px 10px",
+              }}
+            >
+              ✏️ <span className="d-none d-sm-inline">Cập nhật</span>
+            </Button>
+            <Button variant="secondary" onClick={handleClose}>
+              Đóng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

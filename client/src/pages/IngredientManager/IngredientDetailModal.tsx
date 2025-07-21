@@ -70,79 +70,84 @@ export default function IngredientDetailModal({
         open={showDetailModal}
         onOpenChange={(open) => !open && handleClose()}
       >
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl w-[480px]">
           <DialogHeader>
-            <DialogTitle>Chi tiết nguyên liệu</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Thông tin nguyên liệu
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Chi tiết về nguyên liệu hiện tại.
+            </DialogDescription>
           </DialogHeader>
-          <div>
-            <p>
-              <strong>ID:</strong> {selectedIngredient?.id}
-            </p>
-            <p>
-              <strong>Tên:</strong> {selectedIngredient?.name}
-            </p>
-            <p>
-              <strong>Loại:</strong>
-              {selectedIngredient?.type &&
-                getIngredientIcon(selectedIngredient.type)}
-              {selectedIngredient?.type}
-            </p>
-            <p>
-              <strong>Số lượng:</strong> {selectedIngredient?.quantity}{" "}
-              {selectedIngredient?.unit}
-            </p>
-            <p>
-              <strong>Trạng thái: </strong>
-              {selectedIngredient?.status === "Đủ" && (
-                <Badge
-                  variant="secondary"
-                  className="me-1"
-                  key={selectedIngredient?.id}
-                >
-                  {selectedIngredient?.status}
-                </Badge>
-              )}
-              {selectedIngredient?.status === "Sắp hết" && (
-                <Badge
-                  variant="outline"
-                  className="me-1"
-                  key={selectedIngredient?.id}
-                >
-                  {selectedIngredient?.status}
-                </Badge>
-              )}
-              {selectedIngredient?.status === "Hết" && (
-                <Badge
-                  variant="destructive"
-                  className="me-1"
-                  key={selectedIngredient?.id}
-                >
-                  {selectedIngredient?.status}
-                </Badge>
-              )}
-            </p>
-            <p>
-              <strong>Ghi chú: </strong>
-              <i>{selectedIngredient?.notes}</i>
-            </p>
-            <p>
-              <strong>Ngày nhập kho gần nhất: </strong>
-              {selectedIngredient?.lastImportDate &&
-                new Date(selectedIngredient.lastImportDate).toLocaleString(
-                  "vi-VN",
-                  {
-                    timeZone: "Asia/Ho_Chi_Minh",
-                    hour12: false,
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }
+
+          <Separator />
+
+          <div className="grid gap-4 pt-2 ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Tên nguyên liệu</p>
+                <p className="text-base font-medium">
+                  {selectedIngredient?.name}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Loại</p>
+                <p className="text-base">
+                  {selectedIngredient?.status === "Đủ" && (
+                    <Badge variant="secondary">
+                      {selectedIngredient.status}
+                    </Badge>
+                  )}
+                  {selectedIngredient?.status === "Sắp hết" && (
+                    <Badge variant="outline">{selectedIngredient.status}</Badge>
+                  )}
+                  {selectedIngredient?.status === "Hết" && (
+                    <Badge variant="destructive">
+                      {selectedIngredient.status}
+                    </Badge>
+                  )}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Số lượng</p>
+                <p className="text-base">{selectedIngredient?.quantity}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Đơn vị</p>
+                <p className="text-base">{selectedIngredient?.unit}</p>
+              </div>
+              <div className="col-span-full">
+                {selectedIngredient?.notes && (
+                  <>
+                    <p className="text-sm text-muted-foreground">Mô tả</p>
+                    <p className="text-base whitespace-pre-line">
+                      {selectedIngredient.notes}
+                    </p>
+                  </>
                 )}
-            </p>
+              </div>
+              <div className="col-span-full">
+                <p className="text-sm text-muted-foreground">Ngày tạo</p>
+                <p className="text-base">
+                  {selectedIngredient?.lastImportDate &&
+                    new Date(selectedIngredient.lastImportDate).toLocaleString(
+                      "vi-VN",
+                      {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }
+                    )}
+                </p>
+              </div>
+            </div>
           </div>
-          <DialogFooter>
+
+          <DialogFooter className="mt-3">
             <Button
               className="bg-blue-500 text-white dark:bg-blue-600"
               onClick={() => handleOpenUpdateModal()}

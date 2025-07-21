@@ -37,11 +37,11 @@ const items = [
 export default function AppSidebar() {
   return (
     <Sidebar>
-      <SidebarHeader>
-        <h3 className="font-bold">📦 Quản lí kho</h3>
+      <SidebarHeader className="mt-2">
+        <h2 className="font-bold text-2xl">📦 Quản lí kho</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton className="w-full">
+            <SidebarMenuButton className="w-full my-2 text-md">
               Chọn workspace <ChevronDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -52,9 +52,9 @@ export default function AppSidebar() {
         </DropdownMenu>
       </SidebarHeader>
 
-      <Separator className="my-2" />
+      <Separator className="" />
 
-      <SidebarContent>
+      <SidebarContent className="p-3">
         {items.map((item, i) => (
           <SidebarItem
             key={i}

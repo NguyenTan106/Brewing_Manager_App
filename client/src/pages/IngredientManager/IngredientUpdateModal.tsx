@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -138,21 +139,24 @@ export default function IngredientUpdateModal({
         <form>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>
-                Sửa nguyên liệu {selectedIngredient?.name}
+              <DialogTitle className="text-2xl font-bold ">
+                Sửa nguyên liệu: {selectedIngredient?.name}
               </DialogTitle>
             </DialogHeader>
 
+            <Separator />
+
             <div className="grid gap-4">
-              <Label>
+              <Label className="text-base">
                 <strong>ID:</strong> {selectedIngredient?.id}
               </Label>
               <div className="flex flex-wrap gap-4">
-                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                  <Label>
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0 ">
+                  <Label className="text-base">
                     <strong>Tên:</strong>
                   </Label>
                   <Input
+                    style={{ fontSize: "0.95rem" }}
                     placeholder="VD: Crystal 60L"
                     value={editForm?.name ?? ""}
                     onChange={(e) =>
@@ -162,7 +166,7 @@ export default function IngredientUpdateModal({
                 </div>
 
                 <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                  <Label>
+                  <Label className="text-base">
                     <strong>Loại:</strong>
                   </Label>
                   <Select
@@ -178,12 +182,19 @@ export default function IngredientUpdateModal({
                       }));
                     }}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger
+                      style={{ fontSize: "0.95rem" }}
+                      className="w-full"
+                    >
                       <SelectValue placeholder="Chọn loại nguyên liệu" />
                     </SelectTrigger>
                     <SelectContent>
                       {type.map((t) => (
-                        <SelectItem key={t.id} value={t.id.toString()}>
+                        <SelectItem
+                          style={{ fontSize: "0.95rem" }}
+                          key={t.id}
+                          value={t.id.toString()}
+                        >
                           {t.typeName}
                         </SelectItem>
                       ))}
@@ -194,10 +205,11 @@ export default function IngredientUpdateModal({
 
               <div className="flex flex-wrap gap-4">
                 <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                  <Label>
+                  <Label className="text-base">
                     <strong>Đơn vị:</strong>
                   </Label>
                   <Input
+                    style={{ fontSize: "0.95rem" }}
                     placeholder="VD: g"
                     value={editForm?.unit ?? ""}
                     onChange={(e) =>
@@ -206,10 +218,11 @@ export default function IngredientUpdateModal({
                   />
                 </div>
                 <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                  <Label>
+                  <Label className="text-base">
                     <strong>Số lượng:</strong>
                   </Label>
                   <Input
+                    style={{ fontSize: "0.95rem" }}
                     type="number"
                     placeholder="VD: 20"
                     value={editForm?.quantity ?? ""}
@@ -228,10 +241,11 @@ export default function IngredientUpdateModal({
 
               <div className="flex flex-wrap gap-4">
                 <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                  <Label>
+                  <Label className="text-base">
                     <strong>Giới hạn cảnh báo:</strong>
                   </Label>
                   <Input
+                    style={{ fontSize: "0.95rem" }}
                     type="number"
                     placeholder="VD: 20"
                     value={editForm?.lowStockThreshold ?? ""}
@@ -247,10 +261,11 @@ export default function IngredientUpdateModal({
                   />
                 </div>
                 <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                  <Label>
+                  <Label className="text-base">
                     <strong>Ngày nhập kho gần nhất:</strong>
                   </Label>
                   <Input
+                    style={{ fontSize: "0.95rem" }}
                     type="datetime-local"
                     value={
                       editForm?.lastImportDate
@@ -269,10 +284,9 @@ export default function IngredientUpdateModal({
               </div>
               <div className="flex flex-wrap gap-4">
                 <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
-                  <Label>
-                    <strong>Ghi chú:</strong>
-                  </Label>
+                  <Label className="text-base font-bold">Ghi chú:</Label>
                   <Textarea
+                    style={{ fontSize: "0.95rem" }}
                     placeholder="Nhập ghi chú..."
                     value={editForm?.notes ?? ""}
                     onChange={(e) =>
