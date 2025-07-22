@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   handleClose: () => void;
@@ -109,7 +109,7 @@ export default function RecipeDetailModal({
               Chi tiết công thức
             </DialogTitle>
           </DialogHeader>
-
+          <Separator />
           <div className="grid gap-4 pt-2 ">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -117,7 +117,7 @@ export default function RecipeDetailModal({
                 <p className="text-base font-medium">{selectedRecipe?.id}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tên nguyên liệu</p>
+                <p className="text-sm text-muted-foreground">Tên công thức</p>
                 <p className="text-base font-medium">{selectedRecipe?.name}</p>
               </div>
               <div className="col-span-full">
@@ -186,13 +186,17 @@ export default function RecipeDetailModal({
                 </Table>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Đơn vị</p>
+                <p className="text-sm text-muted-foreground">Ghi chú</p>
                 <p className="text-base">{selectedRecipe?.note}</p>
               </div>
               <div className="col-span-full">
-                <p className="text-sm text-muted-foreground">Mô tả</p>
-                <p className="text-base whitespace-pre-line">
-                  {selectedRecipe?.instructions}
+                <p className="text-sm text-muted-foreground">
+                  Các bước thực hiện
+                </p>
+                <p className="text-base ">
+                  <ReactMarkdown>
+                    {selectedRecipe?.instructions || ""}
+                  </ReactMarkdown>
                 </p>
               </div>
               <div className="col-span-full">
@@ -215,8 +219,8 @@ export default function RecipeDetailModal({
 
           <DialogFooter className="mt-2">
             <Button
-              className=""
-              variant="outline"
+              variant="secondary"
+              className="bg-blue-600 text-white hover:bg-blue-500"
               onClick={() => setShowUpdateModal(true)}
               style={{
                 padding: "5px 10px",

@@ -15,3 +15,8 @@ export const getAllActivityLogsAPI = async () => {
   const res = await axios.get(`${BASE_URL}/api/activity-logs`);
   return res.data.data;
 };
+
+export const getActivityLogByIdAPI = async (id: number) => {
+  const res = await axios.get(`${BASE_URL}/api/activity-log/${id}`);
+  return res.data.data;
+};

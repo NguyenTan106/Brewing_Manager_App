@@ -206,8 +206,8 @@ export default function UpdateBatchModal({
           </div>
           <DialogFooter>
             <Button
-              className=""
-              variant="outline"
+              variant="secondary"
+              className="bg-green-600 text-white hover:bg-green-700"
               onClick={() =>
                 selectedBatch?.id && handleUpdateBatchByIdAPI(selectedBatch?.id)
               }

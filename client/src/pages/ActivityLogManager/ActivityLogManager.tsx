@@ -1,46 +1,124 @@
 import { useEffect, useState } from "react";
 import type { ActivityLog } from "../../services/CRUD_API_ActivityLog";
 import { getAllActivityLogsAPI } from "../../services/CRUD_API_ActivityLog";
-import { Table } from "react-bootstrap";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { paginationActivityLogAPI } from "@/services/pagination_API";
+import ReactMarkdown from "react-markdown";
+import ActivityLogDetailModal from "./ActivityLogDetailModal";
+import { getActivityLogByIdAPI } from "../../services/CRUD_API_ActivityLog";
 export default function ActivityLogManager() {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [selectedActivityLog, setSelectedActivityLog] =
+    useState<ActivityLog | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(9);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false); // ✅
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   useEffect(() => {
-    handleGetAllActitivyLogsAPI();
+    const savedPage = localStorage.getItem("batch_page");
+    const savedLimit = localStorage.getItem("batch_limit");
+
+    if (savedPage) setCurrentPage(Number(savedPage));
+    if (savedLimit) setLimit(Number(savedLimit));
+
+    setIsInitialized(true); // ✅ cho phép gọi API sau khi đọc xong localStorage
   }, []);
 
-  const handleGetAllActitivyLogsAPI = async () => {
-    const data = await getAllActivityLogsAPI();
-    setActivityLogs(data);
+  // 🔁 Gọi API chỉ khi dữ liệu khởi tạo xong
+  useEffect(() => {
+    if (isInitialized) {
+      localStorage.setItem("batch_page", currentPage.toString());
+      localStorage.setItem("batch_limit", limit.toString());
+
+      handlePaginationAPI(currentPage, limit);
+    }
+  }, [currentPage, limit, isInitialized]);
+
+  const handlePaginationAPI = async (page: number, limit: number) => {
+    const data = await paginationActivityLogAPI(page, limit);
+
+    // Nếu không có dữ liệu và không phải trang đầu → quay về trang trước
+    if (data.data.length === 0 && page > 1) {
+      setCurrentPage(page - 1);
+      return;
+    }
+    setActivityLogs(data.data);
+    setCurrentPage(data.currentPage);
+    setTotalPages(data.totalPages);
   };
+
+  // Xử lý chuyển trang
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page); // useEffect sẽ tự gọi handlePaginationAPI
+    }
+  };
+
+  // const handleGetAllActitivyLogsAPI = async () => {
+  //   const data = await getAllActivityLogsAPI();
+  //   setActivityLogs(data);
+  // };
+
+  const handleGetActivityLogByIdAPI = async (id: number) => {
+    const activity = await getActivityLogByIdAPI(id);
+    setSelectedActivityLog(activity);
+    setShowDetailModal(true);
+  };
+
   return (
     <>
-      <h3 className="mb-0">Nhật kí hoạt động:</h3>
-      <hr />
+      <ActivityLogDetailModal
+        showDetailModal={showDetailModal}
+        handleClose={() => setShowDetailModal(false)}
+        selectedActivityLog={selectedActivityLog}
+      />
 
-      <Table
-        striped
-        bordered
-        hover
-        responsive
-        style={{ verticalAlign: "middle", marginTop: "20px" }}
-      >
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Bảng</th>
-            <th>Mô tả</th>
-            <th>Ngày thực hiện</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
+        <p className="text-2xl font-bold">Nhật kí hoạt động:</p>
+      </div>
+
+      <Separator className="my-3" />
+      <Table className="text-base">
+        <TableCaption>- - - Nhật kí hoạt động - - -</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead style={{ width: "5%" }}>ID</TableHead>
+            <TableHead style={{ width: "5%" }}>Mã công thức</TableHead>
+            <TableHead style={{ width: "5%" }}>Bảng</TableHead>
+            <TableHead style={{ width: "5%" }}>Mô tả</TableHead>
+            <TableHead style={{ width: "5%" }}>Ngày thực hiện</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {activityLogs.map((e, idx) => {
             return (
-              <tr key={idx}>
-                <td style={{ width: "5%" }}>{e.id}</td>
-                <td style={{ width: "10%" }}>{e.entity}</td>
-                <td style={{ width: "50%" }}>{e.description}</td>
-                <td style={{ width: "20%" }}>
+              <TableRow key={idx}>
+                <TableCell>{e.id}</TableCell>
+                <TableCell>{e.entityId}</TableCell>
+                <TableCell>{e.entity}</TableCell>
+                <TableCell className="whitespace-normal break-words">
+                  <Button
+                    variant={"outline"}
+                    onClick={() => handleGetActivityLogByIdAPI(e.id)}
+                  >
+                    Xem chi tiết
+                  </Button>
+                </TableCell>
+                <TableCell>
                   {e.timestamp &&
                     new Date(e.timestamp).toLocaleString("vi-VN", {
                       timeZone: "Asia/Ho_Chi_Minh",
@@ -51,12 +129,72 @@ export default function ActivityLogManager() {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             );
           })}
-        </tbody>
+        </TableBody>
       </Table>
+      {totalPages > 1 && (
+        <div className="flex justify-center flex-wrap gap-2 mt-10">
+          <Button
+            variant="outline"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
+            style={{ minWidth: "80px" }}
+          >
+            <FaAngleLeft className="me-1" />
+            Trước
+          </Button>
+
+          {[...Array(totalPages)].map((_, i) => {
+            const pageNum = i + 1;
+            if (
+              pageNum === 1 ||
+              pageNum === totalPages ||
+              Math.abs(currentPage - pageNum) <= 1
+            ) {
+              return (
+                <Button
+                  key={pageNum}
+                  variant={pageNum === currentPage ? "secondary" : "outline"}
+                  onClick={() => handlePageChange(pageNum)}
+                  className="rounded-circle fw-semibold"
+                  style={{ width: "40px", height: "40px" }}
+                >
+                  {pageNum}
+                </Button>
+              );
+            } else if (
+              (pageNum === currentPage - 2 && currentPage > 3) ||
+              (pageNum === currentPage + 2 && currentPage < totalPages - 2)
+            ) {
+              return (
+                <div className="mt-1">
+                  <span
+                    key={pageNum}
+                    className=""
+                    style={{ fontWeight: "bold", color: "gray" }}
+                  >
+                    ...
+                  </span>
+                </div>
+              );
+            }
+            return null;
+          })}
+          <Button
+            variant="outline"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="rounded-pill px-3 fw-semibold shadow-sm hover-shadow transition-all"
+            style={{ minWidth: "80px" }}
+          >
+            Sau <FaAngleRight className="ms-1" />
+          </Button>
+        </div>
+      )}
     </>
   );
 }

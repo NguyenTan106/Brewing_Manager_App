@@ -211,7 +211,7 @@ export default function BatchManager() {
         </TableBody>
       </Table>
       {totalPages > 1 && (
-        <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+        <div className="flex justify-center flex-wrap gap-2 mt-4">
           <Button
             variant="outline"
             onClick={() => handlePageChange(currentPage - 1)}
@@ -246,13 +246,15 @@ export default function BatchManager() {
               (pageNum === currentPage + 2 && currentPage < totalPages - 2)
             ) {
               return (
-                <span
-                  key={pageNum}
-                  className="text-secondary mx-2"
-                  style={{ fontWeight: "bold" }}
-                >
-                  ...
-                </span>
+                <div className="mt-1">
+                  <span
+                    key={pageNum}
+                    className=""
+                    style={{ fontWeight: "bold", color: "gray" }}
+                  >
+                    ...
+                  </span>
+                </div>
               );
             }
             return null;

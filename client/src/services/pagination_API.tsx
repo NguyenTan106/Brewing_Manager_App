@@ -21,3 +21,10 @@ export const paginationRecipeAPI = async (page = 1, limit = 10) => {
   );
   return res.data;
 };
+
+export const paginationActivityLogAPI = async (page = 1, limit = 10) => {
+  const res = await axios.get(
+    `${BASE_URL}/api/pagination-activity-log?page=${page}&limit=${limit}`
+  );
+  return res.data;
+};

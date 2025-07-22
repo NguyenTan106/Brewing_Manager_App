@@ -84,6 +84,12 @@ export default function IngredientDetailModal({
           <div className="grid gap-4 pt-2 ">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
+                <p className="text-sm text-muted-foreground">ID</p>
+                <p className="text-base font-medium">
+                  {selectedIngredient?.id}
+                </p>
+              </div>
+              <div>
                 <p className="text-sm text-muted-foreground">Tên nguyên liệu</p>
                 <p className="text-base font-medium">
                   {selectedIngredient?.name}
@@ -109,12 +115,12 @@ export default function IngredientDetailModal({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Số lượng</p>
-                <p className="text-base">{selectedIngredient?.quantity}</p>
+                <p className="text-base">
+                  {Number(selectedIngredient?.quantity).toFixed(2)}{" "}
+                  {selectedIngredient?.unit}
+                </p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Đơn vị</p>
-                <p className="text-base">{selectedIngredient?.unit}</p>
-              </div>
+
               <div className="col-span-full">
                 {selectedIngredient?.notes && (
                   <>
@@ -148,7 +154,8 @@ export default function IngredientDetailModal({
 
           <DialogFooter className="mt-3">
             <Button
-              className="bg-blue-500 text-white dark:bg-blue-600"
+              variant="secondary"
+              className="bg-blue-600 text-white hover:bg-blue-500"
               onClick={() => handleOpenUpdateModal()}
               style={{
                 padding: "5px 10px",
@@ -171,7 +178,7 @@ export default function IngredientDetailModal({
               🗑️ <span className="d-none d-sm-inline">Xóa</span>
             </Button>
             <DialogClose asChild>
-              <Button variant="outline">Huỷ</Button>
+              <Button variant="outline">Đóng</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

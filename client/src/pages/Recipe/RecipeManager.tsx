@@ -138,7 +138,6 @@ export default function RecipeManager() {
             <TableHead style={{ width: "10%" }}>Tên công thức</TableHead>
             <TableHead style={{ width: "8%" }}>Mô tả</TableHead>
             <TableHead style={{ width: "10%" }}>Ghi chú</TableHead>
-            <TableHead style={{ width: "10%" }}>Các bước thực hiện</TableHead>
             <TableHead style={{ width: "10%" }}>Ngày tạo</TableHead>
             <TableHead style={{ width: "10%" }}></TableHead>
           </TableRow>
@@ -155,9 +154,12 @@ export default function RecipeManager() {
               <TableRow key={i.id}>
                 <TableCell>{i.id}</TableCell>
                 <TableCell>{i.name}</TableCell>
-                <TableCell>{i.description}</TableCell>
-                <TableCell>{i.note}</TableCell>
-                <TableCell>{i.instructions}</TableCell>
+                <TableCell className="whitespace-normal break-words">
+                  {i.description}
+                </TableCell>
+                <TableCell className="whitespace-normal break-words">
+                  {i.note}
+                </TableCell>
                 <TableCell>
                   {i.createdAt &&
                     new Date(i.createdAt).toLocaleString("vi-VN", {
@@ -187,7 +189,7 @@ export default function RecipeManager() {
         </TableBody>
       </Table>
       {totalPages > 1 && (
-        <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+        <div className="flex justify-center flex-wrap gap-2 mt-4">
           <Button
             variant="outline"
             onClick={() => handlePageChange(currentPage - 1)}
@@ -222,13 +224,15 @@ export default function RecipeManager() {
               (pageNum === currentPage + 2 && currentPage < totalPages - 2)
             ) {
               return (
-                <span
-                  key={pageNum}
-                  className="text-secondary mx-2"
-                  style={{ fontWeight: "bold" }}
-                >
-                  ...
-                </span>
+                <div className="mt-1">
+                  <span
+                    key={pageNum}
+                    className=""
+                    style={{ fontWeight: "bold", color: "gray" }}
+                  >
+                    ...
+                  </span>
+                </div>
               );
             }
             return null;

@@ -1,11 +1,28 @@
 import express from "express";
 const router = express.Router();
 
-import { handleGetAllActivityLogs } from "../controllers/CRUD_activity_log";
-
+import {
+  handleGetAllActivityLogs,
+  handleGetActivityLogById,
+} from "../controllers/CRUD_activity_log";
+import { handlePaginationActivityLog } from "../controllers/pagination";
 const getAllActivityLogsController = router.get(
   "/activity-logs",
   handleGetAllActivityLogs
 );
 
-export { getAllActivityLogsController };
+const getActivityLogByIdController = router.get(
+  "/activity-log/:id",
+  handleGetActivityLogById
+);
+
+const paginationActivityLogController = router.get(
+  "/pagination-activity-log",
+  handlePaginationActivityLog
+);
+
+export {
+  getAllActivityLogsController,
+  paginationActivityLogController,
+  getActivityLogByIdController,
+};

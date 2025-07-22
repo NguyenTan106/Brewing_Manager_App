@@ -1,5 +1,5 @@
 import { useState, type JSX } from "react";
-import { Modal } from "react-bootstrap";
+
 import {
   type Batch,
   // type Recipe,
@@ -105,7 +105,7 @@ export default function BatchDetailModal({
                 <p className="text-base font-medium">{selectedBatch?.code}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tên nguyên liệu</p>
+                <p className="text-sm text-muted-foreground">Tên mẻ</p>
                 <p className="text-base ">{selectedBatch?.beerName}</p>
               </div>
               <div>
@@ -163,7 +163,8 @@ export default function BatchDetailModal({
           </div>
           <DialogFooter className="mt-3">
             <Button
-              className="bg-blue-500 text-white dark:bg-blue-600"
+              variant="secondary"
+              className="bg-blue-600 text-white hover:bg-blue-500"
               onClick={() => setShowUpdateModal(true)}
               style={{
                 padding: "5px 10px",

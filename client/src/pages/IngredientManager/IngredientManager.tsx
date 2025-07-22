@@ -145,7 +145,7 @@ export default function IngredientManager() {
                   {getIngredientIcon(i.type)}
                   {i.type}
                 </TableCell>
-                <TableCell>{i.quantity}</TableCell>
+                <TableCell>{Number(i.quantity).toFixed(2)}</TableCell>
                 <TableCell>{i.unit}</TableCell>
                 <TableCell>
                   {i.status === "Đủ" && (
@@ -193,7 +193,7 @@ export default function IngredientManager() {
         </TableBody>
       </Table>
       {totalPages > 1 && (
-        <div className="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-4">
+        <div className="flex justify-center flex-wrap gap-2 mt-4">
           <Button
             variant="outline"
             onClick={() => handlePageChange(currentPage - 1)}
@@ -228,13 +228,15 @@ export default function IngredientManager() {
               (pageNum === currentPage + 2 && currentPage < totalPages - 2)
             ) {
               return (
-                <span
-                  key={pageNum}
-                  className="text-secondary mx-2"
-                  style={{ fontWeight: "bold" }}
-                >
-                  ...
-                </span>
+                <div className="mt-1">
+                  <span
+                    key={pageNum}
+                    className=""
+                    style={{ fontWeight: "bold", color: "gray" }}
+                  >
+                    ...
+                  </span>
+                </div>
               );
             }
             return null;

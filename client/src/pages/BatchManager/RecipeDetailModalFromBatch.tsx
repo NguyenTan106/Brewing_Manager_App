@@ -22,6 +22,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   handleClose: () => void;
@@ -62,7 +63,7 @@ export default function RecipeDetailModalFromBatch({
 
               <div>
                 <p className="text-sm text-muted-foreground">Tên nguyên liệu</p>
-                <p className="text-base ">
+                <p className="text-base font-medium">
                   {selectedBatch?.recipe && selectedBatch?.recipe.name}
                 </p>
               </div>
@@ -117,12 +118,15 @@ export default function RecipeDetailModalFromBatch({
                   </TableBody>
                 </Table>
               </div>
-              <div>
+              <div className="col-span-full">
                 <p className="text-sm text-muted-foreground">
                   Các bước thực hiện
                 </p>
-                <p className="text-base font-medium">
-                  {selectedBatch?.recipe && selectedBatch?.recipe.instructions}
+                <p className="text-base ">
+                  <ReactMarkdown>
+                    {selectedBatch?.recipe &&
+                      selectedBatch?.recipe.instructions}
+                  </ReactMarkdown>
                 </p>
               </div>
 
