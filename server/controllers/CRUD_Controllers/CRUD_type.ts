@@ -4,8 +4,8 @@ import {
   getAllTypes,
   createType,
   deleteType,
-} from "../prisma/CRUD_ingredient_service";
-import { typeSchema } from "../middlewares/schema";
+} from "../../prisma/CRUD_Services/CRUD_ingredient_service";
+import { typeSchema } from "../../middlewares/schema";
 
 const handleGetAllTypes = async (req: Request, res: Response) => {
   try {

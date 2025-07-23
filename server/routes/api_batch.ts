@@ -7,7 +7,12 @@ import {
   handleCreateBatch,
   handleDeleteBacthById,
   handleUpdateBatchById,
-} from "../controllers/CRUD_batch";
+} from "../controllers/CRUD_Controllers/CRUD_batch";
+
+import {
+  handleGetTotalBatches,
+  handleGetTotalBatchesByDayWeekYear,
+} from "../controllers/Report_Controllers/statistic_batch_controller";
 
 import { handlePaginationBatch } from "../controllers/pagination";
 
@@ -28,11 +33,23 @@ const paginationBatchController = router.get(
   handlePaginationBatch
 );
 
+const getTotalBatchesController = router.get(
+  "/total-batches",
+  handleGetTotalBatches
+);
+
+const getGetBatchStatsByWeekMonthYearController = router.get(
+  "/total-batches-by-week-month-year",
+  handleGetTotalBatchesByDayWeekYear
+);
+
 export {
   getAllBatchesController,
   getBatchByIdController,
   createBatchController,
   deleteBatchByIdController,
   updateBatchByIdController,
-  paginationBatchController
+  paginationBatchController,
+  getTotalBatchesController,
+  getGetBatchStatsByWeekMonthYearController,
 };

@@ -2,14 +2,16 @@ import type { JSX } from "react";
 
 export const getIngredientIcon = (type: string): JSX.Element => {
   switch (type) {
-    case "malt":
+    case "Ngũ cốc":
       return <span>🌾</span>;
-    case "hop":
+    case "Hoa bia":
       return <span>🌿</span>;
-    case "yeast":
+    case "Men bia":
       return <span>🫧</span>;
-    case "water":
+    case "Nước":
       return <span>💧</span>;
+    case "Phụ gia":
+      return <span>🧂</span>;
     default:
       return <span>📦</span>;
   }

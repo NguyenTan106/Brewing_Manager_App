@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
 import { Status } from "@prisma/client";
 import { ZodError } from "zod";
-import { compareAndLogChanges } from "../services/logActivityService";
+import { compareAndLogChanges } from "../../services/logActivityService";
 import {
   getAllBatches,
   getBatchById,
   createBatch,
   deleteBacthById,
   updateBatchById,
-} from "../prisma/CRUD_batch_service";
-import { batchSchema } from "../middlewares/schema";
-import { logActivity } from "../prisma/logActivity";
+} from "../../prisma/CRUD_Services/CRUD_batch_service";
+import { batchSchema } from "../../middlewares/schema";
+import { logActivity } from "../../prisma/logActivity";
 const handleGetAllBatches = async (req: Request, res: Response) => {
   try {
     const handle = await getAllBatches();

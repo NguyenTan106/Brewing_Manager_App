@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -10,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import type { ActivityLog } from "@/services/CRUD_API_ActivityLog";
 import ReactMarkdown from "react-markdown";
 

@@ -4,7 +4,7 @@ const router = express.Router();
 import {
   handleGetAllActivityLogs,
   handleGetActivityLogById,
-} from "../controllers/CRUD_activity_log";
+} from "../controllers/CRUD_Controllers/CRUD_activity_log";
 import { handlePaginationActivityLog } from "../controllers/pagination";
 const getAllActivityLogsController = router.get(
   "/activity-logs",

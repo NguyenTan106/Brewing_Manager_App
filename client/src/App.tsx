@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import DashBoardManager from "./pages/DashBoardManager/DashboardManager";
 import IngredientManager from "./pages/IngredientManager/IngredientManager";
 import BatchManager from "./pages/BatchManager/BatchManager";
 import RecipeManager from "./pages/Recipe/RecipeManager";
@@ -12,7 +12,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route index element={<DashBoardManager />} />
           <Route path="ingredients" element={<IngredientManager />} />
           <Route path="batchs" element={<BatchManager />} />
           <Route path="recipes" element={<RecipeManager />} />

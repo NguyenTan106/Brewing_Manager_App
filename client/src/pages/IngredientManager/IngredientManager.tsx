@@ -13,7 +13,6 @@ import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -116,7 +115,7 @@ export default function IngredientManager() {
 
       <Separator className="my-2" />
 
-      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden my-3">
         <Table className="table-auto w-full text-base ">
           <TableHeader className="bg-gray-100 text-gray-800">
             <TableRow>

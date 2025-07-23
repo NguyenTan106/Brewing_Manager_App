@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { format } from "date-fns-tz";
-import { paginate } from "./pagination";
+import { paginate } from "../pagination";
 const prisma = new PrismaClient();
 
 export type IngredientInput = {

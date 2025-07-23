@@ -4,7 +4,6 @@ import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import { deleteIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -15,7 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
+import { getBadgeClass } from "./IngredientUtils";
 interface Props {
   showDetailModal: boolean;
   setShowDetailModal: (value: boolean) => void;
@@ -95,22 +94,12 @@ export default function IngredientDetailModal({
                   {selectedIngredient?.name}
                 </p>
               </div>
+
               <div>
                 <p className="text-sm text-muted-foreground">Loại</p>
                 <p className="text-base">
-                  {selectedIngredient?.status === "Đủ" && (
-                    <Badge variant="secondary">
-                      {selectedIngredient.status}
-                    </Badge>
-                  )}
-                  {selectedIngredient?.status === "Sắp hết" && (
-                    <Badge variant="outline">{selectedIngredient.status}</Badge>
-                  )}
-                  {selectedIngredient?.status === "Hết" && (
-                    <Badge variant="destructive">
-                      {selectedIngredient.status}
-                    </Badge>
-                  )}
+                  {getIngredientIcon(selectedIngredient?.type || "")}
+                  {selectedIngredient?.type}
                 </p>
               </div>
               <div>
@@ -120,18 +109,19 @@ export default function IngredientDetailModal({
                   {selectedIngredient?.unit}
                 </p>
               </div>
-
-              <div className="col-span-full">
-                {selectedIngredient?.notes && (
-                  <>
-                    <p className="text-sm text-muted-foreground">Ghi chú</p>
-                    <p className="text-base whitespace-pre-line">
-                      {selectedIngredient.notes}
-                    </p>
-                  </>
-                )}
+              <div>
+                <p className="text-sm text-muted-foreground">Trạng thái</p>
+                <p className="text-base">
+                  <Badge
+                    className={`me-1 ${getBadgeClass(
+                      selectedIngredient?.status ?? ""
+                    )}`}
+                  >
+                    {selectedIngredient?.status}
+                  </Badge>
+                </p>
               </div>
-              <div className="col-span-full">
+              <div>
                 <p className="text-sm text-muted-foreground">Ngày tạo</p>
                 <p className="text-base">
                   {selectedIngredient?.lastImportDate &&
@@ -148,6 +138,16 @@ export default function IngredientDetailModal({
                       }
                     )}
                 </p>
+              </div>
+              <div className="col-span-full">
+                {selectedIngredient?.notes && (
+                  <>
+                    <p className="text-sm text-muted-foreground">Ghi chú</p>
+                    <p className="text-base whitespace-pre-line">
+                      {selectedIngredient.notes}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>

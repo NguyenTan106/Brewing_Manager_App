@@ -16,7 +16,6 @@ import { paginationRecipeAPI } from "../../services/pagination_API";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -24,7 +23,6 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export default function RecipeManager() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -130,7 +128,7 @@ export default function RecipeManager() {
         </Button>
       </div>
       <Separator className="my-2" />
-      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden my-3">
         <Table className="text-base">
           <TableHeader className="bg-gray-100 text-gray-800">
             <TableRow>

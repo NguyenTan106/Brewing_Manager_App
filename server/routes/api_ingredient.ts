@@ -7,12 +7,16 @@ import {
   handleCreateIngredient,
   handleUpdateIngredientById,
   handleDeleteIngredientById,
-} from "../controllers/CRUD_ingredient";
+} from "../controllers/CRUD_Controllers/CRUD_ingredient";
+import {
+  handleGetTotalIngredients,
+  handleGetIngredientStockStatus,
+} from "../controllers/Report_Controllers/statistic_ingredient_controller";
 import {
   handleGetAllTypes,
   handleCreateType,
   handleDeleteType,
-} from "../controllers/CRUD_type";
+} from "../controllers/CRUD_Controllers/CRUD_type";
 
 import { handlePaginationIngredient } from "../controllers/pagination";
 
@@ -50,6 +54,15 @@ const paginationIngredientController = router.get(
   handlePaginationIngredient
 );
 
+const getTotalIngredientsController = router.get(
+  "/total-ingredients",
+  handleGetTotalIngredients
+);
+
+const getIngredientStockStatusController = router.get(
+  "/total-ingredients-stock-status",
+  handleGetIngredientStockStatus
+);
 export {
   getAllIngredientsController,
   getAllIngredientByIdController,
@@ -60,4 +73,6 @@ export {
   createTypeController,
   deleteTypeController,
   paginationIngredientController,
+  getTotalIngredientsController,
+  getIngredientStockStatusController,
 };

@@ -32,6 +32,7 @@ export interface Recipe {
   note?: string;
   instructions?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface RecipeUpate {

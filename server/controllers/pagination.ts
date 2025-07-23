@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 
-import { getIngredientPage } from "../prisma/CRUD_ingredient_service";
-import { getBatchPage } from "../prisma/CRUD_batch_service";
-import { getRecipePage } from "../prisma/CRUD_recipe_service";
-import { getActivityLogPage } from "../prisma/CRUD_activityLog_service";
+import { getIngredientPage } from "../prisma/CRUD_Services/CRUD_ingredient_service";
+import { getBatchPage } from "../prisma/CRUD_Services/CRUD_batch_service";
+import { getRecipePage } from "../prisma/CRUD_Services/CRUD_recipe_service";
+import { getActivityLogPage } from "../prisma/CRUD_Services/CRUD_activityLog_service";
 export const handlePaginationIngredient = async (
   req: Request,
   res: Response

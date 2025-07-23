@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
 import { Ingredient, Status } from "@prisma/client";
 import { ZodError } from "zod";
-import { compareAndLogChanges } from "../services/logActivityService";
-import { logActivity } from "../prisma/logActivity";
+import { compareAndLogChanges } from "../../services/logActivityService";
+import { logActivity } from "../../prisma/logActivity";
 import {
   getAllRecipes,
   createRecipe,
   getRecipeById,
   deleteRecipeById,
   updateRecipeById,
-} from "../prisma/CRUD_recipe_service";
-import { recipeSchema } from "../middlewares/schema";
+} from "../../prisma/CRUD_Services/CRUD_recipe_service";
+import { recipeSchema } from "../../middlewares/schema";
 const handleGetAllRecipes = async (req: Request, res: Response) => {
   try {
     const handle = await getAllRecipes();

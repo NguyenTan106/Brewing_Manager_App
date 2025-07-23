@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import type { ActivityLog } from "../../services/CRUD_API_ActivityLog";
-import { getAllActivityLogsAPI } from "../../services/CRUD_API_ActivityLog";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -12,10 +10,8 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { paginationActivityLogAPI } from "@/services/pagination_API";
-import ReactMarkdown from "react-markdown";
 import ActivityLogDetailModal from "./ActivityLogDetailModal";
 import { getActivityLogByIdAPI } from "../../services/CRUD_API_ActivityLog";
 export default function ActivityLogManager() {

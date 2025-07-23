@@ -42,3 +42,4 @@ export const deleteIngredientByIdAPI = async (id: number) => {
   const res = await axios.delete(`${BASE_URL}/api/ingredient/${id}`);
   return res.data; // thường là thông báo thành công
 };
+

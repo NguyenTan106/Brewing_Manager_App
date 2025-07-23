@@ -12,6 +12,8 @@ import {
   createTypeController,
   deleteTypeController,
   paginationIngredientController,
+  getTotalIngredientsController,
+  getIngredientStockStatusController,
 } from "./routes/api_ingredient";
 
 import {
@@ -21,6 +23,8 @@ import {
   deleteBatchByIdController,
   updateBatchByIdController,
   paginationBatchController,
+  getTotalBatchesController,
+  getGetBatchStatsByWeekMonthYearController,
 } from "./routes/api_batch";
 
 import {
@@ -30,6 +34,9 @@ import {
   updateRecipesByIdController,
   deleteRecipesByIdController,
   paginationRecipeAPIController,
+  getTotalRecipesController,
+  getTotalRecipesMostUsedController,
+  getTotalRecipesRecentlyUpdated,
 } from "./routes/api_recipe";
 
 import {
@@ -54,6 +61,8 @@ app.use("/api", getAllTypesController);
 app.use("/api", createTypeController);
 app.use("/api", deleteTypeController);
 app.use("/api", paginationIngredientController);
+app.use("/api", getTotalIngredientsController);
+app.use("/api", getIngredientStockStatusController);
 
 //batch
 app.use("/api", getAllBatchesController);
@@ -62,6 +71,8 @@ app.use("/api", createBatchController);
 app.use("/api", deleteBatchByIdController);
 app.use("/api", updateBatchByIdController);
 app.use("/api", paginationBatchController);
+app.use("/api", getTotalBatchesController);
+app.use("/api", getGetBatchStatsByWeekMonthYearController);
 
 //recipe
 app.use("/api", getAllRecipesController);
@@ -69,7 +80,11 @@ app.use("/api", createRecipesController);
 app.use("/api", getRecipeByIdController);
 app.use("/api", updateRecipesByIdController);
 app.use("/api", deleteRecipesByIdController);
+app.use("/api", getTotalBatchesController);
 app.use("/api", paginationRecipeAPIController);
+app.use("/api", getTotalRecipesController);
+app.use("/api", getTotalRecipesMostUsedController);
+app.use("/api", getTotalRecipesRecentlyUpdated);
 
 //activity log
 app.use("/api", getAllActivityLogsController);

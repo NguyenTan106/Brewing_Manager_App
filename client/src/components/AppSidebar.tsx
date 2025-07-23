@@ -25,7 +25,7 @@ import {
 import { SidebarItem } from "./SidebarItem"; // tách riêng component
 
 const items = [
-  { title: "Home", path: "/", icon: House },
+  { title: "Trang chủ", path: "/", icon: House },
   { title: "Nguyên liệu", path: "/ingredients", icon: Boxes },
   { title: "Mẻ nấu", path: "/batchs", icon: FlaskConical },
   { title: "Công thức", path: "/recipes", icon: ClipboardList },

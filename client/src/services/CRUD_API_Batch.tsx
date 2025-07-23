@@ -2,17 +2,21 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 import { type Ingredient } from "./CRUD_API_Ingredient";
 export enum Status {
+  mash = "mash",
   boiling = "boiling",
   fermenting = "fermenting",
   cold_crashing = "cold_crashing",
   done = "done",
+  cancel = "cancel",
 }
 
 export const statusLabelMap: Record<Status, string> = {
+  mash: "Ngâm và nấu mạch nha",
   boiling: "Nấu sôi",
   fermenting: "Lên men",
   cold_crashing: "Làm lạnh",
   done: "Hoàn tất",
+  cancel: "Hủy",
 };
 
 export interface RecipeIngredient {

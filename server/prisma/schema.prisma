@@ -31,10 +31,12 @@ model Ingredient {
 }
 
 enum Status {
+  mash
   boiling
   fermenting
   cold_crashing
   done
+  cancel
 }
 
 model Batch {

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { paginate } from "./pagination";
+import { paginate } from "../pagination";
 const prisma = new PrismaClient();
 // use `prisma` in your application to read and write data in your DB
 
@@ -267,6 +267,8 @@ const getIngredientPage = async (page: number, limit: number) => {
     }),
   });
 };
+
+
 
 export {
   getAllIngredients,

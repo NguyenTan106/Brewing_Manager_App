@@ -15,7 +15,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -40,15 +39,23 @@ export default function BatchManager() {
   const getStatusBadge = (status: Status) => {
     switch (status) {
       case Status.boiling:
-        return <Badge variant="outline">Nấu sôi</Badge>;
+        return <Badge className="bg-red-100 text-red-700">Nấu sôi</Badge>;
       case Status.fermenting:
-        return <Badge variant="outline">Lên men</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-700">Lên men</Badge>;
       case Status.cold_crashing:
-        return <Badge variant="outline">Làm lạnh</Badge>;
+        return <Badge className="bg-blue-100 text-blue-700">Làm lạnh</Badge>;
       case Status.done:
-        return <Badge variant="outline">Hoàn tất</Badge>;
+        return <Badge className="bg-green-100 text-green-700">Hoàn tất</Badge>;
+      case Status.cancel:
+        return (
+          <Badge className="bg-gray-300 text-gray-800 line-through">Hủy</Badge>
+        );
+      case Status.mash:
+        return (
+          <Badge className="bg-orange-100 text-orange-700">Ngâm mạch nha</Badge>
+        );
       default:
-        return <Badge variant="secondary">{status}</Badge>;
+        return <Badge className="bg-gray-100 text-gray-600">{status}</Badge>;
     }
   };
 
@@ -141,7 +148,7 @@ export default function BatchManager() {
       </div>
 
       <Separator className="my-2" />
-      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden my-3">
         <Table className="table-auto w-full text-base ">
           <TableHeader className="bg-gray-100 text-gray-800">
             <TableRow>

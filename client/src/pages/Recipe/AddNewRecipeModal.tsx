@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { Modal, Col, Form } from "react-bootstrap";
 import { createRecipeAPI } from "../../services/CRUD_API_Recipe";
 import type { Ingredient } from "../../services/CRUD_API_Ingredient";
 import { type RecipeIngredientInput } from "../../services/CRUD_API_Recipe";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -306,7 +303,7 @@ export default function AddNewRecipeModal({
           <DialogFooter>
             <Button
               className=""
-              variant="primary"
+              variant="outline"
               onClick={() => handleCreateRecipeAPI()}
             >
               <span className="d-sm-inline">Thêm</span>

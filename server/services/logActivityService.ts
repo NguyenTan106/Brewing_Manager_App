@@ -178,11 +178,11 @@ function formatFieldName(field: string): string {
     case "status":
       return "Trạng thái";
     case "boiling":
-      return "Nấu sôi";
+      return "Nấu sôi (boil)";
     case "fermenting":
-      return "Lên men";
+      return "Lên men (ferment)";
     case "cold_crashing":
-      return "Làm lạnh";
+      return "Làm lạnh (cold crashing)";
     case "done":
       return "Hoàn thành";
     case "amountNeeded":
@@ -191,6 +191,10 @@ function formatFieldName(field: string): string {
       return "Nguyên liệu";
     case "quantity":
       return "Số lượng";
+    case "cancel":
+      return "Hủy (cancel)";
+    case "mash":
+      return "Ngâm và nấu mạch nha (mash)";
     default:
       return field;
   }

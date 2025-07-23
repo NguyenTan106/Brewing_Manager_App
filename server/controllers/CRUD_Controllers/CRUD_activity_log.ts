@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
   getAllActivityLogs,
   getActivityLogById,
-} from "../prisma/CRUD_activityLog_service";
+} from "../../prisma/CRUD_Services/CRUD_activityLog_service";
 const handleGetAllActivityLogs = async (req: Request, res: Response) => {
   try {
     const handle = await getAllActivityLogs();

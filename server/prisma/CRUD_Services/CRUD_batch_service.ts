@@ -1,7 +1,7 @@
 import { PrismaClient, Status } from "@prisma/client";
-
 import { format } from "date-fns-tz";
-import { paginate } from "./pagination";
+import { paginate } from "../pagination";
+
 const prisma = new PrismaClient();
 
 // CRUD batchs
@@ -283,18 +283,6 @@ const getBatchPage = async (page: number, limit: number) => {
   });
 };
 
-// const create = async () => {
-//   await prisma.batch.create({
-//     data: {
-//       code: "B001",
-//       beerName: "IPA",
-//       status: "boiling",
-//       volume: 50,
-//     },
-//   });
-// };
-
-// create();
 export {
   getAllBatches,
   getBatchById,

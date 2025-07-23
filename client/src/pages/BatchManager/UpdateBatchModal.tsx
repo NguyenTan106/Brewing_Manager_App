@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
-import { Modal, Form } from "react-bootstrap";
 import type { Batch, Status } from "../../services/CRUD_API_Batch";
 import { updateBatchByIdAPI } from "../../services/CRUD_API_Batch";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -19,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,10 +39,7 @@ export default function UpdateBatchModal({
   handlePaginationAPI,
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<Batch>>({});
-  const [selectedStatus, setSelectedStatus] = useState<{
-    label: string;
-    value: Status;
-  } | null>(null);
+
   const handleUpdateBatchByIdAPI = async (id: number) => {
     if (!id) return;
     try {
@@ -77,16 +69,6 @@ export default function UpdateBatchModal({
       alert("Lỗi khi cập nhật mẻ");
     }
   };
-
-  useEffect(() => {
-    if (editForm.status) {
-      const found = statusOptions.find((opt) => opt.value === editForm.status);
-      if (found) setSelectedStatus(found);
-      else setSelectedStatus(null);
-    } else {
-      setSelectedStatus(null);
-    }
-  }, [editForm.status, statusOptions]);
 
   useEffect(() => {
     if (selectedBatch) {

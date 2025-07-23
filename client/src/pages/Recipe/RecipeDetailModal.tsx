@@ -10,18 +10,15 @@ import IngredientDetailModalFromRecipe from "./IngredientDetailModalFromRecipe";
 import { getIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
