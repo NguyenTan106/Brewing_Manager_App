@@ -88,9 +88,8 @@ const createBatch = async (
     const vnNow = new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
     );
-    const datePrefix = format(vnNow, "ddMMyy"); // ví dụ: 160725
+    const datePrefix = format(vnNow, "ddMMyy"); // ví dụ: 230725
 
-    // Lấy các batch đã tạo hôm nay
     const todayStart = new Date(vnNow);
     todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date(vnNow);
@@ -103,12 +102,11 @@ const createBatch = async (
           lte: todayEnd,
         },
       },
-      orderBy: { createdAt: "asc" },
     });
 
     const countToday = todayBatches.length + 1;
-    const serial = String(countToday).padStart(2, "0"); // NN: 01, 02, ...
-    const newCode = `B${datePrefix}${serial}`; // B16072501
+    const serial = String(countToday).padStart(2, "0");
+    const newCode = `B${datePrefix}${serial}`;
 
     // 1. Lấy công thức và nguyên liệu
     const recipe = await prisma.recipe.findUnique({
@@ -121,15 +119,13 @@ const createBatch = async (
     });
 
     if (!recipe) return { message: "Không có công thức đã chọn", data: [] };
-    const defaultVolume = 60; // giá trị mặc định công thức dùng cho 20
 
-    // 2. Tính scale ratio
+    const defaultVolume = 60; // Ví dụ: mỗi công thức chuẩn là 60 lít
     const scaleRatio = volume / defaultVolume;
     const insufficientIngredients: string[] = [];
-    // 3. Cập nhật lại số lượng nguyên liệu (trừ đi)
+
     for (const ri of recipe.recipeIngredients) {
       const amountToUse = ri.amountNeeded * scaleRatio;
-
       if (ri.ingredient.quantity < amountToUse) {
         insufficientIngredients.push(ri.ingredient.name);
       }
@@ -142,34 +138,51 @@ const createBatch = async (
       };
     }
 
-    // Nếu đủ nguyên liệu thì tiến hành cập nhật số lượng
-    for (const ri of recipe.recipeIngredients) {
-      const amountToUse = ri.amountNeeded * scaleRatio;
-      const quantityUpdate = ri.ingredient.quantity - amountToUse;
+    // 2. Tiến hành transaction: trừ nguyên liệu + tạo batch + tạo batchIngredients
+    const result = await prisma.$transaction(async (tx) => {
+      // a. Trừ nguyên liệu
+      for (const ri of recipe.recipeIngredients) {
+        const amountToUse = ri.amountNeeded * scaleRatio;
+        await tx.ingredient.update({
+          where: { id: ri.ingredientId },
+          data: {
+            quantity: {
+              decrement: amountToUse,
+            },
+          },
+        });
+      }
 
-      await prisma.ingredient.update({
-        where: { id: ri.ingredientId },
+      // b. Tạo mẻ
+      const newBatch = await tx.batch.create({
         data: {
-          quantity: quantityUpdate,
+          code: newCode,
+          beerName,
+          status,
+          volume,
+          notes: notes || null,
+          recipeId,
         },
       });
-    }
 
-    // Giờ tạo batch mới
-    const newBatch = await prisma.batch.create({
-      data: {
-        code: newCode,
-        beerName: beerName,
-        status: status,
-        volume: Number(volume),
-        notes: notes || null,
-        recipeId: Number(recipeId) || null,
-      },
+      // c. Ghi lại batchIngredient
+      for (const ri of recipe.recipeIngredients) {
+        const amountToUse = ri.amountNeeded * scaleRatio;
+        await tx.batchIngredient.create({
+          data: {
+            batchId: newBatch.id,
+            ingredientId: ri.ingredientId,
+            amountUsed: amountToUse,
+          },
+        });
+      }
+
+      return newBatch;
     });
 
     return {
       message: "Thêm mẻ thành công",
-      data: newBatch,
+      data: result,
     };
   } catch (e) {
     console.error("Lỗi khi tạo mẻ mới:", e);
@@ -194,6 +207,7 @@ const updateBatchById = async (
     }
     const updated = await prisma.batch.update({
       where: { id },
+      data: updateData,
       include: {
         batchIngredients: {
           include: {
@@ -208,7 +222,6 @@ const updateBatchById = async (
           },
         }, // nếu muốn lấy luôn thông tin công thức liên kết
       },
-      data: { ...updateData, updatedAt: new Date() },
     });
 
     return {
@@ -263,7 +276,7 @@ const getBatchPage = async (page: number, limit: number) => {
         },
       }, // nếu muốn lấy luôn thông tin công thức liên kết
     },
-    orderBy: { id: "asc" },
+    orderBy: { id: "desc" },
     enhanceItem: async (i) => ({
       ...i,
     }),

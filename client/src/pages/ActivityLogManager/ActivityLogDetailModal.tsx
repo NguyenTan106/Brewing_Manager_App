@@ -33,8 +33,15 @@ export default function ActivityLogDetailModal({
       >
         <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl w-[700px]">
           <DialogHeader>
-            <DialogTitle>Hello</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Chi tiết
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Chi tiết nhật kí hoạt động.
+            </DialogDescription>
           </DialogHeader>
+
+          <Separator />
           <div className="test-base">
             <ReactMarkdown>{selectedActivityLog?.description}</ReactMarkdown>
           </div>

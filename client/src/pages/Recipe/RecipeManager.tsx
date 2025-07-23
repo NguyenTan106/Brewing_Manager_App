@@ -130,64 +130,99 @@ export default function RecipeManager() {
         </Button>
       </div>
       <Separator className="my-2" />
-      <Table className="text-base">
-        <TableCaption>- - - Danh sách công thức - - -</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead style={{ width: "5%" }}>ID</TableHead>
-            <TableHead style={{ width: "10%" }}>Tên công thức</TableHead>
-            <TableHead style={{ width: "8%" }}>Mô tả</TableHead>
-            <TableHead style={{ width: "10%" }}>Ghi chú</TableHead>
-            <TableHead style={{ width: "10%" }}>Ngày tạo</TableHead>
-            <TableHead style={{ width: "10%" }}></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {recipes.length === 0 ? (
+      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+        <Table className="text-base">
+          <TableHeader className="bg-gray-100 text-gray-800">
             <TableRow>
-              <TableCell colSpan={8} className="text-center text-muted">
-                Không có công thức nào
-              </TableCell>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "5%" }}
+              >
+                ID
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "10%" }}
+              >
+                Tên công thức
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "8%" }}
+              >
+                Mô tả
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "10%" }}
+              >
+                Ghi chú
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "10%" }}
+              >
+                Ngày tạo
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "10%" }}
+              ></TableHead>
             </TableRow>
-          ) : (
-            recipes.map((i) => (
-              <TableRow key={i.id}>
-                <TableCell>{i.id}</TableCell>
-                <TableCell>{i.name}</TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  {i.description}
-                </TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  {i.note}
-                </TableCell>
-                <TableCell>
-                  {i.createdAt &&
-                    new Date(i.createdAt).toLocaleString("vi-VN", {
-                      timeZone: "Asia/Ho_Chi_Minh",
-                      hour12: false,
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                </TableCell>
-
-                <TableCell>
-                  <Button
-                    title="Xem chi tiết nguyên liệu"
-                    variant="outline"
-                    onClick={() => handleGetRecipeByIdAPI(i.id)}
-                    style={{ padding: "5px 10px", fontSize: "14px" }}
-                  >
-                    📋 <span className="d-none d-sm-inline">Chi tiết</span>
-                  </Button>
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-200">
+            {recipes.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="text-center text-muted px-4 py-3"
+                >
+                  Không có công thức nào
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              recipes.map((i) => (
+                <TableRow key={i.id}>
+                  <TableCell className="px-4 py-3">{i.id}</TableCell>
+                  <TableCell className="px-4 py-3">{i.name}</TableCell>
+                  <TableCell className="whitespace-normal break-words px-4 py-3">
+                    {i.description}
+                  </TableCell>
+                  <TableCell className="whitespace-normal break-words px-4 py-3">
+                    {i.note}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    {i.createdAt &&
+                      new Date(i.createdAt).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-3">
+                    <Button
+                      title="Xem chi tiết nguyên liệu"
+                      variant="outline"
+                      onClick={() => handleGetRecipeByIdAPI(i.id)}
+                      style={{ padding: "5px 10px", fontSize: "14px" }}
+                    >
+                      📋 <span className="d-none d-sm-inline">Chi tiết</span>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="text-center text-sm text-gray-500  mt-5">
+        - - - Danh sách công thức - - -
+      </div>
       {totalPages > 1 && (
         <div className="flex justify-center flex-wrap gap-2 mt-4">
           <Button

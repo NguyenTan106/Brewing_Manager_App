@@ -75,17 +75,23 @@ export function AddNewType({
         open={showTypeModal}
         onOpenChange={(open) => !open && handleClose()}
       >
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl w-[480px]">
           <DialogHeader>
-            <DialogTitle>Chi tiết nguyên liệu</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Chi tiết loại
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Chi tiết về các loại nguyên liệu.
+            </DialogDescription>
           </DialogHeader>
           <Separator />
-          <>
-            <p>
+          <div className="grid gap-2">
+            <Label className="text-base">
               <b>Thêm loại nguyên liệu mới:</b>
-            </p>
-            <div className="flex flex-wrap gap-4">
+            </Label>
+            <div className="flex flex-wrap gap-2">
               <Input
+                style={{ fontSize: "0.95rem" }}
                 type="text"
                 className="flex flex-col gap-1 w-full md:w-[48%] min-w-0"
                 placeholder="Nhập tên loại nguyên liệu"
@@ -95,15 +101,17 @@ export function AddNewType({
                 }}
               />
               <Button
-                className="flex flex-col gap-1  min-w-0"
-                variant="secondary"
+                style={{ fontSize: "0.95rem" }}
+                className="flex flex-col gap-1 min-w-0"
                 onClick={() => handleCreateTypeAPI(newTypeName)}
               >
                 <span className="d-none d-sm-inline">Thêm</span>
               </Button>
             </div>
-            <h5 className="mt-3">Danh sách các loại nguyên liệu:</h5>
-            <Table>
+            <Label className="mt-3 text-lg">
+              Danh sách các loại nguyên liệu:
+            </Label>
+            <Table className="text-base">
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
@@ -130,7 +138,7 @@ export function AddNewType({
                 ))}
               </TableBody>
             </Table>
-          </>
+          </div>
           <DialogFooter>
             <Button variant="secondary" onClick={handleClose}>
               Đóng

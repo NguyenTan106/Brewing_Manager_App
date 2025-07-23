@@ -103,11 +103,14 @@ export default function RecipeDetailModal({
         open={showDetailModal}
         onOpenChange={(open) => !open && handleClose()}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl w-[700px]">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[440px] md:max-w-[600px]   max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-800">
               Chi tiết công thức
             </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Chi tiết về công thức hiện tại.
+            </DialogDescription>
           </DialogHeader>
           <Separator />
           <div className="grid gap-4 pt-2 ">

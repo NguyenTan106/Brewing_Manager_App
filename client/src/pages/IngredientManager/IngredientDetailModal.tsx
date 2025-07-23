@@ -124,7 +124,7 @@ export default function IngredientDetailModal({
               <div className="col-span-full">
                 {selectedIngredient?.notes && (
                   <>
-                    <p className="text-sm text-muted-foreground">Mô tả</p>
+                    <p className="text-sm text-muted-foreground">Ghi chú</p>
                     <p className="text-base whitespace-pre-line">
                       {selectedIngredient.notes}
                     </p>

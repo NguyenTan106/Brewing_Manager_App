@@ -92,49 +92,78 @@ export default function ActivityLogManager() {
       </div>
 
       <Separator className="my-3" />
-      <Table className="text-base">
-        <TableCaption>- - - Nhật kí hoạt động - - -</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead style={{ width: "5%" }}>ID</TableHead>
-            <TableHead style={{ width: "5%" }}>Mã công thức</TableHead>
-            <TableHead style={{ width: "5%" }}>Bảng</TableHead>
-            <TableHead style={{ width: "5%" }}>Mô tả</TableHead>
-            <TableHead style={{ width: "5%" }}>Ngày thực hiện</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {activityLogs.map((e, idx) => {
-            return (
-              <TableRow key={idx}>
-                <TableCell>{e.id}</TableCell>
-                <TableCell>{e.entityId}</TableCell>
-                <TableCell>{e.entity}</TableCell>
-                <TableCell className="whitespace-normal break-words">
-                  <Button
-                    variant={"outline"}
-                    onClick={() => handleGetActivityLogByIdAPI(e.id)}
-                  >
-                    Xem chi tiết
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  {e.timestamp &&
-                    new Date(e.timestamp).toLocaleString("vi-VN", {
-                      timeZone: "Asia/Ho_Chi_Minh",
-                      hour12: false,
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+        <Table className="text-base">
+          <TableHeader className="bg-gray-100 text-gray-800">
+            <TableRow>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "5%" }}
+              >
+                ID
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "5%" }}
+              >
+                Mã công thức
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "5%" }}
+              >
+                Bảng
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "5%" }}
+              >
+                Mô tả
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "5%" }}
+              >
+                Ngày thực hiện
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-200">
+            {activityLogs.map((e, idx) => {
+              return (
+                <TableRow key={idx}>
+                  <TableCell className="px-4 py-3">{e.id}</TableCell>
+                  <TableCell className="px-4 py-3">{e.entityId}</TableCell>
+                  <TableCell className="px-4 py-3">{e.entity}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    <Button
+                      variant={"outline"}
+                      onClick={() => handleGetActivityLogByIdAPI(e.id)}
+                    >
+                      Xem chi tiết
+                    </Button>
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    {e.timestamp &&
+                      new Date(e.timestamp).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="text-center text-sm text-gray-500  mt-5">
+        - - - Nhật kí hoạt động - - -
+      </div>
       {totalPages > 1 && (
         <div className="flex justify-center flex-wrap gap-2 mt-10">
           <Button

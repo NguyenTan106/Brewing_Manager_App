@@ -1,6 +1,6 @@
 import {
   getAllBatchesAPI,
-  getAllBatchByIdAPI,
+  getBatchByIdAPI,
 } from "../../services/CRUD_API_Batch";
 import { useState, useEffect } from "react";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
@@ -51,7 +51,6 @@ export default function BatchManager() {
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
-  const [usedIngredients, setUsedIngredients] = useState<[]>([]);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -104,16 +103,7 @@ export default function BatchManager() {
   };
 
   const handleGetBatchesByIdAPI = async (id: number) => {
-    const data = await getAllBatchByIdAPI(id);
-    const defaultVolume = 60;
-    const amountNeeded = data.recipe.recipeIngredients.map((e: any) => {
-      const volume = data.volume;
-      const scaleRatio = parseFloat(volume) / defaultVolume;
-      const amountToUse = scaleRatio * e.amountNeeded;
-      return amountToUse;
-    });
-    setUsedIngredients(amountNeeded);
-    // console.log(amountNeeded);
+    const data = await getBatchByIdAPI(id);
     setSelectedBatch(data);
     setShowDetailModal(true);
   };
@@ -129,7 +119,6 @@ export default function BatchManager() {
         handleGetAllBatchesAPI={handleGetAllBatchesAPI}
         statusOptions={statusOptions}
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
-        usedIngredients={usedIngredients}
       />
 
       <AddNewBatchModal
@@ -152,64 +141,72 @@ export default function BatchManager() {
       </div>
 
       <Separator className="my-2" />
-      <Table className="text-base">
-        <TableCaption>- - - Danh sách mẻ - - -</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Mã mẻ</TableHead>
-            <TableHead>Tên mẻ</TableHead>
-            <TableHead>Trạng thái</TableHead>
-            <TableHead>Khối lượng (lít)</TableHead>
-            <TableHead>Công thức</TableHead>
-            <TableHead>Ngày tạo</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {batches.length === 0 ? (
+      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+        <Table className="table-auto w-full text-base ">
+          <TableHeader className="bg-gray-100 text-gray-800">
             <TableRow>
-              <TableCell colSpan={8} className="text-center text-muted">
-                Không có mẻ nào
-              </TableCell>
+              <TableHead className="px-4 py-3 text-left">Mã mẻ</TableHead>
+              <TableHead className="px-4 py-3 text-left">Tên mẻ</TableHead>
+              <TableHead className="px-4 py-3 text-left">Trạng thái</TableHead>
+              <TableHead className="px-4 py-3 text-left">
+                Khối lượng (lít)
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left">Công thức</TableHead>
+              <TableHead className="px-4 py-3 text-left">Ngày tạo</TableHead>
+              <TableHead className="px-4 py-3 text-left"></TableHead>
             </TableRow>
-          ) : (
-            batches.map((i) => (
-              <TableRow key={i.id}>
-                <TableCell>{i.code}</TableCell>
-                <TableCell>{i.beerName}</TableCell>
-                <TableCell>{getStatusBadge(i.status)}</TableCell>
-                <TableCell>{i.volume}</TableCell>
-                <TableCell>
-                  {i.recipe?.name || "Chưa có công thức nào"}
-                </TableCell>
-                <TableCell>
-                  {i.createdAt &&
-                    new Date(i.createdAt).toLocaleString("vi-VN", {
-                      timeZone: "Asia/Ho_Chi_Minh",
-                      hour12: false,
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                </TableCell>
-
-                <TableCell>
-                  <Button
-                    title="Xem chi tiết nguyên liệu"
-                    variant="outline"
-                    onClick={() => handleGetBatchesByIdAPI(i.id)}
-                    style={{ padding: "5px 10px", fontSize: "14px" }}
-                  >
-                    📋 <span className="d-none d-sm-inline">Chi tiết</span>
-                  </Button>
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-200">
+            {batches.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-muted">
+                  Không có mẻ nào
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              batches.map((i) => (
+                <TableRow key={i.id}>
+                  <TableCell className="px-4 py-3">{i.code}</TableCell>
+                  <TableCell className="px-4 py-3">{i.beerName}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    {getStatusBadge(i.status)}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">{i.volume}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    {i.recipe?.name || "Chưa có công thức nào"}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    {i.createdAt &&
+                      new Date(i.createdAt).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-3">
+                    <Button
+                      title="Xem chi tiết nguyên liệu"
+                      variant="outline"
+                      onClick={() => handleGetBatchesByIdAPI(i.id)}
+                      style={{ padding: "5px 10px", fontSize: "14px" }}
+                    >
+                      📋 <span className="d-none d-sm-inline">Chi tiết</span>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="text-center text-sm text-gray-500  mt-5">
+        - - - Danh sách mẻ - - -
+      </div>
       {totalPages > 1 && (
         <div className="flex justify-center flex-wrap gap-2 mt-4">
           <Button

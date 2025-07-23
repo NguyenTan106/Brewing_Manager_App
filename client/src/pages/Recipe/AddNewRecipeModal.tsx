@@ -1,9 +1,41 @@
 import { useState } from "react";
-import { Modal, Row, Col, Button, Form, Table } from "react-bootstrap";
+import { Modal, Col, Form } from "react-bootstrap";
 import { createRecipeAPI } from "../../services/CRUD_API_Recipe";
-import Select from "react-select";
 import type { Ingredient } from "../../services/CRUD_API_Ingredient";
 import { type RecipeIngredientInput } from "../../services/CRUD_API_Recipe";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { FaPlus } from "react-icons/fa";
+
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
@@ -65,31 +97,41 @@ export default function AddNewRecipeModal({
 
   return (
     <>
-      <Modal show={showAddModal} onHide={handleClose} size="xl" centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Thêm nguyên mẻ</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row className="">
-            <Col lg={6}>
-              <Form.Group controlId="name" className="mb-3">
-                <Form.Label>
+      <Dialog
+        open={showAddModal}
+        onOpenChange={(open) => !open && handleClose()}
+      >
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[640px] md:max-w-[700px]   max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Thêm công thức
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Những thông tin cần thêm
+            </DialogDescription>
+          </DialogHeader>
+          <Separator />
+
+          <div className="grid gap-4">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col gap-1 w-full min-w-0">
+                <Label className="text-base">
                   <strong>Tên công thức:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="VD: "
+                  placeholder="VD: Công thức IPA đậm vị"
                 />
-              </Form.Group>
-            </Col>
-            <Col xs={12} lg={6}>
-              <Form.Group controlId="volume" className="mb-3">
-                <Form.Label>
+              </div>
+              <div className="flex flex-col gap-1 w-full min-w-0">
+                <Label className="text-base">
                   <strong>Mô tả: </strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
                   required
                   value={form.description}
                   onChange={(e) =>
@@ -97,126 +139,143 @@ export default function AddNewRecipeModal({
                   }
                   placeholder="VD: g, kg"
                 />
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Label>
-                <strong>Chọn nguyên liệu: </strong>
-              </Form.Label>
-              <Table size="sm">
-                <thead className="">
-                  <tr>
-                    <th style={{ width: "40%" }}>Nguyên liệu</th>
-                    <th style={{ width: "30%" }}>Lượng cần dùng</th>
-                    <th style={{ width: "10%" }}>Loại</th>
-                    <th style={{ width: "10%" }}>Đơn vị</th>
-                    <th style={{ width: "10%" }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {form.recipeIngredients.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        <td style={{ padding: "9px 30px 10px 2px" }}>
-                          <Select
-                            options={options}
-                            placeholder="Chọn nguyên liệu"
-                            className="basic-single"
-                            classNamePrefix="select"
-                            onChange={(selected) => {
-                              const updated = [...form.recipeIngredients];
-                              const target = updated[index];
-                              if (target) {
-                                target.ingredientId = selected?.value || "";
+              </div>
+              <div className="flex flex-col gap-0 w-full min-w-0 mt-3">
+                <div className="flex justify-between items-center flex-wrap ">
+                  <Label className="text-lg font-bold">
+                    <>Chọn nguyên liệu: </>
+                  </Label>
+                  <Button
+                    style={{ fontSize: "0.95rem" }}
+                    className="mb-3 al"
+                    onClick={() =>
+                      setForm({
+                        ...form,
+                        recipeIngredients: [
+                          ...form.recipeIngredients,
+                          { ingredientId: "", amountNeeded: "" },
+                        ],
+                      })
+                    }
+                  >
+                    <FaPlus /> Thêm nguyên liệu
+                  </Button>
+                </div>
+                <Separator />
+                <Table className="text-base">
+                  <TableCaption>- - - Thêm nguyên liệu - - -</TableCaption>
+                  <TableHeader className="">
+                    <TableRow>
+                      <TableHead>Nguyên liệu</TableHead>
+                      <TableHead>Lượng cần dùng</TableHead>
+                      <TableHead>Loại</TableHead>
+                      <TableHead>Đơn vị</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {form.recipeIngredients.map((item, index) => {
+                      return (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Select
+                              onValueChange={(value) => {
+                                const updated = [...form.recipeIngredients];
+                                const target = updated[index];
+                                if (target) {
+                                  target.ingredientId = value;
+                                  setForm({
+                                    ...form,
+                                    recipeIngredients: updated,
+                                  });
+                                }
+                              }}
+                              value={
+                                form.recipeIngredients[index]?.ingredientId ||
+                                ""
+                              }
+                            >
+                              <SelectTrigger
+                                className="w-full"
+                                style={{ fontSize: "0.95rem" }}
+                              >
+                                <SelectValue placeholder="Chọn nguyên liệu" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {options.map((opt) => (
+                                  <SelectItem
+                                    style={{ fontSize: "0.95rem" }}
+                                    key={opt.value}
+                                    value={opt.value.toString()}
+                                  >
+                                    {opt.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              style={{ fontSize: "0.95rem" }}
+                              type="number"
+                              placeholder="Số lượng"
+                              value={item.amountNeeded}
+                              onChange={(e) => {
+                                const updated = [...form.recipeIngredients];
+                                const target = updated[index];
+                                if (target) {
+                                  target.amountNeeded = e.target.value;
+                                  setForm({
+                                    ...form,
+                                    recipeIngredients: updated,
+                                  });
+                                }
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell className="align-middle">
+                            {ingredients.find(
+                              (ing) => ing.id === Number(item.ingredientId)
+                            )?.type || "-"}
+                          </TableCell>
+                          <TableCell className="align-middle">
+                            {ingredients.find(
+                              (ing) => ing.id === Number(item.ingredientId)
+                            )?.unit || "-"}
+                          </TableCell>
+
+                          <TableCell className="align-middle">
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                const updated = form.recipeIngredients.filter(
+                                  (_, i) => i !== index
+                                );
                                 setForm({
                                   ...form,
                                   recipeIngredients: updated,
                                 });
-                              }
-                            }}
-                          />
-                        </td>
-                        <td style={{ padding: "7px 30px 6px 2px" }}>
-                          <Form.Control
-                            style={{
-                              margin: "2px 0px 2px 0",
-                            }}
-                            type="number"
-                            placeholder="Số lượng"
-                            value={item.amountNeeded}
-                            onChange={(e) => {
-                              const updated = [...form.recipeIngredients];
-                              const target = updated[index];
-                              if (target) {
-                                target.amountNeeded = e.target.value;
-                                setForm({
-                                  ...form,
-                                  recipeIngredients: updated,
-                                });
-                              }
-                            }}
-                          />
-                        </td>
-                        <td className="align-middle">
-                          {ingredients.find(
-                            (ing) => ing.id === item.ingredientId
-                          )?.type || "-"}
-                        </td>
-                        <td className="align-middle">
-                          {ingredients.find(
-                            (ing) => ing.id === item.ingredientId
-                          )?.unit || "-"}
-                        </td>
+                              }}
+                            >
+                              X
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
 
-                        <td className="align-middle">
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => {
-                              const updated = form.recipeIngredients.filter(
-                                (_, i) => i !== index
-                              );
-                              setForm({ ...form, recipeIngredients: updated });
-                            }}
-                          >
-                            X
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-
-              <Button
-                variant="outline-primary"
-                style={{
-                  fontSize: "15px",
-                }}
-                className="mb-3 al"
-                onClick={() =>
-                  setForm({
-                    ...form,
-                    recipeIngredients: [
-                      ...form.recipeIngredients,
-                      { ingredientId: "", amountNeeded: "" },
-                    ],
-                  })
-                }
-              >
-                ➕ Thêm nguyên liệu
-              </Button>
-            </Col>
-
-            <Col xs={12} lg={12}>
-              <Form.Group controlId="lowStockThreshold" className="mb-3">
-                <Form.Label>
+              <div className="flex flex-col gap-1 w-full min-w-0">
+                <Label className="text-base">
                   <strong>Ghi chú:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Textarea
+                  style={{ fontSize: "0.95rem" }}
                   required
                   rows={2}
-                  as={"textarea"}
                   value={form.note}
                   onChange={(e) =>
                     setForm({
@@ -224,42 +283,40 @@ export default function AddNewRecipeModal({
                       note: e.target.value,
                     })
                   }
-                  placeholder="VD: 10"
+                  placeholder="VD: Thêm dry hopping sau 5 ngày"
                 />
-              </Form.Group>
-            </Col>
-            <Col xs={12} lg={12}>
-              <Form.Group controlId="notes" className="mb-3">
-                <Form.Label>
+              </div>
+              <div className="flex flex-col gap-1 w-full min-w-0">
+                <Label className="text-base">
                   <strong>Các bước thực hiện:</strong>
-                </Form.Label>
-                <Form.Control
+                </Label>
+                <Textarea
+                  style={{ fontSize: "0.95rem" }}
                   required
                   rows={4}
-                  as={"textarea"}
                   value={form.instructions}
                   onChange={(e) =>
                     setForm({ ...form, instructions: e.target.value })
                   }
-                  placeholder="VD: "
+                  placeholder="VD: Ủ trong 5 ngày ở 20°C. Lên men bằng men T-58."
                 />
-              </Form.Group>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            className=""
-            variant="primary"
-            onClick={() => handleCreateRecipeAPI()}
-          >
-            <span className="d-sm-inline">Thêm</span>
-          </Button>
-          <Button variant="secondary" onClick={handleClose}>
-            Đóng
-          </Button>
-        </Modal.Footer>
-      </Modal>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              className=""
+              variant="primary"
+              onClick={() => handleCreateRecipeAPI()}
+            >
+              <span className="d-sm-inline">Thêm</span>
+            </Button>
+            <Button variant="secondary" onClick={handleClose}>
+              Đóng
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

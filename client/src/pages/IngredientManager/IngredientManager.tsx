@@ -5,7 +5,7 @@ import {
   getIngredientByIdAPI,
 } from "../../services/CRUD_API_Ingredient";
 import IngredientDetailModal from "./IngredientDetailModal";
-import { getIngredientIcon } from "./IngredientIcon";
+import { getIngredientIcon, getBadgeClass } from "./IngredientUtils";
 import { AddIngredient } from "./AddNewIngredient";
 import { paginationIngredientAPI } from "../../services/pagination_API";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
@@ -115,83 +115,92 @@ export default function IngredientManager() {
       </div>
 
       <Separator className="my-2" />
-      <Table className="text-base ">
-        <TableCaption>- - - Kho nguyên liệu - - -</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Tên nguyên liệu</TableHead>
-            <TableHead>Loại</TableHead>
-            <TableHead>Số lượng tồn</TableHead>
-            <TableHead>Đơn vị</TableHead>
-            <TableHead>Trạng thái</TableHead>
-            <TableHead>Ngày nhập kho gần nhất</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {ingredients.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center text-muted">
-                Không có nguyên liệu nào
-              </TableCell>
-            </TableRow>
-          ) : (
-            ingredients.map((i, idx) => (
-              <TableRow key={i.id}>
-                <TableCell>{i.id}</TableCell>
-                <TableCell>{i.name}</TableCell>
-                <TableCell>
-                  {getIngredientIcon(i.type)}
-                  {i.type}
-                </TableCell>
-                <TableCell>{Number(i.quantity).toFixed(2)}</TableCell>
-                <TableCell>{i.unit}</TableCell>
-                <TableCell>
-                  {i.status === "Đủ" && (
-                    <Badge variant="secondary" className="me-1" key={idx}>
-                      {i.status}
-                    </Badge>
-                  )}
-                  {i.status === "Sắp hết" && (
-                    <Badge variant="outline" className="me-1" key={idx}>
-                      {i.status}
-                    </Badge>
-                  )}
-                  {i.status === "Hết" && (
-                    <Badge variant="destructive" className="me-1" key={idx}>
-                      {i.status}
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="">
-                  {i.lastImportDate &&
-                    new Date(i.lastImportDate).toLocaleString("vi-VN", {
-                      timeZone: "Asia/Ho_Chi_Minh",
-                      hour12: false,
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                </TableCell>
 
-                <TableCell>
-                  <Button
-                    title="Xem chi tiết nguyên liệu"
-                    variant="outline"
-                    onClick={() => handleGetIngredientByIdAPI(i.id)}
-                    style={{ padding: "5px 10px", fontSize: "14px" }}
-                  >
-                    📋 <span className="d-none d-sm-inline">Chi tiết</span>
-                  </Button>
+      <div className="bg-white text-base rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+        <Table className="table-auto w-full text-base ">
+          <TableHeader className="bg-gray-100 text-gray-800">
+            <TableRow>
+              <TableHead className="px-4 py-3 text-left">ID</TableHead>
+              <TableHead className="px-4 py-3 text-left">
+                Tên nguyên liệu
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left">Loại</TableHead>
+              <TableHead className="px-4 py-3 text-left">
+                Số lượng tồn
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left">Đơn vị</TableHead>
+              <TableHead className="px-4 py-3 text-left">Trạng thái</TableHead>
+              <TableHead className="px-4 py-3 text-left">
+                Ngày nhập kho gần nhất
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="divide-y divide-gray-200">
+            {ingredients.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="text-center text-muted px-4 py-3"
+                >
+                  Không có nguyên liệu nào
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              ingredients.map((i, idx) => (
+                <TableRow key={i.id}>
+                  <TableCell className="px-4 py-3">{i.id}</TableCell>
+                  <TableCell className="px-4 py-3">{i.name}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    {getIngredientIcon(i.type)}
+                    {i.type}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    {Number(i.quantity).toFixed(2)}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">{i.unit}</TableCell>
+                  <TableCell className="px-4 py-3">
+                    <Badge
+                      className={`me-1 ${getBadgeClass(i.status)}`}
+                      key={idx}
+                    >
+                      {i.status}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="px-4 py-3">
+                    {i.lastImportDate &&
+                      new Date(i.lastImportDate).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-3">
+                    <Button
+                      title="Xem chi tiết nguyên liệu"
+                      variant="outline"
+                      onClick={() => handleGetIngredientByIdAPI(i.id)}
+                      style={{ padding: "5px 10px", fontSize: "14px" }}
+                    >
+                      📋 <span className="d-none d-sm-inline">Chi tiết</span>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="text-center text-sm text-gray-500  mt-5">
+        - - - Kho nguyên liệu - - -
+      </div>
+
       {totalPages > 1 && (
         <div className="flex justify-center flex-wrap gap-2 mt-4">
           <Button

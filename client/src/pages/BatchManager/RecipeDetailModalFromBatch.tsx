@@ -1,4 +1,3 @@
-import { Modal } from "react-bootstrap";
 import type { Batch } from "../../services/CRUD_API_Batch";
 import {
   Dialog,
@@ -28,14 +27,12 @@ interface Props {
   handleClose: () => void;
   showDetailRecipeModal: boolean;
   selectedBatch: Batch | null;
-  usedIngredients: [];
 }
 
 export default function RecipeDetailModalFromBatch({
   handleClose,
   showDetailRecipeModal,
   selectedBatch,
-  usedIngredients,
 }: Props) {
   return (
     <>
@@ -43,15 +40,17 @@ export default function RecipeDetailModalFromBatch({
         open={showDetailRecipeModal}
         onOpenChange={(open) => !open && handleClose()}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl w-[600px]">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[440px] md:max-w-[600px]   max-h-[90vh] overflow-y-auto">
+          {" "}
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-800">
               Chi tiết công thức
             </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Chi tiết về công thức đang được sử dụng.
+            </DialogDescription>
           </DialogHeader>
-
           <Separator />
-
           <div className="grid gap-4 pt-2 ">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -96,24 +95,21 @@ export default function RecipeDetailModalFromBatch({
                         </TableCell>
                       </TableRow>
                     ) : (
-                      selectedBatch?.recipe &&
-                      selectedBatch?.recipe.recipeIngredients.map(
-                        (e, index) => (
-                          <TableRow
-                            className="align-middle"
-                            key={e.ingredient.id}
-                          >
-                            <TableCell>{e.ingredient.id}</TableCell>
-                            <TableCell>{e.ingredient.name}</TableCell>
-                            <TableCell>
-                              {usedIngredients?.[index] ?? "-"}
-                              {e.ingredient.unit} / {selectedBatch.volume}L
-                            </TableCell>
-
-                            <td>{e.ingredient.type}</td>
-                          </TableRow>
-                        )
-                      )
+                      selectedBatch?.batchIngredients &&
+                      selectedBatch.batchIngredients.map((e) => (
+                        <TableRow className="align-middle" key={e.id}>
+                          <TableCell>{e.ingredient.id}</TableCell>
+                          <TableCell>{e.ingredient.name}</TableCell>
+                          <TableCell>
+                            {e.amountUsed != null
+                              ? `${Number(e.amountUsed).toFixed(2)} ${
+                                  e.ingredient.unit
+                                } / ${selectedBatch.volume}L`
+                              : "-"}
+                          </TableCell>
+                          <TableCell>{e.ingredient.type}</TableCell>
+                        </TableRow>
+                      ))
                     )}
                   </TableBody>
                 </Table>
@@ -158,7 +154,6 @@ export default function RecipeDetailModalFromBatch({
               </div>
             </div>
           </div>
-
           <DialogFooter>
             <Button variant="secondary" onClick={handleClose}>
               Đóng

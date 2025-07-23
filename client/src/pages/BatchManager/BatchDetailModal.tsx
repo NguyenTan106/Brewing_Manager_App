@@ -31,7 +31,6 @@ interface Props {
   statusOptions: { label: string; value: Status }[];
   setSelectedBatch: React.Dispatch<React.SetStateAction<Batch | null>>;
   handlePaginationAPI: () => void;
-  usedIngredients: [];
 }
 
 export default function BatchDetailModal({
@@ -43,7 +42,6 @@ export default function BatchDetailModal({
   handleGetAllBatchesAPI,
   statusOptions,
   handlePaginationAPI,
-  usedIngredients,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDetailRecipeModal, setShowDetailRecipeModal] = useState(false);
@@ -77,7 +75,6 @@ export default function BatchDetailModal({
         showDetailRecipeModal={showDetailRecipeModal}
         handleClose={() => setShowDetailRecipeModal(false)}
         selectedBatch={selectedBatch}
-        usedIngredients={usedIngredients}
       />
       <Dialog
         open={showDetailModal}

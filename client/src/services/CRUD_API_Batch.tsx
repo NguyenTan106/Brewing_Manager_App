@@ -22,6 +22,13 @@ export interface RecipeIngredient {
   ingredient: Ingredient;
 }
 
+export interface BatchIngredient {
+  id: number;
+  ingredientId: number | string;
+  amountUsed: number | string;
+  ingredient: Ingredient;
+}
+
 export interface Recipe {
   id: string;
   name: string;
@@ -42,6 +49,7 @@ export interface Batch {
   recipeId?: number | string;
   recipe: Recipe | null;
   createdAt?: string;
+  batchIngredients: BatchIngredient[] | null;
 }
 
 type BatchUpdate = Omit<Batch, "volume" | "recipeId">;
@@ -52,7 +60,7 @@ export const getAllBatchesAPI = async () => {
   return res.data.data;
 };
 
-export const getAllBatchByIdAPI = async (id: number) => {
+export const getBatchByIdAPI = async (id: number) => {
   const res = await axios.get(`${BASE_URL}/api/batch/${id}`);
   return res.data.data;
 };

@@ -10,8 +10,8 @@ export interface RecipeIngredient {
 }
 
 export interface RecipeIngredientInput {
-  ingredientId: string | number;
-  amountNeeded: string | number;
+  ingredientId: string;
+  amountNeeded: string;
 }
 
 export interface RecipeIngredientUpdate {

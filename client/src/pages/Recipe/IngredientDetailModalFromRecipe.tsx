@@ -1,5 +1,8 @@
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
-import { getIngredientIcon } from "../IngredientManager/IngredientIcon";
+import {
+  getBadgeClass,
+  getIngredientIcon,
+} from "../IngredientManager/IngredientUtils";
 import {
   Dialog,
   DialogTrigger,
@@ -36,6 +39,9 @@ export default function IngredientDetailModalFromRecipe({
             <DialogTitle className="text-2xl font-bold text-gray-800">
               Chi tiết nguyên liệu
             </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Chi tiết về nguyên liệu đang được sử dụng.
+            </DialogDescription>
           </DialogHeader>
 
           <Separator />
@@ -73,34 +79,13 @@ export default function IngredientDetailModalFromRecipe({
               <div>
                 <p className="text-sm text-muted-foreground">Trạng thái</p>
                 <p className="text-base">
-                  {" "}
-                  {selectedIngredient?.status === "Đủ" && (
-                    <Badge
-                      variant="outline"
-                      className="me-1"
-                      key={selectedIngredient?.id}
-                    >
-                      {selectedIngredient?.status}
-                    </Badge>
-                  )}
-                  {selectedIngredient?.status === "Sắp hết" && (
-                    <Badge
-                      variant="outline"
-                      className="me-1"
-                      key={selectedIngredient?.id}
-                    >
-                      {selectedIngredient?.status}
-                    </Badge>
-                  )}
-                  {selectedIngredient?.status === "Hết" && (
-                    <Badge
-                      variant="outline"
-                      className="me-1"
-                      key={selectedIngredient?.id}
-                    >
-                      {selectedIngredient?.status}
-                    </Badge>
-                  )}
+                  <Badge
+                    className={`me-1 ${getBadgeClass(
+                      selectedIngredient?.status
+                    )}`}
+                  >
+                    {selectedIngredient?.status}
+                  </Badge>
                 </p>
               </div>
               <div className="">

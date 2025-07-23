@@ -127,16 +127,22 @@ export function AddIngredient({
       >
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Thêm nguyên liệu</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Thêm nguyên liệu
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              Những thông tin cần thêm
+            </DialogDescription>
           </DialogHeader>
           <Separator />
           <div className="grid gap-4">
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-col gap-1 w-full min-w-0">
-                <Label>
+                <Label className="text-base">
                   <strong>Tên:</strong>
                 </Label>
                 <Input
+                  style={{ fontSize: "0.95rem" }}
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -144,10 +150,10 @@ export function AddIngredient({
                 />
               </div>
             </div>
-            <Label>
-              <strong>Loại nguyên liệu: </strong>
-            </Label>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-1">
+              <Label className="text-base">
+                <strong>Loại nguyên liệu: </strong>
+              </Label>
               <div className="flex flex-col gap-1 w-full md:w-[74%] min-w-0">
                 <Select
                   value={selectedTypeId}
@@ -162,19 +168,26 @@ export function AddIngredient({
                     }));
                   }}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger
+                    className="w-full"
+                    style={{ fontSize: "0.95rem" }}
+                  >
                     <SelectValue placeholder="Chọn loại nguyên liệu" />
                   </SelectTrigger>
                   <SelectContent>
                     {type.map((t) => (
-                      <SelectItem key={t.id} value={t.id.toString()}>
+                      <SelectItem
+                        style={{ fontSize: "0.95rem" }}
+                        key={t.id}
+                        value={t.id.toString()}
+                      >
                         {t.typeName}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex flex-col gap-1 min-w-0">
+              <div className="flex flex-col gap-1 min-w-0 ml-3">
                 <Button variant="outline" onClick={showModalType}>
                   📚 Chi tiết
                 </Button>
@@ -182,10 +195,11 @@ export function AddIngredient({
             </div>
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                <Label>
+                <Label className="text-base">
                   <strong>Số lượng:</strong>
                 </Label>
                 <Input
+                  style={{ fontSize: "0.95rem" }}
                   required
                   type="number"
                   value={form.quantity}
@@ -196,10 +210,11 @@ export function AddIngredient({
                 />
               </div>
               <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                <Label>
+                <Label className="text-base">
                   <strong>Đơn vị: </strong>
                 </Label>
                 <Input
+                  style={{ fontSize: "0.95rem" }}
                   required
                   value={form.unit}
                   onChange={(e) => setForm({ ...form, unit: e.target.value })}
@@ -210,10 +225,11 @@ export function AddIngredient({
 
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                <Label>
+                <Label className="text-base">
                   <strong>Giới hạn cảnh báo:</strong>
                 </Label>
                 <Input
+                  style={{ fontSize: "0.95rem" }}
                   required
                   type="number"
                   value={form.lowStockThreshold}
@@ -225,10 +241,11 @@ export function AddIngredient({
               </div>
 
               <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                <Label>
+                <Label className="text-base">
                   <strong>Ngày nhập kho gần nhất:</strong>
                 </Label>
                 <Input
+                  style={{ fontSize: "0.95rem" }}
                   required
                   type="datetime-local"
                   value={form.lastImportDate}
@@ -242,14 +259,15 @@ export function AddIngredient({
 
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
-                <Label>
+                <Label className="text-base">
                   <strong>Ghi chú:</strong>
                 </Label>
                 <Textarea
+                  style={{ fontSize: "0.95rem" }}
                   rows={4}
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  placeholder="VD: 10"
+                  placeholder="VD: Malt nền cho nhiều loại bia, màu sáng, vị ngũ cốc nhẹ"
                 />
               </div>
             </div>
