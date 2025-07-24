@@ -19,6 +19,9 @@ const getAllIngredients = async (): Promise<{ message: string; data: any }> => {
       orderBy: {
         id: "asc", // hoặc "desc" cho giảm dần
       },
+      where: {
+        isDeleted: false,
+      },
     });
     if (data.length === 0) {
       return { message: "Chưa có nguyên liệu nào", data: [] };
@@ -44,7 +47,7 @@ const getIngredientById = async (
 ): Promise<{ message: string; data: any }> => {
   try {
     const data = await prisma.ingredient.findUnique({
-      where: { id: id },
+      where: { id: id, isDeleted: false },
     });
     if (!data) {
       return { message: "Không tìm thấy nguyên liệu", data: [] };
@@ -123,7 +126,9 @@ const updateIngredientById = async (
   }
 ): Promise<{ message: string; data: any }> => {
   try {
-    const existing = await prisma.ingredient.findUnique({ where: { id } });
+    const existing = await prisma.ingredient.findUnique({
+      where: { id, isDeleted: false },
+    });
 
     if (!existing) {
       return {
@@ -163,8 +168,11 @@ const deleteIngredientById = async (
       };
     }
 
-    const deleted = await prisma.ingredient.delete({
+    const deleted = await prisma.ingredient.update({
       where: { id },
+      data: {
+        isDeleted: true,
+      },
     });
 
     return {
@@ -260,6 +268,7 @@ const getIngredientPage = async (page: number, limit: number) => {
     page,
     limit,
     model: "ingredient",
+    where: { isDeleted: false },
     orderBy: { id: "asc" },
     enhanceItem: async (i) => ({
       ...i,
@@ -267,8 +276,6 @@ const getIngredientPage = async (page: number, limit: number) => {
     }),
   });
 };
-
-
 
 export {
   getAllIngredients,

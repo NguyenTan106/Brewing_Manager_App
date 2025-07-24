@@ -136,7 +136,7 @@ export default function BatchManager() {
       />
 
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <p className="text-2xl font-bold">Danh sách mẻ: </p>
+        <p className="text-3xl font-bold">Danh sách mẻ: </p>
         <Button
           onClick={() => setShowAddModal(true)}
           title="Thêm nguyên liệu mới"

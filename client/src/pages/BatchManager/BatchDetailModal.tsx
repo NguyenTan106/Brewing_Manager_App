@@ -4,7 +4,6 @@ import {
   type Batch,
   // type Recipe,
   Status,
-  deleteBatchByIdAPI,
 } from "../../services/CRUD_API_Batch";
 import UpdateBatchModal from "./UpdateBatchModal";
 import RecipeDetailModalFromBatch from "./RecipeDetailModalFromBatch";
@@ -45,20 +44,6 @@ export default function BatchDetailModal({
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDetailRecipeModal, setShowDetailRecipeModal] = useState(false);
-  const handleDeleteBatchByIdAPI = async (id: number) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa mẻ này?")) {
-      const deleted = await deleteBatchByIdAPI(id);
-      console.log(deleted);
-      const errorMessage = deleted.message;
-      if (deleted.data == null) {
-        alert(`${errorMessage}`);
-        return;
-      }
-      alert(`${errorMessage}`);
-      handlePaginationAPI();
-      handleClose();
-    }
-  };
 
   return (
     <>
@@ -170,18 +155,7 @@ export default function BatchDetailModal({
             >
               ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
             </Button>
-            <Button
-              variant="destructive"
-              onClick={() =>
-                selectedBatch?.id && handleDeleteBatchByIdAPI(selectedBatch?.id)
-              }
-              style={{
-                padding: "5px 10px",
-                fontSize: "14px",
-              }}
-            >
-              🗑️ <span className="d-none d-sm-inline">Xóa</span>
-            </Button>
+
             <Button variant="secondary" onClick={handleClose}>
               Đóng
             </Button>

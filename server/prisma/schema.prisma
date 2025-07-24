@@ -23,6 +23,7 @@ model Ingredient {
   lowStockThreshold Float
   lastImportDate    DateTime
   notes             String?
+  isDeleted         Boolean @default(false)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 

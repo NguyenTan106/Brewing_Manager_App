@@ -11,6 +11,17 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -42,17 +53,15 @@ export default function IngredientDetailModal({
   };
 
   const handleDeleteIngredientAPI = async (id: number) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa nguyên liệu này?")) {
-      const response = await deleteIngredientByIdAPI(id);
-      const errorMessage = response.message;
-      if (response.data == null) {
-        alert(`${errorMessage}`);
-        return;
-      }
+    const response = await deleteIngredientByIdAPI(id);
+    const errorMessage = response.message;
+    if (response.data == null) {
       alert(`${errorMessage}`);
-      handlePaginationAPI();
-      handleClose();
+      return;
     }
+    alert(`${errorMessage}`);
+    handlePaginationAPI();
+    handleClose();
   };
 
   return (
@@ -164,19 +173,42 @@ export default function IngredientDetailModal({
             >
               ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
             </Button>
-            <Button
-              className=""
-              variant="destructive"
-              onClick={() =>
-                handleDeleteIngredientAPI(selectedIngredient?.id ?? 0)
-              }
-              style={{
-                padding: "5px 10px",
-                fontSize: "14px",
-              }}
-            >
-              🗑️ <span className="d-none d-sm-inline">Xóa</span>
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  className=""
+                  variant="destructive"
+                  style={{
+                    padding: "5px 10px",
+                    fontSize: "14px",
+                  }}
+                >
+                  🗑️ <span className="d-none d-sm-inline">Xóa</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Bạn có chắc muốn xóa nguyên liệu này?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Nguyên liệu này sẽ bị đưa vào mục đã xóa, các liên kết của
+                    nguyên liệu này vẫn được giữ nguyên
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() =>
+                      handleDeleteIngredientAPI(selectedIngredient?.id ?? 0)
+                    }
+                  >
+                    Xác nhận
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <DialogClose asChild>
               <Button variant="outline">Đóng</Button>
             </DialogClose>

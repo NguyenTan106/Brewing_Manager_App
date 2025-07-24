@@ -6,6 +6,7 @@ interface PaginationOptions<T> {
   page: number;
   limit: number;
   model: keyof PrismaClient;
+  where?: Prisma.Enumerable<any>;
   orderBy?: Prisma.Enumerable<any>;
   select?: Prisma.Enumerable<any>;
   include?: Prisma.Enumerable<any>;
@@ -16,6 +17,7 @@ export const paginate = async <T = any>({
   page,
   limit,
   model,
+  where,
   orderBy = { id: "asc" },
   select,
   include,
@@ -30,14 +32,13 @@ export const paginate = async <T = any>({
   const items = await prisma[model].findMany({
     skip,
     take: limit,
+    where,
     orderBy,
     select,
     include,
   });
 
-  const data = enhanceItem
-    ? await Promise.all(items.map(enhanceItem))
-    : items;
+  const data = enhanceItem ? await Promise.all(items.map(enhanceItem)) : items;
 
   return {
     data,

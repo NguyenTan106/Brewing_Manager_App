@@ -38,8 +38,8 @@ export default function DashBoardManager() {
 
   return (
     <>
-      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <p className="text-2xl font-bold">Danh sách công thức:</p>
+      <div className="flex justify-between items-center flex-wrap gap-2 mt-2">
+        <p className="text-3xl font-bold">Tổng quan kho:</p>
       </div>
       <Separator className="my-3" />
       <div className="flex flex-col 2xl:flex-row gap-3 my-3">

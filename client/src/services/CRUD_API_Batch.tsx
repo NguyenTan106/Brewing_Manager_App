@@ -82,7 +82,7 @@ export const updateBatchByIdAPI = async (
   return res.data;
 };
 
-export const deleteBatchByIdAPI = async (id: number) => {
-  const res = await axios.delete(`${BASE_URL}/api/batch/${id}`);
-  return res.data;
-};
+// export const deleteBatchByIdAPI = async (id: number) => {
+//   const res = await axios.delete(`${BASE_URL}/api/batch/${id}`);
+//   return res.data;
+// };

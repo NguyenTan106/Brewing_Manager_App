@@ -76,7 +76,7 @@ export function TotalBatches({ totalBatches }: Props) {
   return (
     <div className="grid grid-cols-1 gap-6">
       {/* Tổng quan */}
-      <div className="flex justify-start gap-10">
+      <div className="grid lg:grid-cols-4 grid-cols-2 text-center lg:text-left">
         <div>
           <p className="text-sm text-gray-500">Tổng số mẻ đã sản xuất</p>
           <h2 className="text-3xl font-bold text-amber-700">

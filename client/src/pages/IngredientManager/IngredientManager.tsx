@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -102,7 +103,7 @@ export default function IngredientManager() {
       />
 
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <p className="text-2xl font-bold">Kho nguyên liệu:</p>
+        <p className="text-3xl font-bold">Kho nguyên liệu:</p>
         <Button
           onClick={() => setShowAddIngredientModal(true)}
           title="Thêm nguyên liệu mới"
@@ -140,7 +141,7 @@ export default function IngredientManager() {
               <TableRow>
                 <TableCell
                   colSpan={8}
-                  className="text-center text-muted px-4 py-3"
+                  className="text-center text-gray-100 px-4 py-3"
                 >
                   Không có nguyên liệu nào
                 </TableCell>

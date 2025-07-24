@@ -64,12 +64,41 @@ const getBatchById = async (
         }, // nếu muốn lấy luôn thông tin công thức liên kết
       },
     });
+
     if (!data) {
       return { message: "Chưa có mẻ nào được tạo", data: [] };
     }
+    // Xử lý để hiển thị rõ nguyên liệu đã bị xóa
+    const batchIngredientList = data.batchIngredients.map((bi) => ({
+      id: bi.id,
+      ingredientId: bi.ingredientId,
+      amountUsed: bi.amountUsed,
+      ingredient: {
+        id: bi.ingredientId,
+        name: bi.ingredient
+          ? bi.ingredient.isDeleted
+            ? `${bi.ingredient.name} (đã bị xóa)`
+            : bi.ingredient.name
+          : "Nguyên liệu không xác định",
+        type: bi.ingredient.type,
+        unit: bi.ingredient?.unit || "Không rõ",
+      },
+    }));
+
     return {
       message: "Thành công",
-      data: data,
+      data: {
+        id: data.id,
+        code: data.code,
+        beerName: data.beerName,
+        status: data.status,
+        volume: data.volume,
+        recipeId: data.recipeId,
+        recipeName: data.recipe?.name,
+        createdAt: data.createdAt,
+        batchIngredients: batchIngredientList,
+        recipe: data.recipe,
+      },
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách mẻ nấu:", error);
@@ -144,7 +173,7 @@ const createBatch = async (
       for (const ri of recipe.recipeIngredients) {
         const amountToUse = ri.amountNeeded * scaleRatio;
         await tx.ingredient.update({
-          where: { id: ri.ingredientId },
+          where: { id: ri.ingredientId, isDeleted: false },
           data: {
             quantity: {
               decrement: amountToUse,

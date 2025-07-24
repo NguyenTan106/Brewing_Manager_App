@@ -22,12 +22,19 @@ const getAllRecipes = async (): Promise<{
       },
       orderBy: { createdAt: "desc" },
     });
-    if (data.length === 0) {
+
+    const result = data.map((recipe) => ({
+      ...recipe,
+      recipeIngredients: recipe.recipeIngredients.filter(
+        (ri) => !ri.ingredient.isDeleted
+      ),
+    }));
+    if (result.length === 0) {
       return { message: "Chưa có công thức nào được tạo", data: [] };
     }
     return {
       message: "Thành công",
-      data: data,
+      data: result,
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách công thức:", error);
@@ -43,19 +50,29 @@ const getRecipeById = async (
 }> => {
   try {
     const data = await prisma.recipe.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
       include: {
         recipeIngredients: {
           include: { ingredient: true },
         },
       },
     });
-    if (!data) {
+
+    const result = {
+      ...data,
+      recipeIngredients: data?.recipeIngredients.filter(
+        (i) => !i.ingredient.isDeleted
+      ),
+    };
+
+    if (!result) {
       return { message: "Chưa có công thức nào được tạo", data: [] };
     }
     return {
       message: "Thành công",
-      data: data,
+      data: result,
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách công thức:", error);
