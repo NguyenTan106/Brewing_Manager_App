@@ -6,7 +6,9 @@ const getTotalRecipes = async (): Promise<{
   data: any;
 }> => {
   try {
-    const total = await prisma.recipe.count();
+    const total = await prisma.recipe.count({
+      where: { isDeleted: false },
+    });
 
     if (total === 0) {
       return { message: "Chưa có công thức nào được tạo", data: 0 };
@@ -42,7 +44,7 @@ const getTotalRecipesMostUsed = async (): Promise<{
     const recipes = await Promise.all(
       data.map(async (item) => {
         const recipe = await prisma.recipe.findUnique({
-          where: { id: item.recipeId! },
+          where: { id: item.recipeId!, isDeleted: false },
         });
         return {
           recipe,
@@ -71,6 +73,9 @@ const getTotalRecipesRecentlyUpdated = async (): Promise<{
         updatedAt: "desc",
       },
       take: 5,
+      where: {
+        isDeleted: false,
+      },
     });
 
     return {

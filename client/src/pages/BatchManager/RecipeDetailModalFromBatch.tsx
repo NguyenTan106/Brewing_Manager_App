@@ -118,12 +118,12 @@ export default function RecipeDetailModalFromBatch({
                 <p className="text-sm text-muted-foreground">
                   Các bước thực hiện
                 </p>
-                <p className="text-base ">
+                <div className="text-base ">
                   <ReactMarkdown>
                     {selectedBatch?.recipe &&
                       selectedBatch?.recipe.instructions}
                   </ReactMarkdown>
-                </p>
+                </div>
               </div>
 
               <div className="col-span-full">

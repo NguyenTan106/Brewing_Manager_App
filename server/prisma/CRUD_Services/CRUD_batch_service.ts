@@ -27,12 +27,21 @@ const getAllBatches = async (): Promise<{
         }, // nếu muốn lấy luôn thông tin công thức liên kết
       },
     });
-    if (data.length === 0) {
+    const validate = data.map((e) => ({
+      ...e,
+      recipe: {
+        ...e.recipe,
+        name: e.recipe?.isDeleted
+          ? `${e.recipe.name} (đã bị xóa)`
+          : e.recipe?.name,
+      },
+    }));
+    if (validate.length === 0) {
       return { message: "Chưa có mẻ nào được tạo", data: [] };
     }
     return {
       message: "Thành công",
-      data: data,
+      data: validate,
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách mẻ nấu:", error);
@@ -71,6 +80,7 @@ const getBatchById = async (
     // Xử lý để hiển thị rõ nguyên liệu đã bị xóa
     const batchIngredientList = data.batchIngredients.map((bi) => ({
       id: bi.id,
+      batchId: bi.batchId,
       ingredientId: bi.ingredientId,
       amountUsed: bi.amountUsed,
       ingredient: {
@@ -85,6 +95,13 @@ const getBatchById = async (
       },
     }));
 
+    const recipeIngredientList = {
+      ...data.recipe,
+      name: data.recipe?.isDeleted
+        ? `${data.recipe.name} (đã bị xóa)`
+        : data.recipe?.name,
+    };
+
     return {
       message: "Thành công",
       data: {
@@ -97,8 +114,9 @@ const getBatchById = async (
         recipeName: data.recipe?.name,
         createdAt: data.createdAt,
         batchIngredients: batchIngredientList,
-        recipe: data.recipe,
+        recipe: recipeIngredientList,
       },
+      // data: data,
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách mẻ nấu:", error);
@@ -139,7 +157,7 @@ const createBatch = async (
 
     // 1. Lấy công thức và nguyên liệu
     const recipe = await prisma.recipe.findUnique({
-      where: { id: recipeId },
+      where: { id: recipeId, isDeleted: false },
       include: {
         recipeIngredients: {
           include: { ingredient: true },
@@ -147,7 +165,14 @@ const createBatch = async (
       },
     });
 
+    const activeIngredients = recipe?.recipeIngredients.filter(
+      (ri) => ri.ingredient && ri.ingredient.isDeleted === false
+    );
+
     if (!recipe) return { message: "Không có công thức đã chọn", data: [] };
+
+    if (activeIngredients?.length === 0)
+      return { message: "Cần bổ sung nguyên liệu cho công thức", data: [] };
 
     const defaultVolume = 60; // Ví dụ: mỗi công thức chuẩn là 60 lít
     const scaleRatio = volume / defaultVolume;
@@ -308,6 +333,12 @@ const getBatchPage = async (page: number, limit: number) => {
     orderBy: { id: "desc" },
     enhanceItem: async (i) => ({
       ...i,
+      recipe: {
+        ...i.recipe,
+        name: i.recipe?.isDeleted
+          ? `${i.recipe.name} (đã bị xóa)`
+          : i.recipe?.name,
+      },
     }),
   });
 };

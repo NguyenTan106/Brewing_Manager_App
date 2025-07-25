@@ -24,6 +24,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
@@ -57,18 +68,16 @@ export default function RecipeDetailModal({
   const [selectedIngredient, setSelectedIngredient] =
     useState<Ingredient | null>(null);
   const handleDeleteRecipeByIdAPI = async (id: number) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa công thức này?")) {
-      const deleted = await deleteRecipeByIdAPI(id);
-      console.log(deleted);
-      const errorMessage = deleted.message;
-      if (deleted.data == null) {
-        alert(`${errorMessage}`);
-        return;
-      }
+    const deleted = await deleteRecipeByIdAPI(id);
+    console.log(deleted);
+    const errorMessage = deleted.message;
+    if (deleted.data == null) {
       alert(`${errorMessage}`);
-      handlePaginationAPI();
-      handleClose();
+      return;
     }
+    alert(`${errorMessage}`);
+    handlePaginationAPI();
+    handleClose();
   };
 
   const handleGetIngredientByIdAPI = async (id: number) => {
@@ -229,19 +238,43 @@ export default function RecipeDetailModal({
             >
               ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
             </Button>
-            <Button
-              variant="destructive"
-              onClick={() =>
-                selectedRecipe?.id &&
-                handleDeleteRecipeByIdAPI(selectedRecipe?.id)
-              }
-              style={{
-                padding: "5px 10px",
-                fontSize: "14px",
-              }}
-            >
-              🗑️ <span className="d-none d-sm-inline">Xóa</span>
-            </Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  style={{
+                    padding: "5px 10px",
+                    fontSize: "14px",
+                  }}
+                >
+                  🗑️ <span className="d-none d-sm-inline">Xóa</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Bạn có chắc muốn xóa nguyên liệu này?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Công thức này sẽ bị đưa vào mục đã xóa, các liên kết của
+                    công thức này vẫn được giữ nguyên.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() =>
+                      selectedRecipe?.id &&
+                      handleDeleteRecipeByIdAPI(selectedRecipe?.id)
+                    }
+                  >
+                    Xác nhận
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             <Button variant="outline" onClick={handleClose}>
               Đóng
             </Button>

@@ -6,7 +6,9 @@ const getTotalIngredients = async (): Promise<{
   data: any;
 }> => {
   try {
-    const total = await prisma.ingredient.count();
+    const total = await prisma.ingredient.count({
+      where: { isDeleted: false },
+    });
 
     if (total === 0) {
       return { message: "Chưa có nguyên liệu nào được tạo", data: 0 };
@@ -32,6 +34,7 @@ const getIngredientStockStatus = async (): Promise<{
     const outOfStock = await prisma.ingredient.count({
       where: {
         quantity: 0,
+        isDeleted: false,
       },
     });
 
@@ -41,6 +44,7 @@ const getIngredientStockStatus = async (): Promise<{
           gt: 0,
           lte: prisma.ingredient.fields.lowStockThreshold,
         },
+        isDeleted: false,
       },
     });
 

@@ -21,6 +21,9 @@ const getAllRecipes = async (): Promise<{
         },
       },
       orderBy: { createdAt: "desc" },
+      where: {
+        isDeleted: false,
+      },
     });
 
     const result = data.map((recipe) => ({
@@ -52,6 +55,7 @@ const getRecipeById = async (
     const data = await prisma.recipe.findUnique({
       where: {
         id,
+        isDeleted: false,
       },
       include: {
         recipeIngredients: {
@@ -153,7 +157,7 @@ const updateRecipeById = async (
 ): Promise<{ message: string; data: any }> => {
   try {
     const existing = await prisma.recipe.findUnique({
-      where: { id },
+      where: { id, isDeleted: false },
       include: {
         recipeIngredients: true,
       },
@@ -249,12 +253,10 @@ const deleteRecipeById = async (
     }
 
     // ✅ Xóa các liên kết nguyên liệu trước
-    await prisma.recipeIngredient.deleteMany({
-      where: { recipeId: id },
-    });
 
-    const deleted = await prisma.recipe.delete({
+    const deleted = await prisma.recipe.update({
       where: { id },
+      data: { isDeleted: true },
     });
     return {
       message: "Xóa công thức thành công",
@@ -271,6 +273,7 @@ const getRecipePage = async (page: number, limit: number) => {
     page,
     limit,
     model: "recipe",
+    where: { isDeleted: false },
     include: {
       recipeIngredients: {
         include: { ingredient: true },

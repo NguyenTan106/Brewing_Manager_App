@@ -71,6 +71,7 @@ model Recipe {
   description  String?
   note         String?
   instructions String?
+  isDeleted    Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
