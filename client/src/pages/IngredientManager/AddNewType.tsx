@@ -1,30 +1,37 @@
-import React, { useState } from "react";
-import { Modal, Form } from "react-bootstrap";
+import { useState } from "react";
 import { createTypeAPI, deleteTypeAPI } from "../../services/CRUD_API_type";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 type Props = {
   showTypeModal: boolean;
@@ -42,32 +49,30 @@ export function AddNewType({
 
   const handleCreateTypeAPI = async (typeName: string) => {
     if (typeName.trim() === "") {
-      alert("Vui lòng nhập tên loại nguyên liệu");
+      toast.warning("Vui lòng nhập tên loại nguyên liệu");
       return;
     }
     const newType = await createTypeAPI(typeName);
     const errorMessage = newType.message;
     if (newType.data == null) {
-      alert(`${errorMessage}`);
+      toast.error(`${errorMessage}`);
       return;
     }
-    alert(`${errorMessage}`);
+    toast.success(`${errorMessage}`);
     setNewTypeName("");
     handleGetAllTypesAPI();
   };
 
   const handleDeleteTypeAPI = async (id: number) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa loại nguyên liệu này?")) {
-      const response = await deleteTypeAPI(id);
-      console.log(response);
-      const errorMessage = response.message;
-      if (response.data == null) {
-        alert(`${errorMessage}`);
-        return;
-      }
-      alert(`${errorMessage}`);
-      handleGetAllTypesAPI();
+    const response = await deleteTypeAPI(id);
+    console.log(response);
+    const errorMessage = response.message;
+    if (response.data == null) {
+      toast.error(`${errorMessage}`);
+      return;
     }
+    toast.success(`${errorMessage}`);
+    handleGetAllTypesAPI();
   };
   return (
     <>
@@ -125,14 +130,31 @@ export function AddNewType({
                     <TableCell>{t.id}</TableCell>
                     <TableCell>{t.typeName}</TableCell>
                     <TableCell style={{ width: "25%" }}>
-                      <Button
-                        variant="destructive"
-                        onClick={() => {
-                          handleDeleteTypeAPI(t.id);
-                        }}
-                      >
-                        Xóa
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive">Xóa</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Bạn có chắc muốn xóa loại nguyên liệu này?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Nguyên liệu này sẽ bị xóa vĩnh viễn
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Hủy</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                handleDeleteTypeAPI(t.id);
+                              }}
+                            >
+                              Xác nhận
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TableCell>
                   </TableRow>
                 ))}

@@ -38,6 +38,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
 
 interface Props {
   handleClose: () => void;
@@ -69,13 +70,12 @@ export default function RecipeDetailModal({
     useState<Ingredient | null>(null);
   const handleDeleteRecipeByIdAPI = async (id: number) => {
     const deleted = await deleteRecipeByIdAPI(id);
-    console.log(deleted);
     const errorMessage = deleted.message;
     if (deleted.data == null) {
-      alert(`${errorMessage}`);
+      toast.error(`${errorMessage}`);
       return;
     }
-    alert(`${errorMessage}`);
+    toast.success(`${errorMessage}`);
     handlePaginationAPI();
     handleClose();
   };

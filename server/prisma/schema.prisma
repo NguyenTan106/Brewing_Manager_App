@@ -15,20 +15,33 @@ datasource db {
 }
 
 model Ingredient {
-  id                Int      @id @default(autoincrement())
-  name              String   @unique
+  id                Int                @id @default(autoincrement())
+  name              String             @unique
   type              String
   unit              String
   quantity          Float
   lowStockThreshold Float
   lastImportDate    DateTime
   notes             String?
-  isDeleted         Boolean @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
+  isDeleted         Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   batchIngredients  BatchIngredient[]
   recipeIngredients RecipeIngredient[]
+  IngredientImport  IngredientImport[]
+}
+
+model IngredientImport {
+  id           Int        @id @default(autoincrement())
+  ingredientId Int
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  amount       Float
+  importedAt   DateTime   @default(now())
+  notes        String? // Ghi chú nếu cần
+  createdBy    String? // (nếu có phân quyền)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Status {

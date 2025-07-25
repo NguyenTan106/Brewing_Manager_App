@@ -26,25 +26,24 @@ export function TotalRecipes({ totalRecipes }: Props) {
   };
   const handleGetTotalRecipesRecentlyUpdatedAPI = async () => {
     const data = await getTotalRecipesRecentlyUpdatedAPI();
-    console.log(data.data);
     setRecipeRecentlyUpdated(data.data);
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-1 gap-4 pb-2">
       {/* Tổng số công thức */}
-      <div className="p-4 rounded-xl bg-amber-50 shadow-sm">
+      <div className="p-4 ">
         <p className="text-sm text-gray-500 mb-1">Tổng số công thức đã tạo</p>
         <h2 className="text-4xl font-bold text-amber-700">{totalRecipes}</h2>
       </div>
 
       {/* Top 5 công thức được dùng nhiều */}
-      <div className="p-4 rounded-xl bg-amber-50 shadow-sm">
+      <div className="p-4 ">
         <p className="text-sm text-gray-500 mb-2">
           🏆 Top 5 công thức được dùng nhiều nhất
         </p>
         <ul className="text-base text-amber-800 font-medium space-y-1 list-decimal list-inside">
-          {recipeMostUsed?.map((i, idx) => (
+          {recipeMostUsed?.map((i) => (
             <li key={i.recipe.id}>
               {i.recipe.name} —{" "}
               <span className="font-semibold">{i.usedCount}</span> mẻ
@@ -54,12 +53,12 @@ export function TotalRecipes({ totalRecipes }: Props) {
       </div>
 
       {/* Top 5 công thức cập nhật gần đây */}
-      <div className="p-4 rounded-xl bg-amber-50 shadow-sm">
+      <div className="p-4">
         <p className="text-sm text-gray-500 mb-2">
           🕒 Top 5 công thức mới cập nhật gần đây
         </p>
         <ul className="text-base text-amber-800 font-medium space-y-1 list-decimal list-inside">
-          {recipeRecentlyUpdated?.map((i, idx) => (
+          {recipeRecentlyUpdated?.map((i) => (
             <li key={i.id}>
               {i.name} —{" "}
               <span className="text-gray-600 font-normal">

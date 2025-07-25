@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import {
   getTotalRecipes,
-  getTotalRecipesMostUsed,
-  getTotalRecipesRecentlyUpdated,
+  getTop5RecipesMostUsed,
+  getTop5RecipesRecentlyUpdated,
 } from "../../prisma/Report_Services/statistic_recipe_report";
 
 const handleGetTotalRecipes = async (req: Request, res: Response) => {
@@ -17,28 +17,28 @@ const handleGetTotalRecipes = async (req: Request, res: Response) => {
   }
 };
 
-const handleGetTotalRecipesMostUsed = async (req: Request, res: Response) => {
+const handleGetTop5RecipesMostUsed = async (req: Request, res: Response) => {
   try {
-    const handle = await getTotalRecipesMostUsed();
+    const handle = await getTop5RecipesMostUsed();
     res.status(200).json(handle);
   } catch (e) {
-    console.error("Lỗi trong controller handleGetTotalRecipesMostUsed:", e);
+    console.error("Lỗi trong controller handleGetTop5RecipesMostUsed:", e);
     res.status(500).json({
       message: "Lỗi server khi tính tổng công thức được dùng nhiều nhất",
     });
   }
 };
 
-const handleGetTotalRecipesRecentlyUpdated = async (
+const handleGetTop5RecipesRecentlyUpdated = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const handle = await getTotalRecipesRecentlyUpdated();
+    const handle = await getTop5RecipesRecentlyUpdated();
     res.status(200).json(handle);
   } catch (e) {
     console.error(
-      "Lỗi trong controller handleGetTotalRecipesRecentlyUpdated:",
+      "Lỗi trong controller handleGetTop5RecipesRecentlyUpdated:",
       e
     );
     res.status(500).json({
@@ -49,6 +49,6 @@ const handleGetTotalRecipesRecentlyUpdated = async (
 
 export {
   handleGetTotalRecipes,
-  handleGetTotalRecipesMostUsed,
-  handleGetTotalRecipesRecentlyUpdated,
+  handleGetTop5RecipesMostUsed,
+  handleGetTop5RecipesRecentlyUpdated,
 };

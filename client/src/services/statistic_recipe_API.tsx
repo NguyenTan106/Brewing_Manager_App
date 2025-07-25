@@ -13,10 +13,10 @@ export const getTotalRecipesAPI = async () => {
 };
 
 export const getTotalRecipesMostUsedAPI = async () => {
-  const res = await axios.get(`${BASE_URL}/api/total-recipes-most-used`);
+  const res = await axios.get(`${BASE_URL}/api/top-5-recipes-most-used`);
   return res.data;
 };
 export const getTotalRecipesRecentlyUpdatedAPI = async () => {
-  const res = await axios.get(`${BASE_URL}/api/total-recipes-recently-updated`);
+  const res = await axios.get(`${BASE_URL}/api/top-5-recipes-recently-updated`);
   return res.data;
 };

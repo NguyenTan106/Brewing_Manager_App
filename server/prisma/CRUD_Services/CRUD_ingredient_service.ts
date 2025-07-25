@@ -38,7 +38,7 @@ const getAllIngredients = async (): Promise<{ message: string; data: any }> => {
     };
   } catch (e) {
     console.error(e);
-    process.exit(1);
+    throw new Error("Lỗi khi truy vấn nguyên liệu");
   }
 };
 
@@ -78,7 +78,9 @@ const createIngredient = async (
   try {
     // ✅ Kiểm tra trùng tên
     const existing = await prisma.ingredient.findUnique({
-      where: { name: name },
+      where: {
+        name: name,
+      },
     });
     const vnNow = new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })

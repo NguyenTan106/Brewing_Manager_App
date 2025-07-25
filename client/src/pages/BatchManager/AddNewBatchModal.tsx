@@ -1,14 +1,10 @@
-import { Modal, Row, Col, Form } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -22,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 import {
   createBatchAPI,
@@ -49,11 +46,8 @@ export default function AddNewBatchModal({
     notes: "",
     recipeId: "",
     recipe: null,
+    batchIngredients: [],
   });
-  const [selectedStatus, setSelectedStatus] = useState<{
-    label: string;
-    value: Status;
-  } | null>(null);
   const [recipeFromBatch, setRecipeFromBatch] = useState<Recipe[]>([]);
   const clearForm = () => {
     setForm({
@@ -63,6 +57,7 @@ export default function AddNewBatchModal({
       notes: "",
       recipeId: "",
       recipe: null,
+      batchIngredients: [],
     });
   };
 
@@ -73,16 +68,16 @@ export default function AddNewBatchModal({
       form.volume === "" ||
       form.notes === ""
     ) {
-      alert("Vui lòng điền đầy đủ thông tin");
+      toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
     }
     const data = await createBatchAPI(form);
     if (data.data == null) {
-      alert(data.message);
+      toast.warning(data.message);
       return;
     }
     if (data.data) {
-      alert(data.message);
+      toast.success(data.message);
     }
 
     handlePaginationAPI();
@@ -115,7 +110,7 @@ export default function AddNewBatchModal({
           </DialogHeader>
           <Separator />
 
-          <div className="grid gap-4">
+          <div className="grid gap-4 ">
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
                 <Label className="text-base">
@@ -227,7 +222,7 @@ export default function AddNewBatchModal({
             >
               <span className="d-none d-sm-inline">Thêm</span>
             </Button>
-            <Button variant="outline" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose}>
               Đóng
             </Button>
           </DialogFooter>

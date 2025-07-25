@@ -10,6 +10,7 @@ import { AddIngredient } from "./AddNewIngredient";
 import { paginationIngredientAPI } from "../../services/pagination_API";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
+import { ImportIngredient } from "./ImportIngredient/ImportIngredient";
 import {
   Table,
   TableBody,
@@ -29,11 +30,14 @@ export default function IngredientManager() {
     useState<Ingredient | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showAddIngredientModal, setShowAddIngredientModal] = useState(false);
+  const [showImportIngredientModal, setShowImportIngredientModal] =
+    useState(false);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [isInitialized, setIsInitialized] = useState<boolean>(false); // ✅ flag
+
   useEffect(() => {
     const savedPage = localStorage.getItem("ingredient_page");
     const savedLimit = localStorage.getItem("ingredient_limit");
@@ -84,12 +88,24 @@ export default function IngredientManager() {
     setShowDetailModal(true);
   };
 
+  const handleSelectIngredientToImport = async (id: number) => {
+    const data = await getIngredientByIdAPI(id);
+    setSelectedIngredient(data);
+    setShowImportIngredientModal(true);
+  };
+
   return (
     <div className="">
+      <ImportIngredient
+        showImportIngredientModal={showImportIngredientModal}
+        handleClose={() => setShowImportIngredientModal(false)}
+        selectedIngredient={selectedIngredient}
+        handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
+      />
       <AddIngredient
-        handleGetAllIngredientsAPI={handleGetAllIngredientsAPI}
         showAddIngredientModal={showAddIngredientModal}
         handleClose={() => setShowAddIngredientModal(false)}
+        handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
       <IngredientDetailModal
@@ -104,14 +120,16 @@ export default function IngredientManager() {
 
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <p className="text-3xl font-bold">Kho nguyên liệu:</p>
-        <Button
-          onClick={() => setShowAddIngredientModal(true)}
-          title="Thêm nguyên liệu mới"
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
-        >
-          <FaPlus />
-          <span className="hidden sm:inline">Thêm</span>
-        </Button>
+        <div className="flex flex-row gap-5">
+          <Button
+            onClick={() => setShowAddIngredientModal(true)}
+            title="Thêm nguyên liệu mới"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
+          >
+            <FaPlus />
+            <span className="hidden sm:inline">Thêm</span>
+          </Button>
+        </div>
       </div>
 
       <Separator className="my-2" />
@@ -133,7 +151,10 @@ export default function IngredientManager() {
               <TableHead className="px-4 py-3 text-left">
                 Ngày nhập kho gần nhất
               </TableHead>
-              <TableHead className="px-4 py-3 text-left"></TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "5%" }}
+              ></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-200">
@@ -181,7 +202,7 @@ export default function IngredientManager() {
                       })}
                   </TableCell>
 
-                  <TableCell className="px-4 py-3">
+                  <TableCell className="px-4 py-3 flex gap-2">
                     <Button
                       title="Xem chi tiết nguyên liệu"
                       variant="outline"
@@ -189,6 +210,17 @@ export default function IngredientManager() {
                       style={{ padding: "5px 10px", fontSize: "14px" }}
                     >
                       📋 <span className="d-none d-sm-inline">Chi tiết</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleSelectIngredientToImport(i.id)}
+                      title="Thêm nguyên liệu mới"
+                      className=""
+                    >
+                      <FaPlus />
+                      <span className="hidden sm:inline">
+                        Nhập kho nguyên liệu
+                      </span>
                     </Button>
                   </TableCell>
                 </TableRow>

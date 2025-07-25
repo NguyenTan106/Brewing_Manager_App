@@ -23,7 +23,7 @@ const getTotalRecipes = async (): Promise<{
   }
 };
 
-const getTotalRecipesMostUsed = async (): Promise<{
+const getTop5RecipesMostUsed = async (): Promise<{
   message: string;
   data: any;
 }> => {
@@ -43,9 +43,10 @@ const getTotalRecipesMostUsed = async (): Promise<{
 
     const recipes = await Promise.all(
       data.map(async (item) => {
-        const recipe = await prisma.recipe.findUnique({
+        const recipe = await prisma.recipe.findFirst({
           where: { id: item.recipeId!, isDeleted: false },
         });
+        if (!recipe) return null; // bỏ qua nếu bị xóa
         return {
           recipe,
           usedCount: item._count.recipeId,
@@ -53,9 +54,12 @@ const getTotalRecipesMostUsed = async (): Promise<{
       })
     );
 
+    // lọc bỏ null và lấy top 5
+    const filtered = recipes.filter(Boolean).slice(0, 5);
+
     return {
       message: "Top 5 công thức được dùng nhiều nhất",
-      data: recipes,
+      data: filtered,
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách công thức:", error);
@@ -63,7 +67,7 @@ const getTotalRecipesMostUsed = async (): Promise<{
   }
 };
 
-const getTotalRecipesRecentlyUpdated = async (): Promise<{
+const getTop5RecipesRecentlyUpdated = async (): Promise<{
   message: string;
   data: any;
 }> => {
@@ -90,6 +94,6 @@ const getTotalRecipesRecentlyUpdated = async (): Promise<{
 
 export {
   getTotalRecipes,
-  getTotalRecipesMostUsed,
-  getTotalRecipesRecentlyUpdated,
+  getTop5RecipesMostUsed,
+  getTop5RecipesRecentlyUpdated,
 };

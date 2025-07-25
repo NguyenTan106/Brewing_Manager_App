@@ -5,11 +5,9 @@ import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import { getAllTypesAPI } from "../../services/CRUD_API_type";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -25,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 type Props = {
   handleClose: () => void;
   selectedIngredient: Ingredient | null;
@@ -86,7 +85,7 @@ export default function IngredientUpdateModal({
         editForm.lowStockThreshold === "" ||
         editForm.lastImportDate === null
       ) {
-        alert("Vui lòng điền đầy đủ thông tin");
+        toast.warning("Vui lòng điền đầy đủ thông tin");
         return;
       }
       // Kiểm tra xem có thay đổi nào không
@@ -99,7 +98,7 @@ export default function IngredientUpdateModal({
         selectedIngredient?.unit == editForm.unit &&
         selectedIngredient?.notes == editForm.notes
       ) {
-        alert("Không có thay đổi nào để cập nhật");
+        toast.warning("Không có thay đổi nào để cập nhật");
         return;
       }
       await updateIngredientByIdAPI(id, editForm);
@@ -107,10 +106,10 @@ export default function IngredientUpdateModal({
       handleClose();
       // handleGetAllIngredientsAPI();
       handlePaginationAPI();
-      alert("Thành công");
+      toast.success("Cập nhật nguyên liệu thành công");
     } catch (err) {
       console.error("Lỗi khi cập nhật nguyên liệu:", err);
-      alert("Lỗi khi cập nhật nguyên liệu");
+      toast.error("Lỗi khi cập nhật nguyên liệu");
     }
   };
 

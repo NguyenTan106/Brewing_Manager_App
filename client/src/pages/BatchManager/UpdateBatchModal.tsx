@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 interface Props {
   showUpdateModal: boolean;
@@ -48,7 +49,7 @@ export default function UpdateBatchModal({
         editForm.status === ("" as Status) ||
         editForm.notes === ""
       ) {
-        alert("Vui lòng điền đầy đủ thông tin");
+        toast.warning("Vui lòng điền đầy đủ thông tin");
         return;
       }
       // Kiểm tra xem có thay đổi nào không
@@ -57,16 +58,17 @@ export default function UpdateBatchModal({
         selectedBatch?.status == editForm.status &&
         selectedBatch?.notes == editForm.notes
       ) {
-        alert("Không có thay đổi nào để cập nhật");
+        toast.warning("Không có thay đổi nào để cập nhật");
         return;
       }
       const data = await updateBatchByIdAPI(id, editForm);
+      toast.success("Cập nhật mẻ thành công");
       handleClose();
       handlePaginationAPI();
       setSelectedBatch(data.data);
     } catch (err) {
       console.error("Lỗi khi cập nhật mẻ:", err);
-      alert("Lỗi khi cập nhật mẻ");
+      toast.error("Lỗi khi cập nhật mẻ");
     }
   };
 

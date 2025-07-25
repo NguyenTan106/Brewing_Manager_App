@@ -1,18 +1,14 @@
 import { useState, useEffect } from "react";
-import { Form } from "react-bootstrap";
 import type { RecipeUpate } from "../../services/CRUD_API_Recipe";
 import { updateRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
 import { type RecipeIngredient } from "../../services/CRUD_API_Recipe";
 import type { Ingredient } from "../../services/CRUD_API_Ingredient";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -24,7 +20,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -38,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FaPlus } from "react-icons/fa";
 import mammoth from "mammoth";
 import TurndownService from "turndown";
+import { toast } from "sonner";
 
 interface Props {
   showUpdateModal: boolean;
@@ -108,7 +104,7 @@ export default function UpdateRecipeModal({
       }));
     } catch (error) {
       console.error("Lỗi khi xử lý file:", error);
-      alert("Không thể đọc file Word. Vui lòng thử lại.");
+      toast.error("Không thể đọc file Word. Vui lòng thử lại.");
     }
   };
 
@@ -124,7 +120,7 @@ export default function UpdateRecipeModal({
         editForm.note === "" ||
         editForm.instructions === ""
       ) {
-        alert("Vui lòng điền đầy đủ thông tin");
+        toast.warning("Vui lòng điền đầy đủ thông tin");
         return;
       }
       // Kiểm tra xem có thay đổi nào không
@@ -150,18 +146,18 @@ export default function UpdateRecipeModal({
             selectedRecipe?.recipeIngredients.map((i) => i.ingredientId)
           )
       ) {
-        alert("Không có thay đổi nào để cập nhật");
+        toast.warning("Không có thay đổi nào để cập nhật");
         return;
       }
       const data = await updateRecipeByIdAPI(id, editForm);
-      console.log(data);
+      toast.success("Cập nhật công thức thành công");
       handleClose();
       handlePaginationAPI();
       setSelectedRecipe(data.data);
       setSelectedRecipeIngredient(data.data.recipeIngredients);
     } catch (err) {
       console.error("Lỗi khi cập nhật mẻ:", err);
-      alert("Lỗi khi cập nhật mẻ");
+      toast.error("Lỗi khi cập nhật mẻ");
     }
   };
 
@@ -389,18 +385,6 @@ export default function UpdateRecipeModal({
               <Label className="text-base">
                 <strong>Các bước thực hiện:</strong>
               </Label>
-              {/* <Textarea
-                style={{ fontSize: "0.95rem" }}
-                rows={3}
-                placeholder="VD: 20"
-                value={editForm?.instructions ?? ""}
-                onChange={(e) =>
-                  setEditForm({
-                    ...editForm,
-                    instructions: e.target.value,
-                  })
-                }
-              /> */}
               <Input
                 type="file"
                 accept=".docx"

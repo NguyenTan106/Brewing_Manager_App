@@ -32,6 +32,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FaPlus } from "react-icons/fa";
+import mammoth from "mammoth";
+import TurndownService from "turndown";
+import { toast } from "sonner";
 
 interface Props {
   showAddModal: boolean;
@@ -72,16 +75,16 @@ export default function AddNewRecipeModal({
       form.instructions === "" ||
       form.recipeIngredients.length === 0
     ) {
-      alert("Vui lòng điền đầy đủ thông tin");
+      toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
     }
     const data = await createRecipeAPI(form);
     if (data.data == null) {
-      alert(data.message);
+      toast.warning(data.message);
       return;
     }
     if (data.data) {
-      alert(data.message);
+      toast.success(data.message);
     }
     clearForm();
     handlePaginationAPI();
@@ -91,6 +94,31 @@ export default function AddNewRecipeModal({
     value: ing.id,
     label: ing.name,
   }));
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+
+      // B1: Chuyển docx → HTML
+      const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
+
+      // B2: Chuyển HTML → Markdown
+      const turndownService = new TurndownService();
+      const markdown = turndownService.turndown(html);
+
+      // B3: Gán vào form
+      setForm((prev) => ({
+        ...prev,
+        instructions: markdown,
+      }));
+    } catch (error) {
+      console.error("Lỗi khi xử lý file:", error);
+      toast.error("Không thể đọc file Word. Vui lòng thử lại.");
+    }
+  };
 
   return (
     <>
@@ -134,7 +162,7 @@ export default function AddNewRecipeModal({
                   onChange={(e) =>
                     setForm({ ...form, description: e.target.value })
                   }
-                  placeholder="VD: g, kg"
+                  placeholder="VD: India Pale Ale với hương vị hoa houblon mạnh"
                 />
               </div>
               <div className="flex flex-col gap-0 w-full min-w-0 mt-3">
@@ -287,16 +315,11 @@ export default function AddNewRecipeModal({
                 <Label className="text-base">
                   <strong>Các bước thực hiện:</strong>
                 </Label>
-                <Textarea
-                  style={{ fontSize: "0.95rem" }}
-                  required
-                  rows={4}
-                  value={form.instructions}
-                  onChange={(e) =>
-                    setForm({ ...form, instructions: e.target.value })
-                  }
-                  placeholder="VD: Ủ trong 5 ngày ở 20°C. Lên men bằng men T-58."
-                />
+                <Input
+                  type="file"
+                  accept=".docx"
+                  onChange={handleFileUpload}
+                ></Input>
               </div>
             </div>
           </div>

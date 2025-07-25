@@ -11,8 +11,8 @@ import {
 import { handlePaginationRecipe } from "../controllers/pagination";
 import {
   handleGetTotalRecipes,
-  handleGetTotalRecipesMostUsed,
-  handleGetTotalRecipesRecentlyUpdated,
+  handleGetTop5RecipesMostUsed,
+  handleGetTop5RecipesRecentlyUpdated,
 } from "../controllers/Report_Controllers/statistic_recipe_controler";
 const getAllRecipesController = router.get("/recipes", handleGetAllRecipes);
 const getRecipeByIdController = router.get("/recipe/:id", handleGetRecipeById);
@@ -35,13 +35,13 @@ const getTotalRecipesController = router.get(
   "/total-recipes",
   handleGetTotalRecipes
 );
-const getTotalRecipesMostUsedController = router.get(
-  "/total-recipes-most-used",
-  handleGetTotalRecipesMostUsed
+const getTop5RecipesMostUsedController = router.get(
+  "/top-5-recipes-most-used",
+  handleGetTop5RecipesMostUsed
 );
-const getTotalRecipesRecentlyUpdated = router.get(
-  "/total-recipes-recently-updated",
-  handleGetTotalRecipesRecentlyUpdated
+const getTop5RecipesRecentlyUpdated = router.get(
+  "/top-5-recipes-recently-updated",
+  handleGetTop5RecipesRecentlyUpdated
 );
 export {
   getAllRecipesController,
@@ -51,6 +51,6 @@ export {
   deleteRecipesByIdController,
   paginationRecipeAPIController,
   getTotalRecipesController,
-  getTotalRecipesMostUsedController,
-  getTotalRecipesRecentlyUpdated,
+  getTop5RecipesMostUsedController,
+  getTop5RecipesRecentlyUpdated,
 };

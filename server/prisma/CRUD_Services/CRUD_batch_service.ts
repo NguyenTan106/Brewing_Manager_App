@@ -135,7 +135,7 @@ const createBatch = async (
     const vnNow = new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
     );
-    const datePrefix = format(vnNow, "ddMMyy"); // ví dụ: 230725
+    const datePrefix = format(vnNow, "ddMMyy");
 
     const todayStart = new Date(vnNow);
     todayStart.setHours(0, 0, 0, 0);
@@ -160,25 +160,30 @@ const createBatch = async (
       where: { id: recipeId, isDeleted: false },
       include: {
         recipeIngredients: {
-          include: { ingredient: true },
+          include: {
+            ingredient: true,
+          },
         },
       },
     });
 
-    const activeIngredients = recipe?.recipeIngredients.filter(
-      (ri) => ri.ingredient && ri.ingredient.isDeleted === false
+    if (!recipe) {
+      return { message: "Không có công thức đã chọn", data: [] };
+    }
+
+    const activeIngredients = recipe.recipeIngredients.filter(
+      (ri) => ri.ingredient && !ri.ingredient.isDeleted
     );
 
-    if (!recipe) return { message: "Không có công thức đã chọn", data: [] };
-
-    if (activeIngredients?.length === 0)
+    if (activeIngredients.length === 0) {
       return { message: "Cần bổ sung nguyên liệu cho công thức", data: [] };
+    }
 
-    const defaultVolume = 60; // Ví dụ: mỗi công thức chuẩn là 60 lít
+    const defaultVolume = 60;
     const scaleRatio = volume / defaultVolume;
     const insufficientIngredients: string[] = [];
 
-    for (const ri of recipe.recipeIngredients) {
+    for (const ri of activeIngredients) {
       const amountToUse = ri.amountNeeded * scaleRatio;
       if (ri.ingredient.quantity < amountToUse) {
         insufficientIngredients.push(ri.ingredient.name);
@@ -192,13 +197,16 @@ const createBatch = async (
       };
     }
 
-    // 2. Tiến hành transaction: trừ nguyên liệu + tạo batch + tạo batchIngredients
+    // 2. Tiến hành transaction
     const result = await prisma.$transaction(async (tx) => {
       // a. Trừ nguyên liệu
-      for (const ri of recipe.recipeIngredients) {
+      for (const ri of activeIngredients) {
         const amountToUse = ri.amountNeeded * scaleRatio;
         await tx.ingredient.update({
-          where: { id: ri.ingredientId, isDeleted: false },
+          where: {
+            id: ri.ingredientId,
+            isDeleted: false,
+          },
           data: {
             quantity: {
               decrement: amountToUse,
@@ -220,7 +228,7 @@ const createBatch = async (
       });
 
       // c. Ghi lại batchIngredient
-      for (const ri of recipe.recipeIngredients) {
+      for (const ri of activeIngredients) {
         const amountToUse = ri.amountNeeded * scaleRatio;
         await tx.batchIngredient.create({
           data: {

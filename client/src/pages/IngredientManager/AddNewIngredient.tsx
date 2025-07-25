@@ -4,13 +4,11 @@ import { createIngredientAPI } from "../../services/CRUD_API_Ingredient";
 import { AddNewType } from "./AddNewType";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -24,18 +22,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+
 interface Type {
   id: number;
   typeName: string;
 }
 type Props = {
-  handleGetAllIngredientsAPI: () => void;
+  handlePaginationAPI: () => void;
   showAddIngredientModal: boolean;
   handleClose: () => void;
 };
 
 export function AddIngredient({
-  handleGetAllIngredientsAPI,
+  handlePaginationAPI,
   showAddIngredientModal,
   handleClose,
 }: Props) {
@@ -82,7 +82,7 @@ export function AddIngredient({
       form.lowStockThreshold === "" ||
       form.lastImportDate === ""
     ) {
-      alert("Vui lòng điền đầy đủ thông tin");
+      toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
     }
 
@@ -95,16 +95,17 @@ export function AddIngredient({
       lastImportDate: form.lastImportDate,
       notes: form.notes,
     });
-    console.log(data);
     if (data.data == null) {
-      alert(data.message);
+      toast.error(data.message);
       return;
     }
     if (data.data) {
-      alert(data.message);
+      toast.success(data.message, {
+        description: new Date().toLocaleTimeString(),
+      });
     }
 
-    handleGetAllIngredientsAPI();
+    handlePaginationAPI();
     clearForm();
     setSelectedTypeId("");
   };

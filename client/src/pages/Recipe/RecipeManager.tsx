@@ -97,6 +97,8 @@ export default function RecipeManager() {
     setIngredients(data);
   };
 
+  
+
   return (
     <>
       <RecipeDetailModal

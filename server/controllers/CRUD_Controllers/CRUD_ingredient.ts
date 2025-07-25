@@ -8,7 +8,6 @@ import {
   updateIngredientById,
   deleteIngredientById,
 } from "../../prisma/CRUD_Services/CRUD_ingredient_service";
-import { getTotalIngredients } from "../../prisma/Report_Services/statistic_ingredient_report";
 import { ingredientSchema } from "../../middlewares/schema";
 import { compareAndLogChanges } from "../../services/logActivityService";
 import { logActivity } from "../../prisma/logActivity";

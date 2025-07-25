@@ -35,8 +35,8 @@ import {
   deleteRecipesByIdController,
   paginationRecipeAPIController,
   getTotalRecipesController,
-  getTotalRecipesMostUsedController,
-  getTotalRecipesRecentlyUpdated,
+  getTop5RecipesMostUsedController,
+  getTop5RecipesRecentlyUpdated,
 } from "./routes/api_recipe";
 
 import {
@@ -44,6 +44,8 @@ import {
   paginationActivityLogController,
   getActivityLogByIdController,
 } from "./routes/api_activity_log";
+
+import { importIngredientByIdController } from "./routes/api_ingredient_import";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -64,6 +66,9 @@ app.use("/api", paginationIngredientController);
 app.use("/api", getTotalIngredientsController);
 app.use("/api", getIngredientStockStatusController);
 
+//ingredient import
+app.use("/api", importIngredientByIdController);
+
 //batch
 app.use("/api", getAllBatchesController);
 app.use("/api", getBatchByIdController);
@@ -83,8 +88,8 @@ app.use("/api", deleteRecipesByIdController);
 app.use("/api", getTotalBatchesController);
 app.use("/api", paginationRecipeAPIController);
 app.use("/api", getTotalRecipesController);
-app.use("/api", getTotalRecipesMostUsedController);
-app.use("/api", getTotalRecipesRecentlyUpdated);
+app.use("/api", getTop5RecipesMostUsedController);
+app.use("/api", getTop5RecipesRecentlyUpdated);
 
 //activity log
 app.use("/api", getAllActivityLogsController);

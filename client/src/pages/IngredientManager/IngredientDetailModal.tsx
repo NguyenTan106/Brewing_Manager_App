@@ -26,6 +26,8 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getBadgeClass } from "./IngredientUtils";
+import { toast } from "sonner";
+
 interface Props {
   showDetailModal: boolean;
   setShowDetailModal: (value: boolean) => void;
@@ -56,10 +58,10 @@ export default function IngredientDetailModal({
     const response = await deleteIngredientByIdAPI(id);
     const errorMessage = response.message;
     if (response.data == null) {
-      alert(`${errorMessage}`);
+      toast.error(`${errorMessage}`);
       return;
     }
-    alert(`${errorMessage}`);
+    toast.success(`${errorMessage}`);
     handlePaginationAPI();
     handleClose();
   };

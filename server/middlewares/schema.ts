@@ -13,6 +13,13 @@ export const ingredientSchema = z.object({
   notes: z.string().optional(),
 });
 
+export const ingredientImportSchema = z.object({
+  ingredientId: z.preprocess((val) => Number(val), z.number()),
+  amount: z.preprocess((val) => Number(val), z.number()),
+  notes: z.string().optional(),
+  createdBy: z.string().optional(),
+});
+
 export const typeSchema = z.object({
   typeName: z.string().min(1, "Tên không được để trống"),
 });
