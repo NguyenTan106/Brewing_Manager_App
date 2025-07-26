@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 // import { Table, Badge, Button } from "react-bootstrap";
 import {
   getAllIngredientsAPI,
@@ -11,6 +11,7 @@ import { paginationIngredientAPI } from "../../services/pagination_API";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import { type Ingredient } from "../../services/CRUD_API_Ingredient";
 import { ImportIngredient } from "./ImportIngredient/ImportIngredient";
+import { searchIngredientAPI } from "@/services/search_API";
 import {
   Table,
   TableBody,
@@ -25,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 export default function IngredientManager() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -34,6 +36,8 @@ export default function IngredientManager() {
   const [showAddIngredientModal, setShowAddIngredientModal] = useState(false);
   const [showImportIngredientModal, setShowImportIngredientModal] =
     useState(false);
+  const [searchItem, setSearchItem] = useState("");
+  const firstLoad = useRef(true);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -96,6 +100,32 @@ export default function IngredientManager() {
     setShowImportIngredientModal(true);
   };
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (firstLoad.current) {
+        firstLoad.current = false;
+        return; // ❌ Bỏ qua lần đầu
+      }
+
+      if (searchItem.trim() !== "") {
+        handleSearchIngredientAPI(searchItem);
+      } else {
+        handlePaginationAPI(currentPage, limit); // ✅ Chỉ gọi khi người dùng xóa truy vấn
+      }
+    }, 100); // bạn có thể để 300ms cho mượt
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchItem]);
+
+  const handleSearchIngredientAPI = async (query: string) => {
+    try {
+      const res = await searchIngredientAPI(query);
+      setIngredients(res);
+    } catch (err) {
+      toast.error("Lỗi tìm kiếm");
+    }
+  };
+
   return (
     <div className="">
       <ImportIngredient
@@ -123,14 +153,14 @@ export default function IngredientManager() {
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
           <p className="text-3xl font-bold">Kho nguyên liệu:</p>
-          <div className="relative w-full max-w-sm">
+          <div className="relative w-full lg:w-[150%]">
             <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Tìm kiếm..."
               className="pl-9"
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchItem}
+              onChange={(e) => setSearchItem(e.target.value)}
             />
           </div>
         </div>

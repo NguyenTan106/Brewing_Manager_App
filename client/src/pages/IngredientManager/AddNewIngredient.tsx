@@ -155,7 +155,7 @@ export function AddIngredient({
               <Label className="text-base">
                 <strong>Loại nguyên liệu: </strong>
               </Label>
-              <div className="flex flex-col gap-1 w-full md:w-[74%] min-w-0">
+              <div className="flex flex-row gap-2 w-full min-w-0">
                 <Select
                   value={selectedTypeId}
                   onValueChange={(value) => {
@@ -187,10 +187,8 @@ export function AddIngredient({
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="flex flex-col gap-1 min-w-0 ml-3">
                 <Button variant="outline" onClick={showModalType}>
-                  📚 Chi tiết
+                  📚 <span className="hidden sm:inline">Chi tiết</span>
                 </Button>
               </div>
             </div>

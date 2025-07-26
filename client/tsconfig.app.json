@@ -38,6 +38,6 @@
     //   "@/*": ["src/*"]
     // }
   },
-  "include": ["src"],
+  "include": ["src", "../server/controllers/search_IF-IDF.ts"],
   "exclude": ["dist", "node_modules"]
 }

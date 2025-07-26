@@ -63,6 +63,7 @@ const getIngredientStockStatusController = router.get(
   "/total-ingredients-stock-status",
   handleGetIngredientStockStatus
 );
+
 export {
   getAllIngredientsController,
   getAllIngredientByIdController,

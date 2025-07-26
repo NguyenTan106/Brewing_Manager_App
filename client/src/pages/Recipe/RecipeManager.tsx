@@ -3,7 +3,7 @@ import type {
   RecipeIngredient,
   RecipeUpate,
 } from "../../services/CRUD_API_Recipe";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AddNewRecipeModal from "./AddNewRecipeModal";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import {
@@ -23,6 +23,10 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { searchRecipeAPI } from "@/services/search_API";
 
 export default function RecipeManager() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -35,6 +39,8 @@ export default function RecipeManager() {
     RecipeIngredient[] | null
   >(null);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [searchItem, setSearchItem] = useState("");
+  const firstLoad = useRef(true);
 
   useEffect(() => {
     handleGetAllIngredientsAPI();
@@ -97,7 +103,31 @@ export default function RecipeManager() {
     setIngredients(data);
   };
 
-  
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (firstLoad.current) {
+        firstLoad.current = false;
+        return; // ❌ Bỏ qua lần đầu
+      }
+
+      if (searchItem.trim() !== "") {
+        handleSearchRecipeAPI(searchItem);
+      } else {
+        handlePaginationAPI(currentPage, limit); // ✅ Chỉ gọi khi người dùng xóa truy vấn
+      }
+    }, 100); // bạn có thể để 300ms cho mượt
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchItem]);
+
+  const handleSearchRecipeAPI = async (query: string) => {
+    try {
+      const res = await searchRecipeAPI(query);
+      setRecipes(res);
+    } catch (err) {
+      toast.error("Lỗi tìm kiếm");
+    }
+  };
 
   return (
     <>
@@ -119,7 +149,19 @@ export default function RecipeManager() {
       />
 
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <p className="text-3xl font-bold">Danh sách công thức:</p>
+        <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
+          <p className="text-3xl font-bold">Danh sách công thức:</p>
+          <div className="relative w-full lg:w-[100%]">
+            <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="pl-9"
+              value={searchItem}
+              onChange={(e) => setSearchItem(e.target.value)}
+            />
+          </div>
+        </div>
         <Button
           onClick={() => setShowAddModal(true)}
           title="Thêm nguyên liệu mới"
@@ -211,7 +253,7 @@ export default function RecipeManager() {
                       onClick={() => handleGetRecipeByIdAPI(i.id)}
                       style={{ padding: "5px 10px", fontSize: "14px" }}
                     >
-                      📋 <span className="d-none d-sm-inline">Chi tiết</span>
+                      📋 <span className="hidden sm:inline">Chi tiết</span>
                     </Button>
                   </TableCell>
                 </TableRow>

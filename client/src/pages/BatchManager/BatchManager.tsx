@@ -2,7 +2,7 @@ import {
   getAllBatchesAPI,
   getBatchByIdAPI,
 } from "../../services/CRUD_API_Batch";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import BatchDetailModal from "./BatchDetailModal";
 import AddNewBatchModal from "./AddNewBatchModal";
@@ -23,6 +23,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { searchBatchAPI } from "@/services/search_API";
 
 export default function BatchManager() {
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -35,6 +39,8 @@ export default function BatchManager() {
     label,
     value: key as Status,
   }));
+  const [searchItem, setSearchItem] = useState("");
+  const firstLoad = useRef(true);
 
   const getStatusBadge = (status: Status) => {
     switch (status) {
@@ -115,6 +121,32 @@ export default function BatchManager() {
     setShowDetailModal(true);
   };
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (firstLoad.current) {
+        firstLoad.current = false;
+        return; // ❌ Bỏ qua lần đầu
+      }
+
+      if (searchItem.trim() !== "") {
+        handleSearchRecipeAPI(searchItem);
+      } else {
+        handlePaginationAPI(currentPage, limit); // ✅ Chỉ gọi khi người dùng xóa truy vấn
+      }
+    }, 100); // bạn có thể để 300ms cho mượt
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchItem]);
+
+  const handleSearchRecipeAPI = async (query: string) => {
+    try {
+      const res = await searchBatchAPI(query);
+      setBatches(res);
+    } catch (err) {
+      toast.error("Lỗi tìm kiếm");
+    }
+  };
+
   return (
     <>
       <BatchDetailModal
@@ -136,7 +168,19 @@ export default function BatchManager() {
       />
 
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <p className="text-3xl font-bold">Danh sách mẻ: </p>
+        <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
+          <p className="text-3xl font-bold">Danh sách mẻ: </p>
+          <div className="relative w-full lg:w-[150%]">
+            <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="pl-9"
+              value={searchItem}
+              onChange={(e) => setSearchItem(e.target.value)}
+            />
+          </div>
+        </div>
         <Button
           onClick={() => setShowAddModal(true)}
           title="Thêm nguyên liệu mới"
@@ -202,7 +246,7 @@ export default function BatchManager() {
                       onClick={() => handleGetBatchesByIdAPI(i.id)}
                       style={{ padding: "5px 10px", fontSize: "14px" }}
                     >
-                      📋 <span className="d-none d-sm-inline">Chi tiết</span>
+                      📋 <span className="hidden sm:inline">Chi tiết</span>
                     </Button>
                   </TableCell>
                 </TableRow>

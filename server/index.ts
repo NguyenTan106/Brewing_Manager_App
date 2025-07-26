@@ -47,6 +47,12 @@ import {
 
 import { importIngredientByIdController } from "./routes/api_ingredient_import";
 
+import {
+  searchIngredientController,
+  searchBatchController,
+  searchRecipeController,
+} from "./routes/api_search";
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -95,6 +101,11 @@ app.use("/api", getTop5RecipesRecentlyUpdated);
 app.use("/api", getAllActivityLogsController);
 app.use("/api", paginationActivityLogController);
 app.use("/api", getActivityLogByIdController);
+
+//search
+app.use("/api", searchIngredientController);
+app.use("/api", searchBatchController);
+app.use("/api", searchRecipeController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);
