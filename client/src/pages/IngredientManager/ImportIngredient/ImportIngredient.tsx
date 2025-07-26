@@ -14,17 +14,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +49,10 @@ export function ImportIngredient({
     }
   }, [selectedIngredient]);
 
+  const resetForm = () => {
+    setImportIngredientForm({ ingredientId: "", amount: "", notes: "" });
+  };
+
   const handleImportIngredientAPI = async () => {
     if (
       importIngredientForm?.ingredientId === "" ||
@@ -84,6 +77,7 @@ export function ImportIngredient({
       });
     }
     await handlePaginationAPI();
+    resetForm();
   };
 
   return (
@@ -117,7 +111,8 @@ export function ImportIngredient({
               </Label>
               {selectedIngredient?.name}
             </div>
-            <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
+
+            <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
               <Label className="text-base">
                 <strong>Số lượng:</strong>
               </Label>
@@ -135,7 +130,12 @@ export function ImportIngredient({
                 placeholder="VD: 20"
               />
             </div>
-
+            <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+              <Label className="text-base">
+                <strong>Đơn vị:</strong>
+              </Label>
+              {selectedIngredient?.unit}
+            </div>
             <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
               <Label className="text-base">
                 <strong>Ghi chú:</strong>
@@ -155,7 +155,7 @@ export function ImportIngredient({
               variant="outline"
               onClick={() => handleImportIngredientAPI()}
             >
-              <span className="d-none d-sm-inline">Thêm</span>
+              <span className="d-none d-sm-inline">Nhập kho</span>
             </Button>
             <Button variant="secondary" onClick={handleClose}>
               Đóng

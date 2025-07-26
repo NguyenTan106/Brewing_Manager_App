@@ -195,7 +195,7 @@ export default function IngredientDetailModal({
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     Nguyên liệu này sẽ bị đưa vào mục đã xóa, các liên kết của
-                    nguyên liệu này vẫn được giữ nguyên
+                    nguyên liệu này sẽ bị ảnh hưởng
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

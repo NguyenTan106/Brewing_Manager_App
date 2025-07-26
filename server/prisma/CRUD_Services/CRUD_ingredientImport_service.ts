@@ -31,7 +31,12 @@ const importIngredient = async (importData: {
   const updateQuantity = importData.amount + existing.quantity;
 
   const [imported] = await prisma.$transaction([
-    prisma.ingredientImport.create({ data: importData }),
+    prisma.ingredientImport.create({
+      data: importData,
+      include: {
+        ingredient: true, // nếu muốn trả cả tên nguyên liệu
+      },
+    }),
     prisma.ingredient.update({
       where: { id: importData.ingredientId },
       data: {

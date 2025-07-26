@@ -23,6 +23,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export default function IngredientManager() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -119,7 +121,19 @@ export default function IngredientManager() {
       />
 
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <p className="text-3xl font-bold">Kho nguyên liệu:</p>
+        <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
+          <p className="text-3xl font-bold">Kho nguyên liệu:</p>
+          <div className="relative w-full max-w-sm">
+            <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="pl-9"
+              // value={searchTerm}
+              // onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
         <div className="flex flex-row gap-5">
           <Button
             onClick={() => setShowAddIngredientModal(true)}
@@ -142,13 +156,19 @@ export default function IngredientManager() {
               <TableHead className="px-4 py-3 text-left">
                 Tên nguyên liệu
               </TableHead>
-              <TableHead className="px-4 py-3 text-left">Loại</TableHead>
+              <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">
+                Loại
+              </TableHead>
               <TableHead className="px-4 py-3 text-left">
                 Số lượng tồn
               </TableHead>
-              <TableHead className="px-4 py-3 text-left">Đơn vị</TableHead>
-              <TableHead className="px-4 py-3 text-left">Trạng thái</TableHead>
-              <TableHead className="px-4 py-3 text-left">
+              <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
+                Đơn vị
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
+                Trạng thái
+              </TableHead>
+              <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">
                 Ngày nhập kho gần nhất
               </TableHead>
               <TableHead
@@ -172,15 +192,17 @@ export default function IngredientManager() {
                 <TableRow key={i.id}>
                   <TableCell className="px-4 py-3">{i.id}</TableCell>
                   <TableCell className="px-4 py-3">{i.name}</TableCell>
-                  <TableCell className="px-4 py-3">
+                  <TableCell className="px-4 py-3 hidden 2xl:table-cell">
                     {getIngredientIcon(i.type)}
                     {i.type}
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     {Number(i.quantity).toFixed(2)}
                   </TableCell>
-                  <TableCell className="px-4 py-3">{i.unit}</TableCell>
-                  <TableCell className="px-4 py-3">
+                  <TableCell className="px-4 py-3 hidden lg:table-cell">
+                    {i.unit}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 hidden lg:table-cell">
                     <Badge
                       className={`me-1 ${getBadgeClass(i.status)}`}
                       key={idx}
@@ -189,7 +211,7 @@ export default function IngredientManager() {
                     </Badge>
                   </TableCell>
 
-                  <TableCell className="px-4 py-3">
+                  <TableCell className="px-4 py-3 hidden 2xl:table-cell">
                     {i.lastImportDate &&
                       new Date(i.lastImportDate).toLocaleString("vi-VN", {
                         timeZone: "Asia/Ho_Chi_Minh",
@@ -209,7 +231,7 @@ export default function IngredientManager() {
                       onClick={() => handleGetIngredientByIdAPI(i.id)}
                       style={{ padding: "5px 10px", fontSize: "14px" }}
                     >
-                      📋 <span className="d-none d-sm-inline">Chi tiết</span>
+                      📋 <span className="hidden sm:inline">Chi tiết</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -218,9 +240,7 @@ export default function IngredientManager() {
                       className=""
                     >
                       <FaPlus />
-                      <span className="hidden sm:inline">
-                        Nhập kho nguyên liệu
-                      </span>
+                      <span className="hidden sm:inline">Nhập kho</span>
                     </Button>
                   </TableCell>
                 </TableRow>

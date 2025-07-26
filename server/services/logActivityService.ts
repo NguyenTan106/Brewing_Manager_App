@@ -207,6 +207,8 @@ function formatTableName(field: string): string {
       return "Mẻ";
     case "Ingredient":
       return "Nguyên liệu";
+    case "Ingredient Import":
+      return "Nhập kho nguyên liệu";
     default:
       return field;
   }

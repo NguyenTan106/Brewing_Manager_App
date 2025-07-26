@@ -195,7 +195,19 @@ export function AddIngredient({
               </div>
             </div>
             <div className="flex flex-wrap gap-4">
-              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+              <div className="flex flex-col gap-1 w-full md:w-[41%] min-w-0">
+                <Label className="text-base">
+                  <strong>Đơn vị: </strong>
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
+                  required
+                  value={form.unit}
+                  onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                  placeholder="VD: g, kg"
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
                 <Label className="text-base">
                   <strong>Số lượng:</strong>
                 </Label>
@@ -210,22 +222,10 @@ export function AddIngredient({
                   placeholder="VD: 20"
                 />
               </div>
-              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                <Label className="text-base">
-                  <strong>Đơn vị: </strong>
-                </Label>
-                <Input
-                  style={{ fontSize: "0.95rem" }}
-                  required
-                  value={form.unit}
-                  onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                  placeholder="VD: g, kg"
-                />
-              </div>
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+              <div className="flex flex-col gap-1 w-full md:w-[41%] min-w-0">
                 <Label className="text-base">
                   <strong>Giới hạn cảnh báo:</strong>
                 </Label>
@@ -241,11 +241,12 @@ export function AddIngredient({
                 />
               </div>
 
-              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+              <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
                 <Label className="text-base">
                   <strong>Ngày nhập kho gần nhất:</strong>
                 </Label>
                 <Input
+                  className="grid"
                   style={{ fontSize: "0.95rem" }}
                   required
                   type="datetime-local"

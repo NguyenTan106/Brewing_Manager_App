@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+
 import { toast } from "sonner";
 type Props = {
   handleClose: () => void;
@@ -47,7 +48,6 @@ export default function IngredientUpdateModal({
   const [editForm, setEditForm] = useState<Partial<Ingredient>>({});
   const [type, setType] = useState<Type[]>([]);
   const [selectedTypeId, setSelectedTypeId] = useState<string>("");
-
   useEffect(() => {
     if (selectedIngredient) {
       setEditForm(selectedIngredient);
@@ -81,8 +81,8 @@ export default function IngredientUpdateModal({
         editForm.name === "" ||
         editForm.type === "" ||
         editForm.unit === "" ||
-        editForm.quantity === "" ||
-        editForm.lowStockThreshold === "" ||
+        // editForm.quantity === "" ||
+        // editForm.lowStockThreshold === "" ||
         editForm.lastImportDate === null
       ) {
         toast.warning("Vui lòng điền đầy đủ thông tin");
@@ -90,9 +90,9 @@ export default function IngredientUpdateModal({
       }
       // Kiểm tra xem có thay đổi nào không
       if (
-        selectedIngredient?.quantity == editForm.quantity &&
+        // selectedIngredient?.quantity == editForm.quantity &&
         selectedIngredient?.lowStockThreshold == editForm.lowStockThreshold &&
-        selectedIngredient?.lastImportDate == editForm.lastImportDate &&
+        // selectedIngredient?.lastImportDate == editForm.lastImportDate &&
         selectedIngredient?.name == editForm.name &&
         selectedIngredient?.type == editForm.type &&
         selectedIngredient?.unit == editForm.unit &&
@@ -113,10 +113,10 @@ export default function IngredientUpdateModal({
     }
   };
 
-  const toDatetimeLocalValue = (dateString: string) => {
-    const date = new Date(dateString); // ISO string từ DB
-    const offset = date.getTimezoneOffset();
-    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+  const toDatetimeLocalValue = (date: string) => {
+    const dateFormat = new Date(date); // ISO string từ DB
+    const offset = dateFormat.getTimezoneOffset();
+    const localDate = new Date(dateFormat.getTime() - offset * 60 * 1000);
     return localDate.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:mm"
   };
 
@@ -203,7 +203,7 @@ export default function IngredientUpdateModal({
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <div className="flex flex-col gap-1 w-full md:w-[41%] min-w-0">
                   <Label className="text-base">
                     <strong>Đơn vị:</strong>
                   </Label>
@@ -216,12 +216,17 @@ export default function IngredientUpdateModal({
                     }
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
                   <Label className="text-base">
                     <strong>Số lượng:</strong>
                   </Label>
                   <Input
-                    style={{ fontSize: "0.95rem" }}
+                    style={{
+                      fontSize: "0.95rem",
+                      backgroundColor: "gray",
+                      fontWeight: "bold",
+                    }}
+                    disabled
                     type="number"
                     placeholder="VD: 20"
                     value={editForm?.quantity ?? ""}
@@ -239,7 +244,7 @@ export default function IngredientUpdateModal({
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <div className="flex flex-col gap-1 w-full md:w-[41%] min-w-0">
                   <Label className="text-base">
                     <strong>Giới hạn cảnh báo:</strong>
                   </Label>
@@ -259,13 +264,14 @@ export default function IngredientUpdateModal({
                     }
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
                   <Label className="text-base">
                     <strong>Ngày nhập kho gần nhất:</strong>
                   </Label>
                   <Input
                     style={{ fontSize: "0.95rem" }}
                     type="datetime-local"
+                    className="grid"
                     value={
                       editForm?.lastImportDate
                         ? toDatetimeLocalValue(editForm.lastImportDate)
