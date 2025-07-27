@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Recipe } from "./CRUD_API_Recipe";
+import { type Recipe } from "../CRUD/CRUD_API_Recipe";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export interface RecipeMostUsed {

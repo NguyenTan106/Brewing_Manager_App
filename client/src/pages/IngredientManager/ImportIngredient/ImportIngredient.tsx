@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import {
   importIngredientAPI,
   type ImportIngredient,
-} from "@/services/CRUD_API_IngredientImport";
-import type { Ingredient } from "@/services/CRUD_API_Ingredient";
+} from "@/services/CRUD/CRUD_API_IngredientImport";
+import type { Ingredient } from "@/services/CRUD/CRUD_API_Ingredient";
 
 import {
   Dialog,

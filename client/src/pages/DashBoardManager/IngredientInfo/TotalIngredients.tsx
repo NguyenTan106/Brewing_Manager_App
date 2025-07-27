@@ -1,7 +1,7 @@
 import {
   getIngredientStockStatusAPI,
   type StockStatus,
-} from "@/services/statistic_ingredient_API";
+} from "@/services/statistic_report/statistic_ingredient_API";
 import { useEffect, useState } from "react";
 interface Props {
   totalIngredients: number;

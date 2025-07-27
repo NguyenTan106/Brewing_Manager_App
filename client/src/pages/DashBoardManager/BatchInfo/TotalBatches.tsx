@@ -1,4 +1,4 @@
-import type { TotalBatchesInfo } from "@/services/statistic_batch_API";
+import type { TotalBatchesInfo } from "@/services/statistic_report/statistic_batch_API";
 import { type TooltipProps } from "recharts";
 import {
   Area,
@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { getTotalBatchesByWeekMonthYearAPI } from "@/services/statistic_batch_API";
+import { getTotalBatchesByWeekMonthYearAPI } from "@/services/statistic_report/statistic_batch_API";
 interface Props {
   totalBatches: TotalBatchesInfo | null;
 }

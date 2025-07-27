@@ -1,7 +1,7 @@
 import { useState, type JSX } from "react";
 import IngredientUpdateModal from "./IngredientUpdateModal";
-import { type Ingredient } from "../../services/CRUD_API_Ingredient";
-import { deleteIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
+import { type Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
+import { deleteIngredientByIdAPI } from "../../services/CRUD/CRUD_API_Ingredient";
 import {
   Dialog,
   DialogContent,

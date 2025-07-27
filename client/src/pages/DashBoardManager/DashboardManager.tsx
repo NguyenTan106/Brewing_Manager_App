@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { TotalBatches } from "./BatchInfo/TotalBatches";
 import { TotalIngredients } from "./IngredientInfo/TotalIngredients";
 import { TotalRecipes } from "./RecipeInfo/TotalRecipes";
-import { getTotalBatchesAPI } from "@/services/statistic_batch_API";
-import { getTotalIngredientsAPI } from "@/services/statistic_ingredient_API";
-import { getTotalRecipesAPI } from "@/services/statistic_recipe_API";
+import { getTotalBatchesAPI } from "@/services/statistic_report/statistic_batch_API";
+import { getTotalIngredientsAPI } from "@/services/statistic_report/statistic_ingredient_API";
+import { getTotalRecipesAPI } from "@/services/statistic_report/statistic_recipe_API";
 import { Card, CardContent } from "@/components/ui/card";
-import { type TotalBatchesInfo } from "@/services/statistic_batch_API";
+import { type TotalBatchesInfo } from "@/services/statistic_report/statistic_batch_API";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 

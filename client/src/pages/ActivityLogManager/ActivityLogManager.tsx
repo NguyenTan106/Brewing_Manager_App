@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ActivityLog } from "../../services/CRUD_API_ActivityLog";
+import type { ActivityLog } from "../../services/CRUD/CRUD_API_ActivityLog";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { paginationActivityLogAPI } from "@/services/pagination_API";
 import ActivityLogDetailModal from "./ActivityLogDetailModal";
-import { getActivityLogByIdAPI } from "../../services/CRUD_API_ActivityLog";
+import { getActivityLogByIdAPI } from "../../services/CRUD/CRUD_API_ActivityLog";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 export default function ActivityLogManager() {
@@ -87,15 +87,15 @@ export default function ActivityLogManager() {
 
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
-          <p className="text-2xl font-bold">Nhật kí hoạt động:</p>
+          <p className="text-3xl font-bold">Nhật kí hoạt động:</p>
           <div className="relative w-full lg:w-[150%]">
             <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Tìm kiếm..."
               className="pl-9"
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)}
+              // value={searchItem}
+              // onChange={(e) => setSearchItem(e.target.value)}
             />
           </div>
         </div>

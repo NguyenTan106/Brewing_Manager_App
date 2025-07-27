@@ -24,8 +24,8 @@ import {
   createBatchAPI,
   Status,
   type Recipe,
-} from "../../services/CRUD_API_Batch";
-import { getAllRecipesAPI } from "../../services/CRUD_API_Recipe";
+} from "../../services/CRUD/CRUD_API_Batch";
+import { getAllRecipesAPI } from "../../services/CRUD/CRUD_API_Recipe";
 
 interface Props {
   showAddModal: boolean;

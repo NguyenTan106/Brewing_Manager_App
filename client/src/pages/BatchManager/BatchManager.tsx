@@ -1,7 +1,7 @@
 import {
   getAllBatchesAPI,
   getBatchByIdAPI,
-} from "../../services/CRUD_API_Batch";
+} from "../../services/CRUD/CRUD_API_Batch";
 import { useState, useEffect, useRef } from "react";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import BatchDetailModal from "./BatchDetailModal";
@@ -11,7 +11,7 @@ import {
   type Batch,
   statusLabelMap,
   Status,
-} from "../../services/CRUD_API_Batch";
+} from "../../services/CRUD/CRUD_API_Batch";
 import {
   Table,
   TableBody,
@@ -58,7 +58,9 @@ export default function BatchManager() {
         );
       case Status.mash:
         return (
-          <Badge className="bg-orange-100 text-orange-700">Ngâm mạch nha</Badge>
+          <Badge className="bg-orange-100 text-orange-700">
+            Ngâm và nấu mạch nha
+          </Badge>
         );
       default:
         return <Badge className="bg-gray-100 text-gray-600">{status}</Badge>;
@@ -136,13 +138,14 @@ export default function BatchManager() {
     }, 100); // bạn có thể để 300ms cho mượt
 
     return () => clearTimeout(delayDebounce);
-  }, [searchItem]);
+  }, [searchItem, currentPage, limit]);
 
   const handleSearchRecipeAPI = async (query: string) => {
     try {
       const res = await searchBatchAPI(query);
       setBatches(res);
     } catch (err) {
+      console.log("Lỗi tìm kiếm", err);
       toast.error("Lỗi tìm kiếm");
     }
   };

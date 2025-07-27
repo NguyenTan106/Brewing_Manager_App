@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { createRecipeAPI } from "../../services/CRUD_API_Recipe";
-import type { Ingredient } from "../../services/CRUD_API_Ingredient";
-import { type RecipeIngredientInput } from "../../services/CRUD_API_Recipe";
+import { createRecipeAPI } from "../../services/CRUD/CRUD_API_Recipe";
+import type { Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
+import { type RecipeIngredientInput } from "../../services/CRUD/CRUD_API_Recipe";
 import {
   Dialog,
   DialogContent,

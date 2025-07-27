@@ -4,7 +4,7 @@ import {
   type Batch,
   // type Recipe,
   Status,
-} from "../../services/CRUD_API_Batch";
+} from "../../services/CRUD/CRUD_API_Batch";
 import UpdateBatchModal from "./UpdateBatchModal";
 import RecipeDetailModalFromBatch from "./RecipeDetailModalFromBatch";
 import {

@@ -1,6 +1,6 @@
-import { getAllTypesAPI } from "../../services/CRUD_API_type";
+import { getAllTypesAPI } from "../../services/CRUD/CRUD_API_type";
 import { useState, useEffect } from "react";
-import { createIngredientAPI } from "../../services/CRUD_API_Ingredient";
+import { createIngredientAPI } from "../../services/CRUD/CRUD_API_Ingredient";
 import { AddNewType } from "./AddNewType";
 import {
   Dialog,

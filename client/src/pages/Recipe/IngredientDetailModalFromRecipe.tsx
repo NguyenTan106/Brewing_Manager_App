@@ -1,4 +1,4 @@
-import { type Ingredient } from "../../services/CRUD_API_Ingredient";
+import { type Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
 import {
   getBadgeClass,
   getIngredientIcon,

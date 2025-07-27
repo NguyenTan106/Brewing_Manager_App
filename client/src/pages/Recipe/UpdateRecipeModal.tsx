@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import type { RecipeUpate } from "../../services/CRUD_API_Recipe";
-import { updateRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
-import { type RecipeIngredient } from "../../services/CRUD_API_Recipe";
-import type { Ingredient } from "../../services/CRUD_API_Ingredient";
+import type { RecipeUpate } from "../../services/CRUD/CRUD_API_Recipe";
+import { updateRecipeByIdAPI } from "../../services/CRUD/CRUD_API_Recipe";
+import { type RecipeIngredient } from "../../services/CRUD/CRUD_API_Recipe";
+import type { Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
 import {
   Dialog,
   DialogContent,

@@ -1,18 +1,15 @@
-import type { Batch } from "../../services/CRUD_API_Batch";
+import type { Batch } from "../../services/CRUD/CRUD_API_Batch";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -20,7 +17,6 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
 
 interface Props {

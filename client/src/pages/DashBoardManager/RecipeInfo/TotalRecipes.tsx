@@ -1,9 +1,9 @@
-import type { Recipe } from "@/services/CRUD_API_Recipe";
+import type { Recipe } from "@/services/CRUD/CRUD_API_Recipe";
 import {
   getTotalRecipesMostUsedAPI,
   getTotalRecipesRecentlyUpdatedAPI,
   type RecipeMostUsed,
-} from "@/services/statistic_recipe_API";
+} from "@/services//statistic_report/statistic_recipe_API";
 import { useEffect, useState } from "react";
 
 interface Props {

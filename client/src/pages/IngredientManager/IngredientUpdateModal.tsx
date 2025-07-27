@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { updateIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
-import { type Ingredient } from "../../services/CRUD_API_Ingredient";
+import { updateIngredientByIdAPI } from "../../services/CRUD/CRUD_API_Ingredient";
+import { type Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
 // import Select from "react-select";
-import { getAllTypesAPI } from "../../services/CRUD_API_type";
+import { getAllTypesAPI } from "../../services/CRUD/CRUD_API_type";
 import {
   Dialog,
   DialogContent,

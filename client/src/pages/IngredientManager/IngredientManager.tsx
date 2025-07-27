@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-// import { Table, Badge, Button } from "react-bootstrap";
 import {
   getAllIngredientsAPI,
   getIngredientByIdAPI,
-} from "../../services/CRUD_API_Ingredient";
+} from "../../services/CRUD/CRUD_API_Ingredient";
 import IngredientDetailModal from "./IngredientDetailModal";
 import { getIngredientIcon, getBadgeClass } from "./IngredientUtils";
 import { AddIngredient } from "./AddNewIngredient";
 import { paginationIngredientAPI } from "../../services/pagination_API";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
-import { type Ingredient } from "../../services/CRUD_API_Ingredient";
+import { type Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
 import { ImportIngredient } from "./ImportIngredient/ImportIngredient";
 import { searchIngredientAPI } from "@/services/search_API";
 import {
@@ -115,13 +114,14 @@ export default function IngredientManager() {
     }, 100); // bạn có thể để 300ms cho mượt
 
     return () => clearTimeout(delayDebounce);
-  }, [searchItem]);
+  }, [searchItem, currentPage, limit]);
 
   const handleSearchIngredientAPI = async (query: string) => {
     try {
       const res = await searchIngredientAPI(query);
       setIngredients(res);
     } catch (err) {
+      console.log("Lỗi tìm kiếm", err);
       toast.error("Lỗi tìm kiếm");
     }
   };

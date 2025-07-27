@@ -1,13 +1,13 @@
 import type {
   RecipeIngredient,
   RecipeUpate,
-} from "../../services/CRUD_API_Recipe";
+} from "../../services/CRUD/CRUD_API_Recipe";
 import { useState } from "react";
 import UpdateRecipeModal from "./UpdateRecipeModal";
-import { deleteRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
-import type { Ingredient } from "../../services/CRUD_API_Ingredient";
+import { deleteRecipeByIdAPI } from "../../services/CRUD/CRUD_API_Recipe";
+import type { Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
 import IngredientDetailModalFromRecipe from "./IngredientDetailModalFromRecipe";
-import { getIngredientByIdAPI } from "../../services/CRUD_API_Ingredient";
+import { getIngredientByIdAPI } from "../../services/CRUD/CRUD_API_Ingredient";
 import {
   Dialog,
   DialogContent,

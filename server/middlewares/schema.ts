@@ -47,3 +47,26 @@ export const recipeSchema = z.object({
   note: z.string().optional(),
   instructions: z.string().optional(),
 });
+
+export const userSchema = z.object({
+  username: z.string().min(1, "Username không được để trống"),
+  password: z.string().min(1, "Password không được để trống"),
+  role: z.enum(["SUPER_ADMIN", "ADMIN"], {
+    message: "Role không hợp lệ",
+  }),
+  phone: z.string().min(10, "Số điện thoại phải có ít nhất 10 chữ số"),
+  branch: z.string().optional(),
+});
+// .refine(
+//   (data) => {
+//     // Nếu là ADMIN thì phải có branch
+//     if (data.role === "ADMIN") {
+//       return data.branch && data.branch.trim() !== "";
+//     }
+//     return true;
+//   },
+//   {
+//     message: "Branch là bắt buộc với tài khoản ADMIN",
+//     path: ["branch"],
+//   }
+// );

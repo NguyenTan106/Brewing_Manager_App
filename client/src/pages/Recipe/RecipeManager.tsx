@@ -2,15 +2,15 @@ import type {
   Recipe,
   RecipeIngredient,
   RecipeUpate,
-} from "../../services/CRUD_API_Recipe";
+} from "../../services/CRUD/CRUD_API_Recipe";
 import { useEffect, useRef, useState } from "react";
 import AddNewRecipeModal from "./AddNewRecipeModal";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import {
   getAllIngredientsAPI,
   type Ingredient,
-} from "../../services/CRUD_API_Ingredient";
-import { getRecipeByIdAPI } from "../../services/CRUD_API_Recipe";
+} from "../../services/CRUD/CRUD_API_Ingredient";
+import { getRecipeByIdAPI } from "../../services/CRUD/CRUD_API_Recipe";
 import RecipeDetailModal from "./RecipeDetailModal";
 import { paginationRecipeAPI } from "../../services/pagination_API";
 import {
@@ -118,13 +118,14 @@ export default function RecipeManager() {
     }, 100); // bạn có thể để 300ms cho mượt
 
     return () => clearTimeout(delayDebounce);
-  }, [searchItem]);
+  }, [searchItem, currentPage, limit]);
 
   const handleSearchRecipeAPI = async (query: string) => {
     try {
       const res = await searchRecipeAPI(query);
       setRecipes(res);
     } catch (err) {
+      console.log("Lỗi tìm kiếm", err);
       toast.error("Lỗi tìm kiếm");
     }
   };
@@ -151,7 +152,7 @@ export default function RecipeManager() {
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
           <p className="text-3xl font-bold">Danh sách công thức:</p>
-          <div className="relative w-full lg:w-[100%]">
+          <div className="relative w-full lg:w-[150%]">
             <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"

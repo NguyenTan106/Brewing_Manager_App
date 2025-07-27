@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { createTypeAPI, deleteTypeAPI } from "../../services/CRUD_API_type";
+import {
+  createTypeAPI,
+  deleteTypeAPI,
+} from "../../services/CRUD/CRUD_API_type";
 import {
   Dialog,
   DialogContent,

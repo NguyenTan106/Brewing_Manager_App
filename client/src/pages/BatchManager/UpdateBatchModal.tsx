@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import type { Batch, Status } from "../../services/CRUD_API_Batch";
-import { updateBatchByIdAPI } from "../../services/CRUD_API_Batch";
+import type { Batch, Status } from "../../services/CRUD/CRUD_API_Batch";
+import { updateBatchByIdAPI } from "../../services/CRUD/CRUD_API_Batch";
 import {
   Dialog,
   DialogContent,
