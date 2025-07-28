@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-
+import { checkUser } from "@/components/Auth/Check";
 interface Props {
   showImportIngredientModal: boolean;
   handleClose: () => void;
@@ -34,10 +34,12 @@ export function ImportIngredient({
   selectedIngredient,
   handlePaginationAPI,
 }: Props) {
+  const user = checkUser();
   const [importIngredientForm, setImportIngredientForm] = useState({
     ingredientId: "",
     amount: "",
     notes: "",
+    createdById: user?.id ?? 0,
   });
 
   useEffect(() => {
@@ -50,7 +52,12 @@ export function ImportIngredient({
   }, [selectedIngredient]);
 
   const resetForm = () => {
-    setImportIngredientForm({ ingredientId: "", amount: "", notes: "" });
+    setImportIngredientForm({
+      ingredientId: "",
+      amount: "",
+      notes: "",
+      createdById: user?.id ?? 0,
+    });
   };
 
   const handleImportIngredientAPI = async () => {
@@ -66,6 +73,7 @@ export function ImportIngredient({
       ingredientId: importIngredientForm?.ingredientId,
       amount: importIngredientForm?.amount,
       notes: importIngredientForm?.notes,
+      createdById: importIngredientForm.createdById,
     });
     if (imported.data == null) {
       toast.error(imported.message);
@@ -143,7 +151,26 @@ export function ImportIngredient({
               <Textarea
                 style={{ fontSize: "0.95rem" }}
                 rows={4}
+                value={importIngredientForm.notes}
+                onChange={(e) =>
+                  setImportIngredientForm({
+                    ...importIngredientForm,
+                    notes: e.target.value,
+                  })
+                }
                 placeholder="VD: Malt nền cho nhiều loại bia, màu sáng, vị ngũ cốc nhẹ"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+              <Label className="text-base">
+                <strong>Người nhập:</strong>
+              </Label>
+              <Input
+                style={{ fontSize: "0.95rem" }}
+                required
+                disabled
+                value={importIngredientForm.createdById}
+                placeholder="VD: 20"
               />
             </div>
           </div>

@@ -43,6 +43,12 @@ export interface Recipe {
   createdAt: string;
 }
 
+export interface UserInfo {
+  username: string;
+  phone: string;
+  branch: string;
+}
+
 export interface Batch {
   id: number;
   code: string;
@@ -51,6 +57,8 @@ export interface Batch {
   volume: number | string;
   notes?: string;
   recipeId?: number | string;
+  createdById?: number;
+  createdBy?: UserInfo;
   recipe: Recipe | null;
   createdAt?: string;
   batchIngredients: BatchIngredient[] | null;

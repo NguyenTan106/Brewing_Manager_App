@@ -44,7 +44,8 @@ const handleCreateRecipe = async (req: Request, res: Response) => {
       parsed.recipeIngredients,
       parsed.description,
       parsed.note,
-      parsed.instructions
+      parsed.instructions,
+      parsed.createdById
     );
     res.status(200).json(handle);
     const data = handle.data;
@@ -61,7 +62,7 @@ const handleCreateRecipe = async (req: Request, res: Response) => {
       "create",
       "Recipe",
       data.id,
-      `Thêm công thức "${data.name}" vào ${logCreatedAt}`
+      `${data.createdBy.username} đã thêm công thức "${data.name}"  vào ${logCreatedAt}`
       // userId // nếu có
     );
   } catch (e) {

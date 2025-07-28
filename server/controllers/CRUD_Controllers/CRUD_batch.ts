@@ -45,7 +45,8 @@ const handleCreateBatch = async (req: Request, res: Response) => {
       parsed.status as Status,
       Number(parsed.volume),
       parsed.notes || "",
-      Number(parsed.recipeId)
+      Number(parsed.recipeId),
+      Number(parsed.createdById)
     );
     const data = result.data;
     res.status(201).json(result);
@@ -65,7 +66,7 @@ const handleCreateBatch = async (req: Request, res: Response) => {
       "create",
       "Batch",
       data.id,
-      `Thêm mẻ "${data.beerName}": ${data.volume}L với trạng thái ${data.status} vào ngày ${logCreatedAt}`
+      `Thêm mẻ "${data.beerName}": ${data.volume}L với trạng thái ${data.status} bởi ${data.createdBy.username} vào ngày ${logCreatedAt}`
       // userId // nếu có
     );
   } catch (e) {

@@ -207,6 +207,7 @@ export default function BatchManager() {
               </TableHead>
               <TableHead className="px-4 py-3 text-left">Công thức</TableHead>
               <TableHead className="px-4 py-3 text-left">Ngày tạo</TableHead>
+              <TableHead className="px-4 py-3 text-left">Người tạo</TableHead>
               <TableHead className="px-4 py-3 text-left"></TableHead>
             </TableRow>
           </TableHeader>
@@ -241,7 +242,9 @@ export default function BatchManager() {
                         minute: "2-digit",
                       })}
                   </TableCell>
-
+                  <TableCell className="px-4 py-3">
+                    {i.createdBy?.username}
+                  </TableCell>
                   <TableCell className="px-4 py-3">
                     <Button
                       title="Xem chi tiết nguyên liệu"

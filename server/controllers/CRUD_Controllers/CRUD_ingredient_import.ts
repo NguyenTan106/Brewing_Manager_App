@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { importIngredient } from "../../prisma/CRUD_Services/CRUD_ingredientImport_service";
-import { compareAndLogChanges } from "../../services/logActivityService";
 import { logActivity } from "../../prisma/logActivity";
 import { ingredientImportSchema } from "../../middlewares/schema";
 
@@ -12,7 +11,7 @@ const handleImportIngredientById = async (req: Request, res: Response) => {
       ingredientId: Number(parsed.ingredientId),
       amount: Number(parsed.amount),
       notes: parsed.notes || null,
-      createdBy: parsed.createdBy || null,
+      createdById: Number(parsed.createdById),
     });
 
     res.status(200).json(handle);
@@ -31,7 +30,7 @@ const handleImportIngredientById = async (req: Request, res: Response) => {
       "create",
       "Ingredient Import",
       data.id,
-      `Nhập kho nguyên liệu "${data.ingredient.name}" với số lượng ${data.amount} ${data.ingredient.unit} vào ${logLastImportDate}`
+      `${data.createdBy.username} đã nhập kho nguyên liệu "${data.ingredient.name}" với số lượng ${data.amount} ${data.ingredient.unit} vào ${logLastImportDate}`
       // userId // nếu có
     );
   } catch (e) {

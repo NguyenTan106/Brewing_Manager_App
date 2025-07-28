@@ -1,4 +1,8 @@
-import { getAllUsersAPI, type User } from "@/services/CRUD/CRUD_API_User";
+import {
+  getAllUsersAPI,
+  getUserByIdAPI,
+  type User,
+} from "@/services/CRUD/CRUD_API_User";
 import { useEffect, useState } from "react";
 import {
   Table,
@@ -14,8 +18,13 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { FaPlus } from "react-icons/fa";
+import AddNewUserModal from "./AddNewUserModal";
+import UserDetailModal from "./UserDetailModal";
 export default function UserManager() {
   const [users, setUsers] = useState<User[]>([]);
+  const [showAddNewUserModal, setShowAddNewUserModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   useEffect(() => {
     handleGetAllUserAPI();
   }, []);
@@ -24,8 +33,26 @@ export default function UserManager() {
     const data = await getAllUsersAPI();
     setUsers(data.data);
   };
+
+  const handleGetUserByIdAPI = async (id: number) => {
+    const data = await getUserByIdAPI(id);
+    setSelectedUser(data.data);
+    setShowDetailModal(true);
+  };
   return (
     <>
+      <AddNewUserModal
+        showAddNewUserModal={showAddNewUserModal}
+        handleClose={() => setShowAddNewUserModal(false)}
+        handleGetAllUserAPI={handleGetAllUserAPI}
+      />
+      <UserDetailModal
+        selectedUser={selectedUser}
+        handleClose={() => setShowDetailModal(false)}
+        showDetailModal={showDetailModal}
+        handleGetAllUserAPI={handleGetAllUserAPI}
+        setSelectedUser={setSelectedUser}
+      />
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
           <p className="text-3xl font-bold">Danh sách người dùng:</p>
@@ -42,7 +69,7 @@ export default function UserManager() {
         </div>
         <div className="flex flex-row gap-5">
           <Button
-            // onClick={() => setShowAddIngredientModal(true)}
+            onClick={() => setShowAddNewUserModal(true)}
             title="Thêm nguyên liệu mới"
             className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
           >
@@ -64,6 +91,9 @@ export default function UserManager() {
               <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">
                 Vai trò
               </TableHead>
+              <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
+                Số điện thoại
+              </TableHead>
               <TableHead className="px-4 py-3 text-left">Chi nhánh</TableHead>
               <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
                 Ngày tạo
@@ -71,6 +101,7 @@ export default function UserManager() {
               <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
                 Ngày cập nhật
               </TableHead>
+              <TableHead className="px-4 py-3 text-left hidden lg:table-cell"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-200">
@@ -91,28 +122,43 @@ export default function UserManager() {
                   <TableCell className="px-4 py-3 hidden 2xl:table-cell">
                     {i.role}
                   </TableCell>
+                  <TableCell className="px-4 py-3 hidden 2xl:table-cell">
+                    {i.phone}
+                  </TableCell>
                   <TableCell className="px-4 py-3">{i.branch}</TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
-                    {new Date(i.createdAt).toLocaleString("vi-VN", {
-                      timeZone: "Asia/Ho_Chi_Minh",
-                      hour12: false,
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {i.createdAt &&
+                      new Date(i.createdAt).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                   </TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
-                    {new Date(i.updatedAt).toLocaleString("vi-VN", {
-                      timeZone: "Asia/Ho_Chi_Minh",
-                      hour12: false,
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {i.updatedAt &&
+                      new Date(i.updatedAt).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    <Button
+                      title="Xem chi tiết nguyên liệu"
+                      variant="outline"
+                      onClick={() => handleGetUserByIdAPI(i.id ? i.id : 0)}
+                      style={{ padding: "5px 10px", fontSize: "14px" }}
+                    >
+                      📋 <span className="hidden sm:inline">Chi tiết</span>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))

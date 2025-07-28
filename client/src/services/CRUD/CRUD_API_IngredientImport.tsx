@@ -5,7 +5,7 @@ export interface ImportIngredient {
   ingredientId: string;
   amount: string;
   notes?: string;
-  createdBy?: string;
+  createdById: number;
 }
 
 export const importIngredientAPI = async (data: ImportIngredient) => {

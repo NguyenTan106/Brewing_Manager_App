@@ -38,10 +38,10 @@ model IngredientImport {
   amount       Float
   importedAt   DateTime   @default(now())
   notes        String? // Ghi chú nếu cần
-  createdBy    String? // (nếu có phân quyền)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdById  Int?
+  createdBy    User?      @relation(fields: [createdById], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 enum Status {
@@ -54,16 +54,17 @@ enum Status {
 }
 
 model Batch {
-  id        Int      @id @default(autoincrement())
-  code      String   @unique
-  beerName  String
-  status    Status
-  volume    Float
-  notes     String?
-  recipeId  Int? // liên kết công thức (optional)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id               Int               @id @default(autoincrement())
+  code             String            @unique
+  beerName         String
+  status           Status
+  volume           Float
+  notes            String?
+  recipeId         Int? // liên kết công thức (optional)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  createdById      Int?
+  createdBy        User?             @relation(fields: [createdById], references: [id])
   recipe           Recipe?           @relation(fields: [recipeId], references: [id])
   batchIngredients BatchIngredient[]
 }
@@ -79,15 +80,16 @@ model BatchIngredient {
 }
 
 model Recipe {
-  id           Int      @id @default(autoincrement())
-  name         String   @unique
-  description  String?
-  note         String?
-  instructions String?
-  isDeleted    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
+  id                Int                @id @default(autoincrement())
+  name              String             @unique
+  description       String?
+  note              String?
+  instructions      String?
+  isDeleted         Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  createdById       Int?
+  createdBy         User?              @relation(fields: [createdById], references: [id])
   recipeIngredients RecipeIngredient[]
   batches           Batch[]
 }
@@ -113,15 +115,18 @@ model ActivityLog {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String // hashed password
-  phone     String?
-  role      Role // enum: 'SUPER_ADMIN' | 'ADMIN'
-  branch    String? // tên chi nhánh, chỉ dành cho ADMIN
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false)
+  id               Int                @id @default(autoincrement())
+  username         String             @unique
+  password         String // hashed password
+  phone            String?
+  role             Role // enum: 'SUPER_ADMIN' | 'ADMIN'
+  branch           String? // tên chi nhánh, chỉ dành cho ADMIN
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  isDeleted        Boolean            @default(false)
+  IngredientImport IngredientImport[]
+  Batch            Batch[]
+  Recipe           Recipe[]
 }
 
 enum Role {

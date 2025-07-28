@@ -5,7 +5,7 @@ const importIngredient = async (importData: {
   ingredientId: number;
   amount: number;
   notes: string | null;
-  createdBy: string | null;
+  createdById: number;
 }): Promise<{ message: string; data: any }> => {
   const existing = await prisma.ingredient.findFirst({
     where: {
@@ -35,6 +35,7 @@ const importIngredient = async (importData: {
       data: importData,
       include: {
         ingredient: true, // nếu muốn trả cả tên nguyên liệu
+        createdBy: true,
       },
     }),
     prisma.ingredient.update({

@@ -210,6 +210,12 @@ export default function RecipeManager() {
               <TableHead
                 className="px-4 py-3 text-left"
                 style={{ width: "10%" }}
+              >
+                Người tạo
+              </TableHead>
+              <TableHead
+                className="px-4 py-3 text-left"
+                style={{ width: "10%" }}
               ></TableHead>
             </TableRow>
           </TableHeader>
@@ -246,7 +252,9 @@ export default function RecipeManager() {
                         minute: "2-digit",
                       })}
                   </TableCell>
-
+                  <TableCell className="whitespace-normal break-words px-4 py-3">
+                    {i.createdBy?.username}
+                  </TableCell>
                   <TableCell className="px-4 py-3">
                     <Button
                       title="Xem chi tiết nguyên liệu"

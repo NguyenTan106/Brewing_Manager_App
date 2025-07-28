@@ -4,7 +4,10 @@ import { verifySuperAdmin } from "../middlewares/verifySuperAdmin ";
 import {
   handleCreateNewUser,
   handleUserLogin,
-  handlegetAllUsers,
+  handleGetAllUsers,
+  handleGetUserById,
+  handleUpdateUserById,
+  handleDeleteUserById,
 } from "../controllers/CRUD_Controllers/CRUD_user";
 const router = express.Router();
 
@@ -17,11 +20,40 @@ const createNewUserController = router.post(
 );
 
 const loginUserController = router.post("/user-login", handleUserLogin);
+
 const getAllUsersController = router.get(
   "/users",
   verifyToken,
   verifySuperAdmin,
-  handlegetAllUsers
+  handleGetAllUsers
 );
 
-export { createNewUserController, loginUserController, getAllUsersController };
+const getUserByIdController = router.get(
+  "/user/:id",
+  verifyToken,
+  verifySuperAdmin,
+  handleGetUserById
+);
+
+const updateUserByIdController = router.put(
+  "/update-user/:id",
+  verifyToken,
+  verifySuperAdmin,
+  handleUpdateUserById
+);
+
+const deleteUserByIdController = router.delete(
+  "/delete-user/:id",
+  verifyToken,
+  verifySuperAdmin,
+  handleDeleteUserById
+);
+
+export {
+  createNewUserController,
+  loginUserController,
+  getAllUsersController,
+  getUserByIdController,
+  updateUserByIdController,
+  deleteUserByIdController,
+};

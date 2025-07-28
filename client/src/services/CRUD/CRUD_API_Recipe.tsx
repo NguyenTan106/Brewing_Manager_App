@@ -1,6 +1,7 @@
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 import { type Ingredient } from "./CRUD_API_Ingredient";
+import type { UserInfo } from "./CRUD_API_Batch";
 
 export interface RecipeIngredient {
   id: number;
@@ -33,6 +34,8 @@ export interface Recipe {
   instructions?: string;
   createdAt: string;
   updatedAt?: string;
+  createdById?: number;
+  createdBy?: UserInfo;
 }
 
 export interface RecipeUpate {

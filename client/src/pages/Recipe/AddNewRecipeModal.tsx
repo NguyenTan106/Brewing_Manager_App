@@ -35,7 +35,7 @@ import { FaPlus } from "react-icons/fa";
 import mammoth from "mammoth";
 import TurndownService from "turndown";
 import { toast } from "sonner";
-
+import { checkUser } from "@/components/Auth/Check";
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
@@ -49,12 +49,14 @@ export default function AddNewRecipeModal({
   handlePaginationAPI,
   ingredients,
 }: Props) {
+  const user = checkUser();
   const [form, setForm] = useState({
     name: "",
     description: "",
     note: "",
     instructions: "",
     recipeIngredients: [] as RecipeIngredientInput[],
+    createdById: user?.id ?? 0,
   });
 
   const clearForm = () => {
@@ -64,6 +66,7 @@ export default function AddNewRecipeModal({
       note: "",
       instructions: "",
       recipeIngredients: [],
+      createdById: user?.id ?? 0,
     });
   };
 
@@ -80,7 +83,7 @@ export default function AddNewRecipeModal({
     }
     const data = await createRecipeAPI(form);
     if (data.data == null) {
-      toast.warning(data.message);
+      toast.error(data.message);
       return;
     }
     if (data.data) {
@@ -309,6 +312,19 @@ export default function AddNewRecipeModal({
                     })
                   }
                   placeholder="VD: Thêm dry hopping sau 5 ngày"
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full min-w-0">
+                <Label className="text-base">
+                  <strong>Người tạo:</strong>
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
+                  required
+                  disabled
+                  value={form.createdById}
+                  // onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="VD: Công thức IPA đậm vị"
                 />
               </div>
               <div className="flex flex-col gap-1 w-full min-w-0">

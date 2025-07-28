@@ -17,7 +17,11 @@ export const ingredientImportSchema = z.object({
   ingredientId: z.preprocess((val) => Number(val), z.number()),
   amount: z.preprocess((val) => Number(val), z.number()),
   notes: z.string().optional(),
-  createdBy: z.string().optional(),
+  createdById: z
+    .number({
+      error: "Người tạo không được để trống",
+    })
+    .min(1, "Người tạo không hợp lệ"),
 });
 
 export const typeSchema = z.object({
@@ -30,6 +34,11 @@ export const batchSchema = z.object({
   volume: z.string().min(0, "Khối lượng mẻ không được để trống"),
   notes: z.string().optional(),
   recipeId: z.number().optional(),
+  createdById: z
+    .number({
+      error: "Người tạo không được để trống",
+    })
+    .min(1, "Người tạo không hợp lệ"),
 });
 
 export const recipeSchema = z.object({
@@ -46,6 +55,11 @@ export const recipeSchema = z.object({
   description: z.string().optional(),
   note: z.string().optional(),
   instructions: z.string().optional(),
+  createdById: z
+    .number({
+      error: "Người tạo không được để trống",
+    })
+    .min(1, "Người tạo không hợp lệ"),
 });
 
 export const userSchema = z.object({

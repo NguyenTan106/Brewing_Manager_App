@@ -5,11 +5,12 @@ export const checkUser = () => {
   const token = localStorage.getItem("token");
   if (token) {
     const decoded = jwtDecode<JwtUserPayload>(token);
+    const id = decoded.id;
     const role = decoded.role;
     const username = decoded.username;
     const phone = decoded.phone;
-    console.log({ role, username, phone });
-    return { role, username, phone };
+    // console.log({ role, username, phone });
+    return { id, role, username, phone };
   }
 };
 // export const showUsername = () => {

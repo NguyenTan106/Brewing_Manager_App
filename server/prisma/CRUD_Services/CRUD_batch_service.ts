@@ -25,6 +25,13 @@ const getAllBatches = async (): Promise<{
             },
           },
         }, // nếu muốn lấy luôn thông tin công thức liên kết
+        createdBy: {
+          select: {
+            username: true,
+            phone: true,
+            branch: true,
+          },
+        },
       },
     });
     const validate = data.map((e) => ({
@@ -71,6 +78,13 @@ const getBatchById = async (
             },
           },
         }, // nếu muốn lấy luôn thông tin công thức liên kết
+        createdBy: {
+          select: {
+            username: true,
+            phone: true,
+            branch: true,
+          },
+        },
       },
     });
 
@@ -111,6 +125,8 @@ const getBatchById = async (
         status: data.status,
         volume: data.volume,
         recipeId: data.recipeId,
+        createdById: data.createdById,
+        createdBy: data.createdBy,
         recipeName: data.recipe?.name,
         createdAt: data.createdAt,
         batchIngredients: batchIngredientList,
@@ -129,7 +145,8 @@ const createBatch = async (
   status: Status,
   volume: number,
   notes: string,
-  recipeId: number
+  recipeId: number,
+  createdById: number
 ): Promise<{ message: string; data: any }> => {
   try {
     const vnNow = new Date(
@@ -224,6 +241,10 @@ const createBatch = async (
           volume,
           notes: notes || null,
           recipeId,
+          createdById,
+        },
+        include: {
+          createdBy: true,
         },
       });
 
@@ -337,6 +358,13 @@ const getBatchPage = async (page: number, limit: number) => {
           },
         },
       }, // nếu muốn lấy luôn thông tin công thức liên kết
+      createdBy: {
+        select: {
+          username: true,
+          phone: true,
+          branch: true,
+        },
+      },
     },
     orderBy: { id: "desc" },
     enhanceItem: async (i) => ({

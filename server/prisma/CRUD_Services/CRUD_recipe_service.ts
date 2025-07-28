@@ -19,6 +19,7 @@ const getAllRecipes = async (): Promise<{
         recipeIngredients: {
           include: { ingredient: true },
         },
+        createdBy: true,
       },
       orderBy: { createdAt: "desc" },
       where: {
@@ -61,6 +62,7 @@ const getRecipeById = async (
         recipeIngredients: {
           include: { ingredient: true },
         },
+        createdBy: true,
       },
     });
 
@@ -89,7 +91,8 @@ const createRecipe = async (
   recipeIngredients: IngredientInput[],
   description?: string,
   note?: string,
-  instructions?: string
+  instructions?: string,
+  createdById?: number
 ): Promise<{ message: string; data: any }> => {
   try {
     // ✅ Kiểm tra trùng tên
@@ -127,6 +130,7 @@ const createRecipe = async (
             amountNeeded: ing.amountNeeded,
           })),
         },
+        createdById,
       },
       include: {
         recipeIngredients: {
@@ -134,6 +138,7 @@ const createRecipe = async (
             ingredient: true, // nếu muốn trả cả tên nguyên liệu
           },
         },
+        createdBy: true,
       },
     });
 
@@ -278,6 +283,7 @@ const getRecipePage = async (page: number, limit: number) => {
       recipeIngredients: {
         include: { ingredient: true },
       },
+      createdBy: true,
     },
     orderBy: { createdAt: "desc" },
     enhanceItem: async (i) => ({

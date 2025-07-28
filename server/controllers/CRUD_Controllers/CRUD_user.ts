@@ -3,6 +3,9 @@ import {
   createNewUser,
   userLogin,
   getAllUsers,
+  getUserById,
+  updateUserById,
+  deleteUserById,
 } from "../../prisma/CRUD_Services/CRUD_user_service";
 import { userSchema } from "../../middlewares/schema";
 
@@ -38,7 +41,7 @@ const handleUserLogin = async (req: Request, res: Response) => {
   }
 };
 
-const handlegetAllUsers = async (req: Request, res: Response) => {
+const handleGetAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await getAllUsers();
     res.status(200).json(result);
@@ -50,4 +53,52 @@ const handlegetAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export { handleCreateNewUser, handleUserLogin, handlegetAllUsers };
+const handleGetUserById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const result = await getUserById(id);
+    res.status(200).json(result);
+  } catch (e) {
+    console.error("Lỗi trong controller handleGetUserById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi lấy danh sách người dùng",
+    });
+  }
+};
+
+const handleUpdateUserById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const { username, role, phone, branch } = req.body;
+    const result = await updateUserById(id, { username, role, phone, branch });
+    res.status(200).json(result);
+  } catch (e) {
+    console.error("Lỗi trong controller handleUpdateUserById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi cập nhật người dùng",
+    });
+  }
+};
+
+const handleDeleteUserById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const currentUserId = Number(req.body);
+    const result = await deleteUserById(id, currentUserId);
+    res.status(200).json(result);
+  } catch (e) {
+    console.error("Lỗi trong controller handleDeleteUserById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi xóa người dùng",
+    });
+  }
+};
+
+export {
+  handleCreateNewUser,
+  handleUserLogin,
+  handleGetAllUsers,
+  handleGetUserById,
+  handleUpdateUserById,
+  handleDeleteUserById,
+};

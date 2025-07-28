@@ -57,6 +57,9 @@ import {
   createNewUserController,
   loginUserController,
   getAllUsersController,
+  getUserByIdController,
+  updateUserByIdController,
+  deleteUserByIdController,
 } from "./routes/api_user";
 
 const app = express();
@@ -117,6 +120,9 @@ app.use("/api", searchRecipeController);
 app.use("/api", createNewUserController);
 app.use("/api", loginUserController);
 app.use("/api", getAllUsersController);
+app.use("/api", getUserByIdController);
+app.use("/api", updateUserByIdController);
+app.use("/api", deleteUserByIdController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

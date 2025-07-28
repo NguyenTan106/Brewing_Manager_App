@@ -86,6 +86,10 @@ export default function RecipeDetailModal({
     setShowDetailIngredientModal(true);
   };
 
+  const handleShowUpdateModal = async () => {
+    setShowUpdateModal(true);
+  };
+
   return (
     <>
       <IngredientDetailModalFromRecipe
@@ -230,7 +234,7 @@ export default function RecipeDetailModal({
             <Button
               variant="secondary"
               className="bg-blue-600 text-white hover:bg-blue-500"
-              onClick={() => setShowUpdateModal(true)}
+              onClick={() => handleShowUpdateModal()}
               style={{
                 padding: "5px 10px",
                 fontSize: "14px",

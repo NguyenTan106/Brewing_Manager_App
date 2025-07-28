@@ -123,7 +123,7 @@ export default function BatchDetailModal({
                   {selectedBatch?.notes}
                 </p>
               </div>
-              <div className="col-span-full">
+              <div className="">
                 <p className="text-sm text-muted-foreground">Ngày tạo</p>
                 <p className="text-base">
                   {selectedBatch?.createdAt &&
@@ -137,6 +137,10 @@ export default function BatchDetailModal({
                       minute: "2-digit",
                     })}
                 </p>
+              </div>
+              <div className="">
+                <p className="text-sm text-muted-foreground">Người tạo</p>
+                <p className="text-base">{selectedBatch?.createdBy?.username}</p>
               </div>
             </div>
           </div>

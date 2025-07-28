@@ -64,7 +64,9 @@ const userLogin = async (
   password: string
 ): Promise<LoginResult> => {
   try {
-    const user = await prisma.user.findUnique({ where: { username } });
+    const user = await prisma.user.findUnique({
+      where: { username, isDeleted: false },
+    });
 
     if (!user) {
       return { message: "Tài khoản không tồn tại", token: "", data: null };
@@ -110,6 +112,15 @@ const getAllUsers = async (): Promise<{
     const data = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       where: { isDeleted: false },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        phone: true,
+        branch: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     if (data.length === 0) {
@@ -125,4 +136,123 @@ const getAllUsers = async (): Promise<{
   }
 };
 
-export { createNewUser, userLogin, getAllUsers };
+const getUserById = async (
+  id: number
+): Promise<{
+  message: string;
+  data: any;
+}> => {
+  try {
+    const data = await prisma.user.findFirst({
+      where: { id, isDeleted: false },
+      select: {
+        id: true,
+        username: true,
+        role: true,
+        phone: true,
+        branch: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!data) {
+      return { message: "Không tìm thấy người dùng", data: [] };
+    }
+    return {
+      message: "Thành công",
+      data: data,
+    };
+  } catch (error) {
+    console.error("Lỗi khi lấy người dùng:", error);
+    throw new Error("Lỗi server khi truy suất người dùng");
+  }
+};
+
+const updateUserById = async (
+  id: number,
+  updateData: {
+    username: string;
+    role?: Role;
+    phone: string;
+    branch: string;
+  }
+): Promise<{
+  message: string;
+  data: any;
+}> => {
+  try {
+    const data = await prisma.user.update({
+      where: { id, isDeleted: false },
+      data: updateData,
+    });
+
+    if (!data) {
+      return { message: "Không tìm thấy người dùng", data: [] };
+    }
+    return {
+      message: "Thành công",
+      data: data,
+    };
+  } catch (error) {
+    console.error("Lỗi khi lấy người dùng:", error);
+    throw new Error("Lỗi server khi cập nhật người dùng");
+  }
+};
+
+const deleteUserById = async (
+  id: number, // id của người bị xóa
+  currentUserId: number // id của người đang thực hiện thao tác
+): Promise<{
+  message: string;
+  data: any;
+}> => {
+  try {
+    // Lấy thông tin người dùng trước
+    const userToDelete = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        role: true,
+        isDeleted: true,
+      },
+    });
+
+    if (!userToDelete || userToDelete.isDeleted) {
+      return { message: "Không tìm thấy người dùng", data: [] };
+    }
+
+    // ✅ Không cho xóa Super Admin
+    if (userToDelete.role === "SUPER_ADMIN") {
+      return { message: "Không thể xóa Super Admin", data: [] };
+    }
+
+    // ✅ Không cho xóa chính mình
+    if (id === currentUserId) {
+      return { message: "Không thể tự xóa chính mình", data: [] };
+    }
+
+    // ✅ Tiến hành cập nhật trạng thái isDeleted
+    const data = await prisma.user.update({
+      where: { id },
+      data: { isDeleted: true },
+    });
+
+    return {
+      message: "Thành công",
+      data,
+    };
+  } catch (error) {
+    console.error("Lỗi khi xóa người dùng:", error);
+    throw new Error("Lỗi server khi xóa người dùng");
+  }
+};
+
+export {
+  createNewUser,
+  userLogin,
+  getAllUsers,
+  getUserById,
+  updateUserById,
+  deleteUserById,
+};

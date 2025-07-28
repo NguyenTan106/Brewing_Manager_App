@@ -19,14 +19,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-
+import { checkUser } from "@/components/Auth/Check";
 import {
   createBatchAPI,
   Status,
   type Recipe,
 } from "../../services/CRUD/CRUD_API_Batch";
 import { getAllRecipesAPI } from "../../services/CRUD/CRUD_API_Recipe";
-
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
@@ -39,12 +38,15 @@ export default function AddNewBatchModal({
   statusOptions,
   handlePaginationAPI,
 }: Props) {
+  const user = checkUser();
+
   const [form, setForm] = useState({
     beerName: "",
     status: "" as Status,
     volume: "",
     notes: "",
     recipeId: "",
+    createdById: user?.id ?? 0,
     recipe: null,
     batchIngredients: [],
   });
@@ -56,6 +58,7 @@ export default function AddNewBatchModal({
       volume: "",
       notes: "",
       recipeId: "",
+      createdById: user?.id ?? 0,
       recipe: null,
       batchIngredients: [],
     });
@@ -66,6 +69,7 @@ export default function AddNewBatchModal({
       form.beerName === "" ||
       form.status === ("" as Status) ||
       form.volume === "" ||
+      form.recipeId === "" ||
       form.notes === ""
     ) {
       toast.warning("Vui lòng điền đầy đủ thông tin");
@@ -198,6 +202,20 @@ export default function AddNewBatchModal({
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+            <div className="hidden">
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
+                  <strong>Người tạo:</strong>
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
+                  disabled
+                  required
+                  value={form.createdById}
+                  placeholder="VD: "
+                />
               </div>
             </div>
             <div className="flex flex-col gap-1 w-full min-w-0">
