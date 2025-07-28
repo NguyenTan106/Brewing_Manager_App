@@ -73,8 +73,6 @@ export default function AddNewRecipeModal({
   const handleCreateRecipeAPI = async () => {
     if (
       form.name === "" ||
-      form.description === "" ||
-      form.note === "" ||
       form.instructions === "" ||
       form.recipeIngredients.length === 0
     ) {
@@ -314,7 +312,7 @@ export default function AddNewRecipeModal({
                   placeholder="VD: Thêm dry hopping sau 5 ngày"
                 />
               </div>
-              <div className="flex flex-col gap-1 w-full min-w-0">
+              <div className="hidden">
                 <Label className="text-base">
                   <strong>Người tạo:</strong>
                 </Label>

@@ -41,28 +41,36 @@ export default function AddNewUserModal({
       branch: "",
     });
   };
-
   const handleCreateNewUserAPI = async () => {
     if (
       form.username === "" ||
       form.password === "" ||
-      //   form.role === ("" as Role) ||
-      form.phone === ""
+      form.phone === "" ||
+      form.branch === ""
     ) {
       toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
     }
-    const data = await createNewUserAPI(form);
-    if (data.data == null) {
-      toast.error(data.message);
-      return;
-    }
-    if (data.data) {
+
+    try {
+      const data = await createNewUserAPI(form);
+
+      if (!data || data.data == null) {
+        toast.error(data?.message || "Tạo người dùng thất bại");
+        return;
+      }
+
       toast.success(data.message);
+      clearForm();
+      handleGetAllUserAPI();
+      handleClose();
+    } catch (error: any) {
+      // ✅ Lấy message từ lỗi Axios
+      const errorMessage =
+        error.response?.data?.message || "Đã xảy ra lỗi không xác định";
+      toast.error(errorMessage);
+      console.error("Lỗi khi tạo user:", error);
     }
-    clearForm();
-    handleGetAllUserAPI();
-    handleClose();
   };
   return (
     <>
@@ -145,7 +153,7 @@ export default function AddNewUserModal({
                   style={{ fontSize: "0.95rem" }}
                   required
                   value={form.branch}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  onChange={(e) => setForm({ ...form, branch: e.target.value })}
                   placeholder="VD: Tây Ninh"
                 />
               </div>

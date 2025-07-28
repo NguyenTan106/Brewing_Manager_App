@@ -98,7 +98,7 @@ export default function UserManager() {
               <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
                 Ngày tạo
               </TableHead>
-              <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
+              <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">
                 Ngày cập nhật
               </TableHead>
               <TableHead className="px-4 py-3 text-left hidden lg:table-cell"></TableHead>
@@ -111,7 +111,7 @@ export default function UserManager() {
                   colSpan={8}
                   className="text-center text-gray-100 px-4 py-3"
                 >
-                  Không có nguyên liệu nào
+                  Không có người dùng nào
                 </TableCell>
               </TableRow>
             ) : (
@@ -122,7 +122,7 @@ export default function UserManager() {
                   <TableCell className="px-4 py-3 hidden 2xl:table-cell">
                     {i.role}
                   </TableCell>
-                  <TableCell className="px-4 py-3 hidden 2xl:table-cell">
+                  <TableCell className="px-4 py-3 hidden lg:table-cell">
                     {i.phone}
                   </TableCell>
                   <TableCell className="px-4 py-3">{i.branch}</TableCell>
@@ -138,7 +138,7 @@ export default function UserManager() {
                         minute: "2-digit",
                       })}
                   </TableCell>
-                  <TableCell className="px-4 py-3 hidden lg:table-cell">
+                  <TableCell className="px-4 py-3 hidden 2xl:table-cell">
                     {i.updatedAt &&
                       new Date(i.updatedAt).toLocaleString("vi-VN", {
                         timeZone: "Asia/Ho_Chi_Minh",

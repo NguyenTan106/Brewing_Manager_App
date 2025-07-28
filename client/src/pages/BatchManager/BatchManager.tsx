@@ -174,7 +174,7 @@ export default function BatchManager() {
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
           <p className="text-3xl font-bold">Danh sách mẻ: </p>
           <div className="relative w-full lg:w-[150%]">
-            <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Tìm kiếm..."
@@ -206,7 +206,9 @@ export default function BatchManager() {
                 Khối lượng (lít)
               </TableHead>
               <TableHead className="px-4 py-3 text-left">Công thức</TableHead>
-              <TableHead className="px-4 py-3 text-left">Ngày tạo</TableHead>
+              <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">
+                Ngày tạo
+              </TableHead>
               <TableHead className="px-4 py-3 text-left">Người tạo</TableHead>
               <TableHead className="px-4 py-3 text-left"></TableHead>
             </TableRow>
@@ -230,7 +232,7 @@ export default function BatchManager() {
                   <TableCell className="px-4 py-3">
                     {i.recipe?.name || "Chưa có công thức nào"}
                   </TableCell>
-                  <TableCell className="px-4 py-3">
+                  <TableCell className="px-4 py-3 hidden 2xl:table-cell">
                     {i.createdAt &&
                       new Date(i.createdAt).toLocaleString("vi-VN", {
                         timeZone: "Asia/Ho_Chi_Minh",

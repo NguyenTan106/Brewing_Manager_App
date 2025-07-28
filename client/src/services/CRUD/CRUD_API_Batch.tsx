@@ -79,6 +79,7 @@ export const getBatchByIdAPI = async (id: number) => {
 
 export const createBatchAPI = async (data: BatchInput) => {
   const res = await axios.post(`${BASE_URL}/api/batch`, data);
+  console.log(res.data);
   return res.data;
 };
 
