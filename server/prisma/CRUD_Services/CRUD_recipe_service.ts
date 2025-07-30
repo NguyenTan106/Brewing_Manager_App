@@ -336,6 +336,7 @@ const getRecipePage = async (page: number, limit: number) => {
     enhanceItem: async (i) => ({
       ...i,
     }),
+    useSoftDelete: true,
   });
 };
 

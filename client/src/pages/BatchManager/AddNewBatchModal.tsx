@@ -69,14 +69,13 @@ export default function AddNewBatchModal({
       form.beerName === "" ||
       form.status === ("" as Status) ||
       form.volume === "" ||
-      form.recipeId === "" ||
-      form.notes === ""
+      form.recipeId === ""
     ) {
       toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
     }
     const data = await createBatchAPI(form);
-    if (data.data == null) {
+    if (data.data == null || data.data.length == 0) {
       toast.warning(data.message);
       return;
     }

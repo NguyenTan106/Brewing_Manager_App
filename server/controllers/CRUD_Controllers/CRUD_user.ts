@@ -1,3 +1,4 @@
+import { ZodError } from "zod";
 import { Request, Response } from "express";
 import {
   createNewUser,
@@ -21,10 +22,19 @@ const handleCreateNewUser = async (req: Request, res: Response) => {
     );
     res.status(200).json(result);
   } catch (e) {
-    console.error("Lỗi trong controller handleCreateNewUser:", e);
-    res.status(500).json({
-      message: "Lỗi server khi thêm người dùng mới",
-    });
+    if (e instanceof ZodError) {
+      if (e instanceof ZodError) {
+        const errMessage = e._zod.def;
+        const err = errMessage.map((e) => e.message);
+        console.error(
+          "Lỗi trong controller handleCreateNewUser:",
+          err.toString()
+        );
+        res.status(500).json({
+          message: err.toString(),
+        });
+      }
+    }
   }
 };
 

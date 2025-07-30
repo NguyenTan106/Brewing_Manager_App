@@ -276,6 +276,7 @@ const getIngredientPage = async (page: number, limit: number) => {
       ...i,
       status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
     }),
+    useSoftDelete: true,
   });
 };
 

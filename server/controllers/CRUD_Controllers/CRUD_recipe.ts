@@ -138,7 +138,7 @@ const handleDeleteRecipeById = async (req: Request, res: Response) => {
       "delete",
       "Recipe",
       data.id,
-      `Xóa mẻ ${data.id}: "${data.name}" vào ngày ${logDeleteDate}`
+      `Xóa công thức ${data.id}: "${data.name}" vào ngày ${logDeleteDate}`
       // userId // nếu có
     );
   } catch (e) {

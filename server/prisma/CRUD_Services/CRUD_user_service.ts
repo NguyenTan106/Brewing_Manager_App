@@ -3,7 +3,8 @@ const prisma = new PrismaClient();
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET =
+  process.env.JWT_SECRET || "JWT_SECRET=super_secret_2025_brewing_token!@#$";
 if (!JWT_SECRET) throw new Error("Thiếu JWT_SECRET trong .env");
 const createNewUser = async (
   username: string,

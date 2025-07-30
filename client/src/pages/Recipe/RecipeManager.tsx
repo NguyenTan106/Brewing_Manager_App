@@ -153,7 +153,7 @@ export default function RecipeManager() {
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
           <p className="text-3xl font-bold">Danh sách công thức:</p>
           <div className="relative w-full lg:w-[150%]">
-            <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Tìm kiếm..."
