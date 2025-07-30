@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Ingredient, Status } from "@prisma/client";
+import { Ingredient } from "@prisma/client";
 import { ZodError } from "zod";
 import { compareAndLogChanges } from "../../services/logActivityService";
 import { logActivity } from "../../prisma/logActivity";
@@ -38,17 +38,25 @@ const handleGetRecipeById = async (req: Request, res: Response) => {
 
 const handleCreateRecipe = async (req: Request, res: Response) => {
   try {
+    // ✅ Validate toàn bộ schema (bao gồm cả recipeSteps)
     const parsed = recipeSchema.parse(req.body);
+
     const handle = await createRecipe(
       parsed.name,
       parsed.recipeIngredients,
+      parsed.recipeSteps,
+      parsed.createdById,
       parsed.description,
       parsed.note,
-      parsed.instructions,
-      parsed.createdById
+      parsed.instructions
     );
-    res.status(200).json(handle);
+
     const data = handle.data;
+
+    // ✅ Trả JSON trước (khuyến khích để tránh lỗi log chặn response)
+    res.status(200).json(handle);
+
+    // ✅ Sau đó ghi log (không block response)
     const logCreatedAt = new Date(data.createdAt).toLocaleString("vi-VN", {
       timeZone: "Asia/Ho_Chi_Minh",
       hour12: false,
@@ -58,15 +66,16 @@ const handleCreateRecipe = async (req: Request, res: Response) => {
       hour: "2-digit",
       minute: "2-digit",
     });
+
     await logActivity(
       "create",
       "Recipe",
       data.id,
-      `${data.createdBy.username} đã thêm công thức "${data.name}"  vào ${logCreatedAt}`
-      // userId // nếu có
+      `${data.createdBy.username} đã thêm công thức "${data.name}" vào ${logCreatedAt}`
     );
   } catch (e) {
     console.error("Lỗi trong controller handleCreateRecipe:", e);
+
     res.status(500).json({
       message: "Lỗi server khi tạo công thức",
     });

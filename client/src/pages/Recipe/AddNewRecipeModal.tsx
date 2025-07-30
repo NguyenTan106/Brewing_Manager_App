@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { createRecipeAPI } from "../../services/CRUD/CRUD_API_Recipe";
+import {
+  createRecipeAPI,
+  type RecipeStep,
+} from "../../services/CRUD/CRUD_API_Recipe";
 import type { Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
 import { type RecipeIngredientInput } from "../../services/CRUD/CRUD_API_Recipe";
 import {
@@ -36,6 +39,7 @@ import mammoth from "mammoth";
 import TurndownService from "turndown";
 import { toast } from "sonner";
 import { checkUser } from "@/components/Auth/Check";
+import ReactMarkdown from "react-markdown";
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
@@ -57,6 +61,13 @@ export default function AddNewRecipeModal({
     instructions: "",
     recipeIngredients: [] as RecipeIngredientInput[],
     createdById: user?.id ?? 0,
+    steps: [] as RecipeStep[],
+  });
+
+  const [currentStep, setCurrentStep] = useState<RecipeStep>({
+    stepOrder: 1,
+    durationMinutes: 0,
+    name: "",
   });
 
   const clearForm = () => {
@@ -67,7 +78,9 @@ export default function AddNewRecipeModal({
       instructions: "",
       recipeIngredients: [],
       createdById: user?.id ?? 0,
+      steps: [],
     });
+    setCurrentStep({ stepOrder: 1, durationMinutes: 0, name: "" });
   };
 
   const handleCreateRecipeAPI = async () => {
@@ -314,28 +327,110 @@ export default function AddNewRecipeModal({
                   placeholder="VD: Thêm dry hopping sau 5 ngày"
                 />
               </div>
-              <div className="flex flex-col gap-1 w-full min-w-0">
-                <Label className="text-base">
-                  <strong>Người tạo:</strong>
-                </Label>
-                <Input
-                  style={{ fontSize: "0.95rem" }}
-                  required
-                  disabled
-                  value={form.createdById}
-                  // onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="VD: Công thức IPA đậm vị"
-                />
-              </div>
-              <div className="flex flex-col gap-1 w-full min-w-0">
-                <Label className="text-base">
-                  <strong>Các bước thực hiện:</strong>
-                </Label>
-                <Input
+              <div className="flex flex-col gap-1 w-full min-w-0 mt-2">
+                <div className="flex justify-between items-center flex-wrap">
+                  <Label className="text-lg font-bold">
+                    <>Các bước thực hiện: </>
+                  </Label>
+                  <Button
+                    style={{ fontSize: "0.95rem" }}
+                    className="col-span-full"
+                    onClick={() => {
+                      const durationMinutes = currentStep.durationMinutes;
+                      const name = currentStep.name;
+                      if (durationMinutes == 0 || !name) {
+                        return toast.warning("Yêu cầu nhập đầy đủ thông tin");
+                      }
+                      setForm({
+                        ...form,
+                        steps: [...form.steps, currentStep],
+                      });
+                      setCurrentStep({
+                        stepOrder: currentStep.stepOrder + 1,
+                        durationMinutes: 0,
+                        name: "",
+                      });
+                    }}
+                  >
+                    <FaPlus /> Thêm bước
+                  </Button>
+                </div>
+                <Separator className="my-1" />
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-base">
+                      <>Bước:</>
+                    </Label>
+                    <Input
+                      type="number"
+                      placeholder="Step"
+                      value={currentStep.stepOrder}
+                      onChange={(e) =>
+                        setCurrentStep({
+                          ...currentStep,
+                          stepOrder: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-base">
+                      <>Thời gian hoàn thành:</>
+                    </Label>
+                    <Input
+                      type="number"
+                      placeholder="Thời gian (phút)"
+                      value={currentStep.durationMinutes}
+                      onChange={(e) =>
+                        setCurrentStep({
+                          ...currentStep,
+                          durationMinutes: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="col-span-full">
+                    <Label className="text-base">
+                      <>Mô tả:</>
+                    </Label>
+                    <Textarea
+                      placeholder="Mô tả"
+                      value={currentStep.name}
+                      onChange={(e) =>
+                        setCurrentStep({
+                          ...currentStep,
+                          name: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <h3 className="text-md font-semibold">Danh sách bước:</h3>
+                {form.steps.map((p, idx) => (
+                  <div key={idx}>
+                    <div className="p-2 border rounded shadow-sm text-center">
+                      <strong className="text-xl">Bước {p.stepOrder}</strong>:
+                      <ReactMarkdown>{p.name}</ReactMarkdown>
+                    </div>
+
+                    {idx < form.steps.length - 1 && (
+                      <div className="relative my-5 mt-4 h-6">
+                        <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
+                          ↓
+                        </div>
+                        <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
+                          {p.durationMinutes} phút
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {/* <Input
                   type="file"
                   accept=".docx"
                   onChange={handleFileUpload}
-                ></Input>
+                ></Input> */}
               </div>
             </div>
           </div>

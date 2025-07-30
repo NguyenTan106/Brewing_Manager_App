@@ -68,6 +68,7 @@ export default function RecipeDetailModal({
     useState(false);
   const [selectedIngredient, setSelectedIngredient] =
     useState<Ingredient | null>(null);
+
   const handleDeleteRecipeByIdAPI = async (id: number) => {
     const deleted = await deleteRecipeByIdAPI(id);
     const errorMessage = deleted.message;
@@ -207,9 +208,32 @@ export default function RecipeDetailModal({
                   Các bước thực hiện
                 </p>
                 <p className="text-base ">
-                  <ReactMarkdown>
-                    {selectedRecipe?.instructions || ""}
-                  </ReactMarkdown>
+                  {selectedRecipe?.steps.map((p, idx) => (
+                    <div key={idx}>
+                      {/* Hiển thị bước */}
+                      <div className="p-2 border rounded shadow-sm text-center">
+                        <strong className="text-xl">
+                          Bước {p.stepOrder}:{" "}
+                        </strong>
+                        <ReactMarkdown>{p.name}</ReactMarkdown>
+                      </div>
+
+                      {/* Hiển thị mũi tên + thời gian (nếu không phải bước cuối) */}
+                      {idx < selectedRecipe?.steps.length - 1 && (
+                        <div className="relative my-5 mt-4 h-6">
+                          {/* Mũi tên ở giữa */}
+                          <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
+                            ↓
+                          </div>
+
+                          {/* Thời gian nằm bên phải mũi tên */}
+                          <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
+                            {p.durationMinutes} phút
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </p>
               </div>
               <div className="col-span-full">

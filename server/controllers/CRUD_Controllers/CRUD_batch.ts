@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Status } from "@prisma/client";
 import { ZodError } from "zod";
 import { compareAndLogChanges } from "../../services/logActivityService";
 import {
@@ -42,11 +41,12 @@ const handleCreateBatch = async (req: Request, res: Response) => {
 
     const result = await createBatch(
       parsed.beerName,
-      parsed.status as Status,
+      parsed.status,
       Number(parsed.volume),
       parsed.notes || "",
       Number(parsed.recipeId),
-      Number(parsed.createdById)
+      Number(parsed.createdById),
+      parsed.stepStartedAt
     );
     const data = result.data;
     res.status(201).json(result);

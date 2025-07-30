@@ -20,6 +20,9 @@ const getAllRecipes = async (): Promise<{
           include: { ingredient: true },
         },
         createdBy: true,
+        steps: {
+          orderBy: { stepOrder: "asc" }, // đảm bảo thứ tự bước
+        },
       },
       orderBy: { createdAt: "desc" },
       where: {
@@ -63,50 +66,61 @@ const getRecipeById = async (
           include: { ingredient: true },
         },
         createdBy: true,
+        steps: {
+          orderBy: { stepOrder: "asc" }, // đảm bảo thứ tự bước
+        },
       },
     });
 
-    const result = {
-      ...data,
-      recipeIngredients: data?.recipeIngredients.filter(
-        (i) => !i.ingredient.isDeleted
-      ),
-    };
-
-    if (!result) {
-      return { message: "Chưa có công thức nào được tạo", data: [] };
+    if (!data) {
+      return { message: "Không tìm thấy công thức", data: null };
     }
+
+    const filteredIngredients = data.recipeIngredients.filter(
+      (i) => !i.ingredient.isDeleted
+    );
+
     return {
       message: "Thành công",
-      data: result,
+      data: {
+        ...data,
+        recipeIngredients: filteredIngredients,
+      },
     };
   } catch (error) {
-    console.error("Lỗi khi lấy danh sách công thức:", error);
+    console.error("Lỗi khi lấy công thức theo ID:", error);
     throw new Error("Lỗi server khi truy xuất công thức");
   }
 };
 
+interface RecipeStepInput {
+  name: string;
+  durationMinutes: number;
+}
+
 const createRecipe = async (
   name: string,
   recipeIngredients: IngredientInput[],
+  recipeSteps: RecipeStepInput[],
+  createdById: number,
   description?: string,
   note?: string,
-  instructions?: string,
-  createdById?: number
+  instructions?: string
 ): Promise<{ message: string; data: any }> => {
   try {
     // ✅ Kiểm tra trùng tên
     const existing = await prisma.recipe.findUnique({
-      where: { name: name },
+      where: { name },
     });
 
     if (existing) {
       return {
-        message: `Công thức ${name} đã tồn tại`,
+        message: `Công thức "${name}" đã tồn tại`,
         data: null,
       };
     }
 
+    // ✅ Kiểm tra nguyên liệu
     if (
       !recipeIngredients ||
       !Array.isArray(recipeIngredients) ||
@@ -118,33 +132,62 @@ const createRecipe = async (
       };
     }
 
+    // ✅ Kiểm tra bước
+    if (
+      !recipeSteps ||
+      !Array.isArray(recipeSteps) ||
+      recipeSteps.length === 0
+    ) {
+      return {
+        message: "Danh sách bước thực hiện không hợp lệ",
+        data: null,
+      };
+    }
+
+    // ✅ Tạo recipe trước
     const newRecipe = await prisma.recipe.create({
       data: {
         name,
         description: description || null,
         note: note || null,
         instructions: instructions || null,
+        createdById,
         recipeIngredients: {
-          create: recipeIngredients.map((ing: any) => ({
+          create: recipeIngredients.map((ing) => ({
             ingredientId: ing.ingredientId,
             amountNeeded: ing.amountNeeded,
           })),
         },
-        createdById,
       },
+    });
+
+    // ✅ Tạo recipeSteps liên kết với recipe mới
+    await prisma.recipeStep.createMany({
+      data: recipeSteps.map((step, index) => ({
+        recipeId: newRecipe.id,
+        name: step.name,
+        durationMinutes: step.durationMinutes,
+        stepOrder: index, // dùng index làm thứ tự
+      })),
+    });
+
+    // ✅ Lấy lại recipe đầy đủ để trả về
+    const fullRecipe = await prisma.recipe.findUnique({
+      where: { id: newRecipe.id },
       include: {
         recipeIngredients: {
           include: {
-            ingredient: true, // nếu muốn trả cả tên nguyên liệu
+            ingredient: true,
           },
         },
+        steps: true,
         createdBy: true,
       },
     });
 
     return {
       message: "Thêm công thức thành công",
-      data: newRecipe,
+      data: fullRecipe,
     };
   } catch (e) {
     console.error("Lỗi khi tạo công thức mới:", e);
@@ -284,8 +327,12 @@ const getRecipePage = async (page: number, limit: number) => {
         include: { ingredient: true },
       },
       createdBy: true,
+      steps: {
+        orderBy: { stepOrder: "asc" }, // đảm bảo thứ tự bước
+      },
     },
     orderBy: { createdAt: "desc" },
+
     enhanceItem: async (i) => ({
       ...i,
     }),

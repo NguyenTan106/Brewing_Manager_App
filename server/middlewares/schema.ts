@@ -39,27 +39,33 @@ export const batchSchema = z.object({
       error: "Người tạo không được để trống",
     })
     .min(1, "Người tạo không hợp lệ"),
+  stepStartedAt: z.string().min(1, "Yêu cầu chọn thời gian hoàn thành"),
 });
 
 export const recipeSchema = z.object({
-  name: z.string().min(1, "Tên không được để trống"),
-  recipeIngredients: z.array(
-    z.object({
-      ingredientId: z.preprocess((val) => Number(val), z.number()),
-      amountNeeded: z.preprocess(
-        (val) => Number(val),
-        z.number().nonnegative()
-      ),
-    })
-  ),
+  name: z.string(),
   description: z.string().optional(),
   note: z.string().optional(),
   instructions: z.string().optional(),
-  createdById: z
-    .number({
-      error: "Người tạo không được để trống",
-    })
-    .min(1, "Người tạo không hợp lệ"),
+  createdById: z.number(),
+
+  recipeIngredients: z
+    .array(
+      z.object({
+        ingredientId: z.number(),
+        amountNeeded: z.number(),
+      })
+    )
+    .nonempty(),
+
+  recipeSteps: z
+    .array(
+      z.object({
+        name: z.string(),
+        durationMinutes: z.number().positive(),
+      })
+    )
+    .nonempty(),
 });
 
 export const userSchema = z.object({

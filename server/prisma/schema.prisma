@@ -38,35 +38,33 @@ model IngredientImport {
   amount       Float
   importedAt   DateTime   @default(now())
   notes        String? // Ghi chú nếu cần
-  createdById  Int?
-  createdBy    User?      @relation(fields: [createdById], references: [id])
+  createdById  Int
+  createdBy    User       @relation(fields: [createdById], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-}
-
-enum Status {
-  mash
-  boiling
-  fermenting
-  cold_crashing
-  done
-  cancel
 }
 
 model Batch {
   id               Int               @id @default(autoincrement())
   code             String            @unique
   beerName         String
-  status           Status
   volume           Float
   notes            String?
-  recipeId         Int? // liên kết công thức (optional)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-  createdById      Int?
-  createdBy        User?             @relation(fields: [createdById], references: [id])
-  recipe           Recipe?           @relation(fields: [recipeId], references: [id])
+  createdById      Int
+  createdBy        User              @relation(fields: [createdById], references: [id])
+  recipeId         Int // liên kết công thức (optional)
+  recipe           Recipe            @relation(fields: [recipeId], references: [id])
   batchIngredients BatchIngredient[]
+
+  // Trạng thái động dựa theo recipeStep
+  currentStepIndex Int      @default(0) // Bắt đầu ở bước 0
+  stepStartedAt    DateTime // Bắt đầu bước hiện tại
+  status           String // Tên bước hiện tại (cập nhật theo recipeStep.name)
+
+  @@index([recipeId])
+  @@index([createdById])
 }
 
 model BatchIngredient {
@@ -88,10 +86,24 @@ model Recipe {
   isDeleted         Boolean            @default(false)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  createdById       Int?
-  createdBy         User?              @relation(fields: [createdById], references: [id])
+  createdById       Int
+  createdBy         User               @relation(fields: [createdById], references: [id])
   recipeIngredients RecipeIngredient[]
   batches           Batch[]
+  steps             RecipeStep[]
+}
+
+model RecipeStep {
+  id              Int    @id @default(autoincrement())
+  recipeId        Int
+  stepOrder       Int // Thứ tự bước
+  name            String // Tên bước (nấu, lên men, đóng chai,...)
+  durationMinutes Int // Thời gian thực hiện bước (phút)
+
+  recipe Recipe @relation(fields: [recipeId], references: [id])
+
+  @@unique([recipeId, stepOrder]) // Mỗi công thức không có 2 bước trùng thứ tự
+  @@index([recipeId])
 }
 
 model RecipeIngredient {

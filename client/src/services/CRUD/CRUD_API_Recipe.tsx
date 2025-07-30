@@ -25,6 +25,13 @@ export interface RecipeIngredientUpdate {
   };
 }
 
+export interface RecipeStep {
+  recipeId?: string;
+  stepOrder: number;
+  name: string;
+  durationMinutes: number;
+}
+
 export interface Recipe {
   id: number;
   name: string;
@@ -36,6 +43,7 @@ export interface Recipe {
   updatedAt?: string;
   createdById?: number;
   createdBy?: UserInfo;
+  steps: RecipeStep[];
 }
 
 export interface RecipeUpate {
@@ -46,6 +54,7 @@ export interface RecipeUpate {
   note?: string;
   instructions?: string;
   createdAt: string;
+  steps: RecipeStep[];
 }
 
 type RecipeInput = Omit<Recipe, "id" | "createdAt">;

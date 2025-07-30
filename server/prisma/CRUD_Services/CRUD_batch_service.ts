@@ -1,4 +1,4 @@
-import { PrismaClient, Status } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { format } from "date-fns-tz";
 import { paginate } from "../pagination";
 
@@ -140,13 +140,47 @@ const getBatchById = async (
   }
 };
 
+const checkAndUpdateBatchStatuses = async () => {
+  const allBatches = await prisma.batch.findMany({ include: { recipe: true } });
+  for (const batch of allBatches) {
+    const steps = await prisma.recipeStep.findMany({
+      where: { recipeId: batch.recipeId },
+      orderBy: { stepOrder: "asc" },
+    });
+
+    const currentStep = steps[batch.currentStepIndex];
+    const duration = currentStep.durationMinutes * 60 * 1000;
+    const elapsed = Date.now() - new Date(batch.stepStartedAt).getTime();
+
+    if (elapsed >= duration) {
+      const nextIndex = batch.currentStepIndex + 1;
+      if (nextIndex < steps.length) {
+        await prisma.batch.update({
+          where: { id: batch.id },
+          data: {
+            currentStepIndex: nextIndex,
+            stepStartedAt: new Date(),
+            status: steps[nextIndex].name,
+          },
+        });
+      } else {
+        await prisma.batch.update({
+          where: { id: batch.id },
+          data: { status: "Hoàn tất" },
+        });
+      }
+    }
+  }
+};
+
 const createBatch = async (
   beerName: string,
-  status: Status,
+  status: string,
   volume: number,
   notes: string,
   recipeId: number,
-  createdById: number
+  createdById: number,
+  stepStartedAt: string
 ): Promise<{ message: string; data: any }> => {
   try {
     const vnNow = new Date(
@@ -242,6 +276,7 @@ const createBatch = async (
           notes: notes || null,
           recipeId,
           createdById,
+          stepStartedAt,
         },
         include: {
           createdBy: true,
@@ -277,7 +312,7 @@ const updateBatchById = async (
   id: number,
   updateData: {
     beerName?: string;
-    status?: Status;
+    status?: string;
     notes?: string;
   }
 ): Promise<{ message: string; data: any }> => {
