@@ -1,6 +1,7 @@
 import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 import { type Ingredient } from "./CRUD_API_Ingredient";
+import type { RecipeStep } from "./CRUD_API_Recipe";
 export enum Status {
   mash = "mash",
   boiling = "boiling",
@@ -10,6 +11,14 @@ export enum Status {
   cancel = "cancel",
 }
 
+export interface BatchSteps {
+  id: number;
+  batchId: number;
+  recipeStepId: number;
+  stepOrder: number;
+  startedAt: string;
+  scheduledEndAt: string;
+}
 export const statusLabelMap: Record<Status, string> = {
   mash: "Ngâm và nấu mạch nha",
   boiling: "Nấu sôi",
@@ -41,6 +50,7 @@ export interface Recipe {
   note?: string;
   instructions?: string;
   createdAt: string;
+  steps: RecipeStep[];
 }
 
 export interface UserInfo {
@@ -62,6 +72,7 @@ export interface Batch {
   recipe: Recipe | null;
   createdAt?: string;
   batchIngredients: BatchIngredient[] | null;
+  batchSteps: BatchSteps[];
 }
 
 type BatchUpdate = Omit<Batch, "volume" | "recipeId">;
@@ -74,6 +85,7 @@ export const getAllBatchesAPI = async () => {
 
 export const getBatchByIdAPI = async (id: number) => {
   const res = await axios.get(`${BASE_URL}/api/batch/${id}`);
+  console.log(res.data);
   return res.data.data;
 };
 

@@ -19,15 +19,6 @@ const getTotalBaches = async (): Promise<{
 }> => {
   try {
     const total = await prisma.batch.count();
-    const totalBatchesInFermenting = await prisma.batch.count({
-      where: { status: "fermenting" },
-    });
-    const totalBatchesDone = await prisma.batch.count({
-      where: { status: "done" },
-    });
-    const totalBatchesCancel = await prisma.batch.count({
-      where: { status: "cancel" },
-    });
 
     const now = new Date();
 
@@ -72,9 +63,6 @@ const getTotalBaches = async (): Promise<{
       message: "Thành công",
       data: {
         total,
-        totalBatchesInFermenting,
-        totalBatchesDone,
-        totalBatchesCancel,
         byTime: {
           weeklyTotal,
           monthlyTotal,

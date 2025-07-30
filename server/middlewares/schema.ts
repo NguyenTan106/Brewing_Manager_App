@@ -30,7 +30,6 @@ export const typeSchema = z.object({
 
 export const batchSchema = z.object({
   beerName: z.string().min(1, "Tên không được để trống"),
-  status: z.string().min(1, "Yêu cầu chọn trạng thái"),
   volume: z.string().min(0, "Khối lượng mẻ không được để trống"),
   notes: z.string().optional(),
   recipeId: z.number().optional(),
@@ -39,7 +38,42 @@ export const batchSchema = z.object({
       error: "Người tạo không được để trống",
     })
     .min(1, "Người tạo không hợp lệ"),
-  stepStartedAt: z.string().min(1, "Yêu cầu chọn thời gian hoàn thành"),
+  batchSteps: z
+    .array(
+      z.object({
+        batchId: z.number(),
+        recipeStepId: z.number(),
+        stepOrder: z.number().positive(),
+        startedAt: z.string(),
+        scheduledEndAt: z.string(),
+      })
+    )
+    .nonempty(),
+});
+
+export const recipeUpdateSchema = z.object({
+  name: z.string(),
+  instructions: z.string().optional(),
+  note: z.string().optional(),
+  description: z.string().optional(),
+  recipeIngredients: z
+    .array(
+      z.object({
+        ingredientId: z.preprocess((val) => Number(val), z.number()),
+        amountNeeded: z.preprocess((val) => Number(val), z.number()),
+      })
+    )
+    .nonempty(),
+  steps: z
+    .array(
+      z.object({
+        recipeId: z.number(),
+        name: z.string(),
+        durationMinutes: z.number(),
+        stepOrder: z.number().positive(),
+      })
+    )
+    .nonempty(),
 });
 
 export const recipeSchema = z.object({
@@ -52,17 +86,19 @@ export const recipeSchema = z.object({
   recipeIngredients: z
     .array(
       z.object({
-        ingredientId: z.number(),
-        amountNeeded: z.number(),
+        ingredientId: z.preprocess((val) => Number(val), z.number()),
+        amountNeeded: z.preprocess((val) => Number(val), z.number()),
       })
     )
     .nonempty(),
 
-  recipeSteps: z
+  steps: z
     .array(
       z.object({
+        recipeId: z.number(),
         name: z.string(),
-        durationMinutes: z.number().positive(),
+        durationMinutes: z.number(),
+        stepOrder: z.number().positive(),
       })
     )
     .nonempty(),

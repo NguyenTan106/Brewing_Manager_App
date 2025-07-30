@@ -39,6 +39,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { minutesToOtherTimes } from "./MinutesToOtherTimes";
 
 interface Props {
   handleClose: () => void;
@@ -228,10 +229,11 @@ export default function RecipeDetailModal({
 
                           {/* Thời gian nằm bên phải mũi tên */}
                           <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
-                            {p.durationMinutes} phút
+                            {minutesToOtherTimes(p.durationMinutes)}
                           </div>
                         </div>
                       )}
+                      {idx == selectedRecipe?.steps.length - 1 && <div></div>}
                     </div>
                   ))}
                 </p>

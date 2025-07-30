@@ -40,6 +40,7 @@ import TurndownService from "turndown";
 import { toast } from "sonner";
 import { checkUser } from "@/components/Auth/Check";
 import ReactMarkdown from "react-markdown";
+import { minutesToOtherTimes } from "./MinutesToOtherTimes";
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
@@ -86,10 +87,8 @@ export default function AddNewRecipeModal({
   const handleCreateRecipeAPI = async () => {
     if (
       form.name === "" ||
-      form.description === "" ||
-      form.note === "" ||
-      form.instructions === "" ||
-      form.recipeIngredients.length === 0
+      form.recipeIngredients.length === 0 ||
+      form.steps.length === 0
     ) {
       toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
@@ -142,7 +141,7 @@ export default function AddNewRecipeModal({
         open={showAddModal}
         onOpenChange={(open) => !open && handleClose()}
       >
-        <DialogContent className="w-full max-w-[95vw] sm:max-w-[640px] md:max-w-[700px]   max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[640px] md:max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-800">
               Thêm công thức
@@ -332,30 +331,7 @@ export default function AddNewRecipeModal({
                   <Label className="text-lg font-bold">
                     <>Các bước thực hiện: </>
                   </Label>
-                  <Button
-                    style={{ fontSize: "0.95rem" }}
-                    className="col-span-full"
-                    onClick={() => {
-                      const durationMinutes = currentStep.durationMinutes;
-                      const name = currentStep.name;
-                      if (durationMinutes == 0 || !name) {
-                        return toast.warning("Yêu cầu nhập đầy đủ thông tin");
-                      }
-                      setForm({
-                        ...form,
-                        steps: [...form.steps, currentStep],
-                      });
-                      setCurrentStep({
-                        stepOrder: currentStep.stepOrder + 1,
-                        durationMinutes: 0,
-                        name: "",
-                      });
-                    }}
-                  >
-                    <FaPlus /> Thêm bước
-                  </Button>
                 </div>
-                <Separator className="my-1" />
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <Label className="text-base">
@@ -375,7 +351,7 @@ export default function AddNewRecipeModal({
                   </div>
                   <div>
                     <Label className="text-base">
-                      <>Thời gian hoàn thành:</>
+                      <>Thời gian hoàn thành (phút):</>
                     </Label>
                     <Input
                       type="number"
@@ -405,7 +381,33 @@ export default function AddNewRecipeModal({
                     />
                   </div>
                 </div>
-                <h3 className="text-md font-semibold">Danh sách bước:</h3>
+                <div className="flex justify-between items-center flex-wrap my-2">
+                  <Label className="text-lg font-bold">
+                    <>Danh sách bước:</>
+                  </Label>
+                  <Button
+                    style={{ fontSize: "0.95rem" }}
+                    className="col-span-full"
+                    onClick={() => {
+                      const durationMinutes = currentStep.durationMinutes;
+                      const name = currentStep.name;
+                      if (!name) {
+                        return toast.warning("Yêu cầu nhập đầy đủ thông tin");
+                      }
+                      setForm({
+                        ...form,
+                        steps: [...form.steps, currentStep],
+                      });
+                      setCurrentStep({
+                        stepOrder: currentStep.stepOrder + 1,
+                        durationMinutes: 0,
+                        name: "",
+                      });
+                    }}
+                  >
+                    <FaPlus /> Thêm bước
+                  </Button>
+                </div>
                 {form.steps.map((p, idx) => (
                   <div key={idx}>
                     <div className="p-2 border rounded shadow-sm text-center">
@@ -419,9 +421,12 @@ export default function AddNewRecipeModal({
                           ↓
                         </div>
                         <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
-                          {p.durationMinutes} phút
+                          {minutesToOtherTimes(p.durationMinutes)}
                         </div>
                       </div>
+                    )}
+                    {idx == form.steps.length - 1 && (
+                      <div className="relative mt-4 h-6"></div>
                     )}
                   </div>
                 ))}
@@ -434,6 +439,7 @@ export default function AddNewRecipeModal({
               </div>
             </div>
           </div>
+
           <DialogFooter>
             <Button
               className=""

@@ -41,12 +41,11 @@ const handleCreateBatch = async (req: Request, res: Response) => {
 
     const result = await createBatch(
       parsed.beerName,
-      parsed.status,
       Number(parsed.volume),
       parsed.notes || "",
       Number(parsed.recipeId),
       Number(parsed.createdById),
-      parsed.stepStartedAt
+      parsed.batchSteps
     );
     const data = result.data;
     res.status(201).json(result);

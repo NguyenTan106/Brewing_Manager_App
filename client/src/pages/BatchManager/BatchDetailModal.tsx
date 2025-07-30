@@ -41,7 +41,16 @@ export default function BatchDetailModal({
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDetailRecipeModal, setShowDetailRecipeModal] = useState(false);
-
+  const now = new Date();
+  const currentStep = selectedBatch?.batchSteps.find(
+    (step) => new Date(step.startedAt) > now
+  );
+  // console.log("Steps:", currentStep);
+  const currentRecipeStep = selectedBatch?.recipe?.steps.find(
+    (step) => step.id === currentStep?.recipeStepId
+  );
+  const test = selectedBatch?.batchSteps.map((step) => step.startedAt);
+  console.log(currentRecipeStep);
   return (
     <>
       <UpdateBatchModal
@@ -94,9 +103,9 @@ export default function BatchDetailModal({
               <div>
                 <p className="text-sm text-muted-foreground pt-1">Trạng thái</p>
                 <p className="text-base pt-1">
-                  {selectedBatch?.status
-                    ? getStatusBadge(selectedBatch.status)
-                    : "Không xác định"}
+                  {currentRecipeStep
+                    ? currentRecipeStep.name
+                    : "Chưa bắt đầu hoặc đã hoàn tất"}
                 </p>
               </div>
 
@@ -140,7 +149,9 @@ export default function BatchDetailModal({
               </div>
               <div className="">
                 <p className="text-sm text-muted-foreground">Người tạo</p>
-                <p className="text-base">{selectedBatch?.createdBy?.username}</p>
+                <p className="text-base">
+                  {selectedBatch?.createdBy?.username}
+                </p>
               </div>
             </div>
           </div>

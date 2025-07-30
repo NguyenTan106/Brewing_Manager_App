@@ -10,7 +10,7 @@ import {
   deleteRecipeById,
   updateRecipeById,
 } from "../../prisma/CRUD_Services/CRUD_recipe_service";
-import { recipeSchema } from "../../middlewares/schema";
+import { recipeSchema, recipeUpdateSchema } from "../../middlewares/schema";
 const handleGetAllRecipes = async (req: Request, res: Response) => {
   try {
     const handle = await getAllRecipes();
@@ -44,7 +44,7 @@ const handleCreateRecipe = async (req: Request, res: Response) => {
     const handle = await createRecipe(
       parsed.name,
       parsed.recipeIngredients,
-      parsed.recipeSteps,
+      parsed.steps,
       parsed.createdById,
       parsed.description,
       parsed.note,
@@ -88,14 +88,15 @@ const handleUpdateRecipeById = async (req: Request, res: Response) => {
 
     const oldResult = await getRecipeById(Number(id));
 
-    const parsed = recipeSchema.parse(req.body);
+    const parsed = recipeUpdateSchema.parse(req.body);
     const result = await updateRecipeById(
       id,
       parsed.name,
       parsed.description,
       parsed.note,
       parsed.instructions,
-      parsed.recipeIngredients
+      parsed.recipeIngredients,
+      parsed.steps
     );
 
     const newData = result.data;

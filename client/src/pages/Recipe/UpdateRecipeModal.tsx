@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import type { RecipeUpate } from "../../services/CRUD/CRUD_API_Recipe";
+import type {
+  RecipeStep,
+  RecipeUpate,
+} from "../../services/CRUD/CRUD_API_Recipe";
 import { updateRecipeByIdAPI } from "../../services/CRUD/CRUD_API_Recipe";
 import { type RecipeIngredient } from "../../services/CRUD/CRUD_API_Recipe";
 import type { Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
@@ -30,10 +33,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaTrash } from "react-icons/fa";
 import mammoth from "mammoth";
 import TurndownService from "turndown";
 import { toast } from "sonner";
+import { minutesToOtherTimes } from "./MinutesToOtherTimes";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   showUpdateModal: boolean;
@@ -59,6 +64,11 @@ export default function UpdateRecipeModal({
   ingredients,
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<RecipeUpate>>({});
+  const [currentStep, setCurrentStep] = useState<RecipeStep>({
+    stepOrder: 1,
+    durationMinutes: 0,
+    name: "",
+  });
 
   useEffect(() => {
     if (selectedRecipe) {
@@ -68,6 +78,18 @@ export default function UpdateRecipeModal({
 
   useEffect(() => {
     if (showUpdateModal && selectedRecipe && selectedRecipeIngredient) {
+      const steps = selectedRecipe.steps ?? [];
+
+      const nextStepOrder =
+        steps.length > 0 ? Math.max(...steps.map((s) => s.stepOrder)) + 1 : 1;
+
+      setCurrentStep({
+        stepOrder: nextStepOrder,
+        durationMinutes: 0,
+        name: "",
+      });
+
+      // Cập nhật editForm nếu cần
       setEditForm({
         name: selectedRecipe.name || "",
         description: selectedRecipe.description || "",
@@ -79,9 +101,33 @@ export default function UpdateRecipeModal({
           ingredientId: ri.ingredient.id,
           amountNeeded: ri.amountNeeded,
         })),
+        steps: steps,
       });
     }
   }, [showUpdateModal, selectedRecipe, selectedRecipeIngredient]);
+
+  const handleRemoveStep = (index: number) => {
+    const updatedSteps = [...(editForm.steps ?? [])];
+    updatedSteps.splice(index, 1);
+
+    // Optionally re-index lại stepOrder cho đẹp
+    const reindexedSteps = updatedSteps.map((s, i) => ({
+      ...s,
+      stepOrder: i + 1,
+    }));
+
+    setEditForm({
+      ...editForm,
+      steps: reindexedSteps,
+    });
+
+    // Cập nhật lại stepOrder cho bước tiếp theo
+    setCurrentStep({
+      stepOrder: reindexedSteps.length + 1,
+      durationMinutes: 0,
+      name: "",
+    });
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -116,18 +162,12 @@ export default function UpdateRecipeModal({
         !editForm.recipeIngredients ||
         (Array.isArray(editForm.recipeIngredients) &&
           editForm.recipeIngredients.length === 0) ||
-        editForm.description === "" ||
-        editForm.note === "" ||
-        editForm.instructions === ""
+        editForm.steps?.length === 0
       ) {
         toast.warning("Vui lòng điền đầy đủ thông tin");
         return;
       }
-      // Kiểm tra xem có thay đổi nào không
-      // console.log(selectedRecipe?.recipeIngredients.map((i) => i.amountNeeded));
-      console.log();
 
-      console.log();
       if (
         selectedRecipe?.name == editForm.name &&
         selectedRecipe?.description == editForm.description &&
@@ -144,7 +184,11 @@ export default function UpdateRecipeModal({
         ) ===
           JSON.stringify(
             selectedRecipe?.recipeIngredients.map((i) => i.ingredientId)
-          )
+          ) &&
+        JSON.stringify(editForm.steps?.map((i) => i.name)) ===
+          JSON.stringify(selectedRecipe?.steps.map((i) => i.name)) &&
+        JSON.stringify(editForm.steps?.map((i) => i.durationMinutes)) ===
+          JSON.stringify(selectedRecipe?.steps.map((i) => i.durationMinutes))
       ) {
         toast.warning("Không có thay đổi nào để cập nhật");
         return;
@@ -381,7 +425,7 @@ export default function UpdateRecipeModal({
                 }
               />
             </div>
-            <div className="flex flex-col gap-1 w-full min-w-0">
+            {/* <div className="flex flex-col gap-1 w-full min-w-0">
               <Label className="text-base">
                 <strong>Các bước thực hiện:</strong>
               </Label>
@@ -390,7 +434,142 @@ export default function UpdateRecipeModal({
                 accept=".docx"
                 onChange={handleFileUpload}
               ></Input>
+            </div> */}
+            <div className="flex justify-between items-center flex-wrap">
+              <Label className="text-lg font-bold">
+                <>Các bước thực hiện: </>
+              </Label>
             </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-base">
+                  <>Bước:</>
+                </Label>
+                <Input
+                  type="number"
+                  placeholder="Step"
+                  value={currentStep.stepOrder}
+                  onChange={(e) =>
+                    setCurrentStep({
+                      ...currentStep,
+                      stepOrder: parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-base">
+                  <>Thời gian hoàn thành (phút):</>
+                </Label>
+                <Input
+                  type="number"
+                  placeholder="Thời gian (phút)"
+                  value={currentStep.durationMinutes}
+                  onChange={(e) =>
+                    setCurrentStep({
+                      ...currentStep,
+                      durationMinutes: parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
+              <div className="col-span-full">
+                <Label className="text-base">
+                  <>Mô tả:</>
+                </Label>
+                <Textarea
+                  placeholder="Mô tả"
+                  value={currentStep.name}
+                  onChange={(e) =>
+                    setCurrentStep({
+                      ...currentStep,
+                      name: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="flex justify-between items-center flex-wrap my-2">
+              <Label className="text-lg font-bold">
+                <>Danh sách bước:</>
+              </Label>
+              <Button
+                style={{ fontSize: "0.95rem" }}
+                className="col-span-full"
+                onClick={() => {
+                  const name = currentStep.name;
+                  if (!name) {
+                    return toast.warning("Yêu cầu nhập đầy đủ thông tin");
+                  }
+                  setEditForm({
+                    ...editForm,
+                    steps: [...(editForm.steps ?? []), currentStep],
+                  });
+                  setCurrentStep({
+                    stepOrder: (editForm.steps?.length ?? 0) + 1,
+                    durationMinutes: 0,
+                    name: "",
+                  });
+                }}
+              >
+                <FaPlus /> Thêm bước
+              </Button>
+              <Button
+                variant="outline"
+                style={{ fontSize: "0.95rem" }}
+                className="col-span-full"
+                onClick={() => {
+                  if (!editForm.steps || editForm.steps.length === 0) {
+                    return toast.info("Không còn bước nào để xóa");
+                  }
+
+                  const updatedSteps = [...editForm.steps];
+                  // Tìm step có stepOrder lớn nhất
+                  const maxStepOrder = Math.max(
+                    ...updatedSteps.map((s) => s.stepOrder)
+                  );
+                  const filtered = updatedSteps.filter(
+                    (s) => s.stepOrder !== maxStepOrder
+                  );
+
+                  setEditForm({
+                    ...editForm,
+                    steps: filtered,
+                  });
+
+                  setCurrentStep({
+                    stepOrder: maxStepOrder, // quay lại đúng stepOrder vừa bị xóa
+                    durationMinutes: 0,
+                    name: "",
+                  });
+                }}
+              >
+                <FaTrash className="mr-1" /> Xóa bước cuối
+              </Button>
+            </div>
+            {editForm.steps &&
+              editForm.steps.map((p, idx) => (
+                <div key={idx}>
+                  <div className="p-2 border rounded shadow-sm text-center">
+                    <strong className="text-xl">Bước {p.stepOrder}</strong>:
+                    <ReactMarkdown>{p.name}</ReactMarkdown>
+                  </div>
+
+                  {editForm.steps && idx < editForm.steps.length - 1 && (
+                    <div className="relative my-5 mt-4 h-6">
+                      <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
+                        ↓
+                      </div>
+                      <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
+                        {minutesToOtherTimes(p.durationMinutes)}
+                      </div>
+                    </div>
+                  )}
+                  {editForm.steps && idx == editForm.steps.length - 1 && (
+                    <div className="relative mt-4 h-6"></div>
+                  )}
+                </div>
+              ))}
           </div>
           <DialogFooter className="mt-2">
             <Button

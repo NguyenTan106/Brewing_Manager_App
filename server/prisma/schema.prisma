@@ -52,20 +52,33 @@ model Batch {
   notes            String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
+
   createdById      Int
   createdBy        User              @relation(fields: [createdById], references: [id])
   recipeId         Int // liên kết công thức (optional)
   recipe           Recipe            @relation(fields: [recipeId], references: [id])
   batchIngredients BatchIngredient[]
-
-  // Trạng thái động dựa theo recipeStep
-  currentStepIndex Int      @default(0) // Bắt đầu ở bước 0
-  stepStartedAt    DateTime // Bắt đầu bước hiện tại
-  status           String // Tên bước hiện tại (cập nhật theo recipeStep.name)
+  batchSteps BatchStep[]
 
   @@index([recipeId])
   @@index([createdById])
 }
+
+model BatchStep {
+  id             Int       @id @default(autoincrement())
+  batchId        Int
+  recipeStepId   Int
+  stepOrder      Int
+  startedAt      DateTime?
+  scheduledEndAt DateTime?
+
+  batch        Batch       @relation(fields: [batchId], references: [id])
+  recipeStep   RecipeStep  @relation(fields: [recipeStepId], references: [id])
+
+  @@unique([batchId, stepOrder])
+  @@index([batchId])
+}
+
 
 model BatchIngredient {
   id           Int   @id @default(autoincrement())
@@ -94,17 +107,19 @@ model Recipe {
 }
 
 model RecipeStep {
-  id              Int    @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   recipeId        Int
-  stepOrder       Int // Thứ tự bước
-  name            String // Tên bước (nấu, lên men, đóng chai,...)
-  durationMinutes Int // Thời gian thực hiện bước (phút)
+  stepOrder       Int
+  name            String
+  durationMinutes Int
 
-  recipe Recipe @relation(fields: [recipeId], references: [id])
+  recipe      Recipe      @relation(fields: [recipeId], references: [id])
+  batchSteps  BatchStep[]
 
-  @@unique([recipeId, stepOrder]) // Mỗi công thức không có 2 bước trùng thứ tự
+  @@unique([recipeId, stepOrder])
   @@index([recipeId])
 }
+
 
 model RecipeIngredient {
   id           Int   @id @default(autoincrement())

@@ -32,6 +32,7 @@ const getAllBatches = async (): Promise<{
             branch: true,
           },
         },
+        batchSteps: true,
       },
     });
     const validate = data.map((e) => ({
@@ -58,26 +59,22 @@ const getAllBatches = async (): Promise<{
 
 const getBatchById = async (
   id: number
-): Promise<{
-  message: string;
-  data: any;
-}> => {
+): Promise<{ message: string; data: any }> => {
   try {
     const data = await prisma.batch.findUnique({
       where: { id },
       include: {
         batchIngredients: {
-          include: {
-            ingredient: true,
-          },
+          include: { ingredient: true },
         },
         recipe: {
           include: {
             recipeIngredients: {
               include: { ingredient: true },
             },
+            steps: true,
           },
-        }, // nếu muốn lấy luôn thông tin công thức liên kết
+        },
         createdBy: {
           select: {
             username: true,
@@ -85,31 +82,29 @@ const getBatchById = async (
             branch: true,
           },
         },
+        batchSteps: true,
       },
     });
 
     if (!data) {
       return { message: "Chưa có mẻ nào được tạo", data: [] };
     }
-    // Xử lý để hiển thị rõ nguyên liệu đã bị xóa
-    const batchIngredientList = data.batchIngredients.map((bi) => ({
-      id: bi.id,
-      batchId: bi.batchId,
-      ingredientId: bi.ingredientId,
-      amountUsed: bi.amountUsed,
+
+    const batchIngredients = data.batchIngredients.map((bi) => ({
+      ...bi,
       ingredient: {
         id: bi.ingredientId,
         name: bi.ingredient
-          ? bi.ingredient.isDeleted
-            ? `${bi.ingredient.name} (đã bị xóa)`
-            : bi.ingredient.name
+          ? `${bi.ingredient.name}${
+              bi.ingredient.isDeleted ? " (đã bị xóa)" : ""
+            }`
           : "Nguyên liệu không xác định",
-        type: bi.ingredient.type,
-        unit: bi.ingredient?.unit || "Không rõ",
+        type: bi.ingredient?.type ?? null,
+        unit: bi.ingredient?.unit ?? "Không rõ",
       },
     }));
 
-    const recipeIngredientList = {
+    const recipe = {
       ...data.recipe,
       name: data.recipe?.isDeleted
         ? `${data.recipe.name} (đã bị xóa)`
@@ -122,17 +117,16 @@ const getBatchById = async (
         id: data.id,
         code: data.code,
         beerName: data.beerName,
-        status: data.status,
         volume: data.volume,
         recipeId: data.recipeId,
         createdById: data.createdById,
         createdBy: data.createdBy,
-        recipeName: data.recipe?.name,
+        recipeName: recipe.name,
         createdAt: data.createdAt,
-        batchIngredients: batchIngredientList,
-        recipe: recipeIngredientList,
+        batchIngredients,
+        recipe,
+        batchSteps: data.batchSteps,
       },
-      // data: data,
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách mẻ nấu:", error);
@@ -140,47 +134,21 @@ const getBatchById = async (
   }
 };
 
-const checkAndUpdateBatchStatuses = async () => {
-  const allBatches = await prisma.batch.findMany({ include: { recipe: true } });
-  for (const batch of allBatches) {
-    const steps = await prisma.recipeStep.findMany({
-      where: { recipeId: batch.recipeId },
-      orderBy: { stepOrder: "asc" },
-    });
-
-    const currentStep = steps[batch.currentStepIndex];
-    const duration = currentStep.durationMinutes * 60 * 1000;
-    const elapsed = Date.now() - new Date(batch.stepStartedAt).getTime();
-
-    if (elapsed >= duration) {
-      const nextIndex = batch.currentStepIndex + 1;
-      if (nextIndex < steps.length) {
-        await prisma.batch.update({
-          where: { id: batch.id },
-          data: {
-            currentStepIndex: nextIndex,
-            stepStartedAt: new Date(),
-            status: steps[nextIndex].name,
-          },
-        });
-      } else {
-        await prisma.batch.update({
-          where: { id: batch.id },
-          data: { status: "Hoàn tất" },
-        });
-      }
-    }
-  }
-};
+export interface BatchSteps {
+  batchId: number;
+  recipeStepId: number;
+  stepOrder: number;
+  startedAt: string;
+  scheduledEndAt: string;
+}
 
 const createBatch = async (
   beerName: string,
-  status: string,
   volume: number,
   notes: string,
   recipeId: number,
   createdById: number,
-  stepStartedAt: string
+  batchSteps: BatchSteps[]
 ): Promise<{ message: string; data: any }> => {
   try {
     const vnNow = new Date(
@@ -271,16 +239,21 @@ const createBatch = async (
         data: {
           code: newCode,
           beerName,
-          status,
           volume,
           notes: notes || null,
           recipeId,
           createdById,
-          stepStartedAt,
         },
-        include: {
-          createdBy: true,
-        },
+      });
+
+      await tx.batchStep.createMany({
+        data: batchSteps.map((bt) => ({
+          batchId: newBatch.id,
+          recipeStepId: bt.recipeStepId,
+          stepOrder: bt.stepOrder,
+          startedAt: bt.startedAt,
+          scheduledEndAt: bt.scheduledEndAt,
+        })),
       });
 
       // c. Ghi lại batchIngredient
@@ -298,9 +271,22 @@ const createBatch = async (
       return newBatch;
     });
 
+    const fullBatch = await prisma.batch.findUnique({
+      where: { id: result.id },
+      include: {
+        batchIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+        createdBy: true,
+        batchSteps: true,
+      },
+    });
+
     return {
       message: "Thêm mẻ thành công",
-      data: result,
+      data: fullBatch,
     };
   } catch (e) {
     console.error("Lỗi khi tạo mẻ mới:", e);
@@ -339,6 +325,7 @@ const updateBatchById = async (
             },
           },
         }, // nếu muốn lấy luôn thông tin công thức liên kết
+        batchSteps: true,
       },
     });
 
@@ -400,6 +387,7 @@ const getBatchPage = async (page: number, limit: number) => {
           branch: true,
         },
       },
+      batchSteps: true,
     },
     orderBy: { id: "desc" },
     enhanceItem: async (i) => ({

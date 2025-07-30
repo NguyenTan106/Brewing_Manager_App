@@ -26,6 +26,7 @@ export interface RecipeIngredientUpdate {
 }
 
 export interface RecipeStep {
+  id?: number;
   recipeId?: string;
   stepOrder: number;
   name: string;

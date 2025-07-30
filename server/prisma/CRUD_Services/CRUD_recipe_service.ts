@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, RecipeStep } from "@prisma/client";
 import { format } from "date-fns-tz";
 import { paginate } from "../pagination";
 const prisma = new PrismaClient();
@@ -94,14 +94,17 @@ const getRecipeById = async (
 };
 
 interface RecipeStepInput {
+  id?: number;
+  recipeId: number;
   name: string;
   durationMinutes: number;
+  stepOrder: number;
 }
 
 const createRecipe = async (
   name: string,
   recipeIngredients: IngredientInput[],
-  recipeSteps: RecipeStepInput[],
+  steps: RecipeStepInput[],
   createdById: number,
   description?: string,
   note?: string,
@@ -121,11 +124,7 @@ const createRecipe = async (
     }
 
     // ✅ Kiểm tra nguyên liệu
-    if (
-      !recipeIngredients ||
-      !Array.isArray(recipeIngredients) ||
-      recipeIngredients.length === 0
-    ) {
+    if (!recipeIngredients || recipeIngredients.length === 0) {
       return {
         message: "Danh sách nguyên liệu không hợp lệ",
         data: null,
@@ -133,11 +132,7 @@ const createRecipe = async (
     }
 
     // ✅ Kiểm tra bước
-    if (
-      !recipeSteps ||
-      !Array.isArray(recipeSteps) ||
-      recipeSteps.length === 0
-    ) {
+    if (!steps || steps.length === 0) {
       return {
         message: "Danh sách bước thực hiện không hợp lệ",
         data: null,
@@ -163,11 +158,11 @@ const createRecipe = async (
 
     // ✅ Tạo recipeSteps liên kết với recipe mới
     await prisma.recipeStep.createMany({
-      data: recipeSteps.map((step, index) => ({
+      data: steps.map((step) => ({
         recipeId: newRecipe.id,
         name: step.name,
         durationMinutes: step.durationMinutes,
-        stepOrder: index, // dùng index làm thứ tự
+        stepOrder: step.stepOrder, // dùng index làm thứ tự
       })),
     });
 
@@ -201,7 +196,8 @@ const updateRecipeById = async (
   description?: string,
   note?: string,
   instructions?: string,
-  recipeIngredients?: IngredientInput[]
+  recipeIngredients?: IngredientInput[],
+  steps?: RecipeStepInput[]
 ): Promise<{ message: string; data: any }> => {
   try {
     const existing = await prisma.recipe.findUnique({
@@ -259,6 +255,48 @@ const updateRecipeById = async (
         }
       }
     }
+    // Nếu có truyền vào danh sách bước mới
+    if (steps && Array.isArray(steps)) {
+      const existingSteps = await prisma.recipeStep.findMany({
+        where: { recipeId: id },
+      });
+
+      const newStepIds = steps
+        .filter((s) => s.id !== undefined && s.id !== null)
+        .map((s) => s.id);
+
+      // Xóa các bước không còn
+      const toDeleteSteps = existingSteps.filter(
+        (s) => !newStepIds.includes(s.id)
+      );
+
+      for (const step of toDeleteSteps) {
+        await prisma.recipeStep.delete({ where: { id: step.id } });
+      }
+
+      // Cập nhật hoặc thêm mới
+      for (const step of steps) {
+        if (step.id !== undefined && step.id !== null) {
+          await prisma.recipeStep.update({
+            where: { id: step.id },
+            data: {
+              name: step.name,
+              stepOrder: step.stepOrder,
+              durationMinutes: step.durationMinutes,
+            },
+          });
+        } else {
+          await prisma.recipeStep.create({
+            data: {
+              recipeId: id,
+              name: step.name,
+              stepOrder: step.stepOrder,
+              durationMinutes: step.durationMinutes,
+            },
+          });
+        }
+      }
+    }
 
     // ✅ Cập nhật thông tin chung của recipe
     const updated = await prisma.recipe.update({
@@ -276,6 +314,7 @@ const updateRecipeById = async (
             ingredient: true,
           },
         },
+        steps: true,
       },
     });
 
