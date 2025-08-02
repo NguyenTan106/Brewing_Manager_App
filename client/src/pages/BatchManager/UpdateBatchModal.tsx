@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Batch, Status } from "../../services/CRUD/CRUD_API_Batch";
+import type { Batch } from "../../services/CRUD/CRUD_API_Batch";
 import { updateBatchByIdAPI } from "../../services/CRUD/CRUD_API_Batch";
 import {
   Dialog,
@@ -8,13 +8,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +19,6 @@ interface Props {
   handleClose: () => void;
   handleGetAllBatchesAPI: () => Promise<void>;
   selectedBatch: Batch | null;
-  statusOptions: { label: string; value: Status }[];
   setSelectedBatch: React.Dispatch<React.SetStateAction<Batch | null>>;
   handlePaginationAPI: () => void;
 }
@@ -36,7 +28,6 @@ export default function UpdateBatchModal({
   setSelectedBatch,
   handleClose,
   selectedBatch,
-  statusOptions,
   handlePaginationAPI,
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<Batch>>({});
@@ -44,18 +35,13 @@ export default function UpdateBatchModal({
   const handleUpdateBatchByIdAPI = async (id: number) => {
     if (!id) return;
     try {
-      if (
-        editForm.beerName === "" ||
-        editForm.status === ("" as Status) ||
-        editForm.notes === ""
-      ) {
+      if (editForm.beerName === "" || editForm.notes === "") {
         toast.warning("Vui lòng điền đầy đủ thông tin");
         return;
       }
       // Kiểm tra xem có thay đổi nào không
       if (
         selectedBatch?.beerName == editForm.beerName &&
-        selectedBatch?.status == editForm.status &&
         selectedBatch?.notes == editForm.notes
       ) {
         toast.warning("Không có thay đổi nào để cập nhật");
@@ -107,35 +93,6 @@ export default function UpdateBatchModal({
                     setEditForm({ ...editForm, beerName: e.target.value })
                   }
                 />
-              </div>
-              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                <Label className="text-base">
-                  <strong>Trạng thái:</strong>
-                </Label>
-                <Select
-                  value={editForm.status ?? ""}
-                  onValueChange={(value) =>
-                    setEditForm({ ...editForm, status: value as Status })
-                  }
-                >
-                  <SelectTrigger
-                    className="w-full"
-                    style={{ fontSize: "0.95rem" }}
-                  >
-                    <SelectValue placeholder="Chọn trạng thái" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((option) => (
-                      <SelectItem
-                        style={{ fontSize: "0.95rem" }}
-                        key={option.value}
-                        value={option.value}
-                      >
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             <div className="flex flex-wrap gap-4">

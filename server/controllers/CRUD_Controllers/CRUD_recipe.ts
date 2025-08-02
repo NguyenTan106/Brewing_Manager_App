@@ -86,9 +86,9 @@ const handleUpdateRecipeById = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
 
-    const oldResult = await getRecipeById(Number(id));
-
+    const oldResult = await getRecipeById(id);
     const parsed = recipeUpdateSchema.parse(req.body);
+
     const result = await updateRecipeById(
       id,
       parsed.name,
@@ -102,16 +102,28 @@ const handleUpdateRecipeById = async (req: Request, res: Response) => {
     const newData = result.data;
     const oldData = oldResult.data;
 
-    res.status(200).json(result);
-    await compareAndLogChanges(
-      oldData,
-      newData,
-      ["name", "description", "note", "instructions", "recipeIngredients"],
-      "Recipe",
-      newData.id,
-      oldData.name
-      // userId // nếu có
-    );
+    // 🔍 Kiểm tra trước khi gọi log
+    if (newData.id || newData.length != 0) {
+      await compareAndLogChanges(
+        oldData,
+        newData,
+        [
+          "name",
+          "description",
+          "notes",
+          "instructions",
+          "recipeIngredients",
+          "steps",
+        ],
+        "Recipe",
+        newData.id,
+        oldData.name
+        // userId // nếu cần
+      );
+      res.status(200).json(result);
+    } else {
+      res.status(500).json(result);
+    }
   } catch (e) {
     console.error("Lỗi trong controller handleUpdateRecipeById:", e);
     res.status(500).json({

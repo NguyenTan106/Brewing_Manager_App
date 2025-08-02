@@ -136,10 +136,6 @@ export default function RecipeDetailModal({
                 <p className="text-base font-medium">{selectedRecipe?.name}</p>
               </div>
               <div className="col-span-full">
-                <p className="text-sm text-muted-foreground">Mô tả</p>
-                <p className="text-base">{selectedRecipe?.description}</p>
-              </div>
-              <div className="col-span-full">
                 <p className="text-sm text-muted-foreground">
                   Nguyên liệu cần dùng
                 </p>
@@ -202,7 +198,7 @@ export default function RecipeDetailModal({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Ghi chú</p>
-                <p className="text-base">{selectedRecipe?.note}</p>
+                <p className="text-base">{selectedRecipe?.notes}</p>
               </div>
               <div className="col-span-full">
                 <p className="text-sm text-muted-foreground">
@@ -220,20 +216,20 @@ export default function RecipeDetailModal({
                       </div>
 
                       {/* Hiển thị mũi tên + thời gian (nếu không phải bước cuối) */}
-                      {idx < selectedRecipe?.steps.length - 1 && (
-                        <div className="relative my-5 mt-4 h-6">
-                          {/* Mũi tên ở giữa */}
-                          <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
-                            ↓
-                          </div>
+                      {p.durationMinutes != 0 &&
+                        idx < selectedRecipe?.steps.length && (
+                          <div className="relative my-5 mt-4 h-6">
+                            {/* Mũi tên ở giữa */}
+                            <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
+                              ↓
+                            </div>
 
-                          {/* Thời gian nằm bên phải mũi tên */}
-                          <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
-                            {minutesToOtherTimes(p.durationMinutes)}
+                            {/* Thời gian nằm bên phải mũi tên */}
+                            <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
+                              {minutesToOtherTimes(p.durationMinutes)}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                      {idx == selectedRecipe?.steps.length - 1 && <div></div>}
+                        )}
                     </div>
                   ))}
                 </p>

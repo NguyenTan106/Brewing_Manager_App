@@ -18,6 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import { minutesToOtherTimes } from "../Recipe/MinutesToOtherTimes";
 
 interface Props {
   handleClose: () => void;
@@ -114,12 +115,46 @@ export default function RecipeDetailModalFromBatch({
                 <p className="text-sm text-muted-foreground">
                   Các bước thực hiện
                 </p>
-                <div className="text-base ">
-                  <ReactMarkdown>
-                    {selectedBatch?.recipe &&
-                      selectedBatch?.recipe.instructions}
-                  </ReactMarkdown>
-                </div>
+                <p className="text-base ">
+                  {selectedBatch?.batchSteps &&
+                    selectedBatch?.batchSteps.map((p, idx) => (
+                      <div key={idx}>
+                        {/* Hiển thị bước */}
+                        <div className="p-2 border rounded shadow-sm text-center">
+                          <strong className="text-xl">
+                            Bước {p.stepOrder}:{" "}
+                          </strong>
+                          <ReactMarkdown>{p.name}</ReactMarkdown>
+                        </div>
+
+                        {/* Hiển thị mũi tên + thời gian (nếu không phải bước cuối) */}
+                        {(Number(new Date(p.scheduledEndAt)) -
+                          Number(new Date(p.startedAt))) /
+                          1000 /
+                          60 !=
+                          0 &&
+                          selectedBatch?.batchSteps &&
+                          idx < selectedBatch?.batchSteps.length && (
+                            <div className="relative my-5 mt-4 h-6">
+                              {/* Mũi tên ở giữa */}
+                              <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
+                                ↓
+                              </div>
+
+                              {/* Thời gian nằm bên phải mũi tên */}
+                              <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
+                                {minutesToOtherTimes(
+                                  (Number(new Date(p.scheduledEndAt)) -
+                                    Number(new Date(p.startedAt))) /
+                                    1000 /
+                                    60
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </div>
+                    ))}
+                </p>
               </div>
 
               <div className="col-span-full">

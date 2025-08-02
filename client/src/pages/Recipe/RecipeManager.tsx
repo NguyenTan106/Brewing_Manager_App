@@ -238,7 +238,7 @@ export default function RecipeManager() {
                     {i.description}
                   </TableCell>
                   <TableCell className="whitespace-normal break-words px-4 py-3">
-                    {i.note}
+                    {i.notes}
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     {i.createdAt &&

@@ -7,6 +7,7 @@ import {
   createBatch,
   deleteBacthById,
   updateBatchById,
+  updateFeedbackBatchSteps,
 } from "../../prisma/CRUD_Services/CRUD_batch_service";
 import { batchSchema } from "../../middlewares/schema";
 import { logActivity } from "../../prisma/logActivity";
@@ -44,8 +45,7 @@ const handleCreateBatch = async (req: Request, res: Response) => {
       Number(parsed.volume),
       parsed.notes || "",
       Number(parsed.recipeId),
-      Number(parsed.createdById),
-      parsed.batchSteps
+      Number(parsed.createdById)
     );
     const data = result.data;
     res.status(201).json(result);
@@ -84,13 +84,12 @@ const handleUpdateBatchById = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
 
-    const { beerName, status, notes } = req.body;
+    const { beerName, notes } = req.body;
 
     const oldResult = await getBatchById(Number(id));
 
     const result = await updateBatchById(id, {
       beerName: beerName,
-      status: status,
       notes: notes,
     });
 
@@ -101,7 +100,7 @@ const handleUpdateBatchById = async (req: Request, res: Response) => {
     await compareAndLogChanges(
       oldData,
       newData,
-      ["beerName", "status", "volume", "notes", "recipeId"],
+      ["beerName", "volume", "notes", "recipeId"],
       "Batch",
       newData.id,
       oldData.beerName
@@ -145,10 +144,24 @@ const handleDeleteBacthById = async (req: Request, res: Response) => {
   }
 };
 
+const handleUpdateFeedbackBatchSteps = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const updateData = req.body;
+    const updated = await updateFeedbackBatchSteps(id, updateData);
+    res.status(200).json(updated);
+  } catch (e) {
+    console.error("Lỗi trong controller handleUpdateFeedbackBatchSteps:", e);
+    res.status(500).json({
+      message: "Lỗi server khi cập nhật feedback",
+    });
+  }
+};
 export {
   handleGetAllBatches,
   handleGetBatchById,
   handleCreateBatch,
   handleDeleteBacthById,
   handleUpdateBatchById,
+  handleUpdateFeedbackBatchSteps,
 };

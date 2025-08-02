@@ -22,55 +22,49 @@ import { toast } from "sonner";
 import { checkUser } from "@/components/Auth/Check";
 import {
   createBatchAPI,
-  Status,
   type Recipe,
 } from "../../services/CRUD/CRUD_API_Batch";
 import { getAllRecipesAPI } from "../../services/CRUD/CRUD_API_Recipe";
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
-  statusOptions: { label: string; value: Status }[];
   handlePaginationAPI: () => void;
 }
 export default function AddNewBatchModal({
   showAddModal,
   handleClose,
-  statusOptions,
   handlePaginationAPI,
 }: Props) {
   const user = checkUser();
 
   const [form, setForm] = useState({
     beerName: "",
-    status: "" as Status,
     volume: "",
     notes: "",
     recipeId: "",
     createdById: user?.id ?? 0,
     recipe: null,
     batchIngredients: [],
+    batchSteps: [],
+    status: "",
   });
   const [recipeFromBatch, setRecipeFromBatch] = useState<Recipe[]>([]);
   const clearForm = () => {
     setForm({
       beerName: "",
-      status: "" as Status,
       volume: "",
       notes: "",
       recipeId: "",
       createdById: user?.id ?? 0,
       recipe: null,
       batchIngredients: [],
+      batchSteps: [],
+      status: "",
     });
   };
 
   const handleCreateBatchAPI = async () => {
-    if (
-      form.beerName === "" ||
-      form.status === ("" as Status) ||
-      form.volume === "" ||
-      form.recipeId === ""
-    ) {
+    if (form.beerName === "" || form.volume === "" || form.recipeId === "") {
       toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
     }
@@ -129,35 +123,6 @@ export default function AddNewBatchModal({
                   placeholder="VD: "
                 />
               </div>
-              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                <Label className="text-base">
-                  <strong>Trạng thái: </strong>
-                </Label>
-                <Select
-                  value={form.status ?? ""}
-                  onValueChange={(value) =>
-                    setForm({ ...form, status: value as Status })
-                  }
-                >
-                  <SelectTrigger
-                    className="w-full"
-                    style={{ fontSize: "0.95rem" }}
-                  >
-                    <SelectValue placeholder="Chọn trạng thái" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((option) => (
-                      <SelectItem
-                        style={{ fontSize: "0.95rem" }}
-                        key={option.value}
-                        value={option.value}
-                      >
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
                 <Label className="text-base">
@@ -169,7 +134,7 @@ export default function AddNewBatchModal({
                   type="numer"
                   value={form.volume}
                   onChange={(e) => setForm({ ...form, volume: e.target.value })}
-                  placeholder="VD: g, kg"
+                  placeholder="VD: 50"
                 />
               </div>
               <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
@@ -203,20 +168,7 @@ export default function AddNewBatchModal({
                 </Select>
               </div>
             </div>
-            <div className="hidden">
-              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-                <Label className="text-base">
-                  <strong>Người tạo:</strong>
-                </Label>
-                <Input
-                  style={{ fontSize: "0.95rem" }}
-                  disabled
-                  required
-                  value={form.createdById}
-                  placeholder="VD: "
-                />
-              </div>
-            </div>
+
             <div className="flex flex-col gap-1 w-full min-w-0">
               <Label className="text-base">
                 <strong>Ghi chú:</strong>

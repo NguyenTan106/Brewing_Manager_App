@@ -2,31 +2,18 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 import { type Ingredient } from "./CRUD_API_Ingredient";
 import type { RecipeStep } from "./CRUD_API_Recipe";
-export enum Status {
-  mash = "mash",
-  boiling = "boiling",
-  fermenting = "fermenting",
-  cold_crashing = "cold_crashing",
-  done = "done",
-  cancel = "cancel",
-}
 
 export interface BatchSteps {
-  id: number;
-  batchId: number;
+  id?: number | undefined;
+  batchId?: number | undefined;
   recipeStepId: number;
   stepOrder: number;
+  name: string;
+  feedback?: string;
+  actualDuration?: string;
   startedAt: string;
   scheduledEndAt: string;
 }
-export const statusLabelMap: Record<Status, string> = {
-  mash: "Ngâm và nấu mạch nha",
-  boiling: "Nấu sôi",
-  fermenting: "Lên men",
-  cold_crashing: "Làm lạnh",
-  done: "Hoàn tất",
-  cancel: "Hủy",
-};
 
 export interface RecipeIngredient {
   id: number;
@@ -63,7 +50,6 @@ export interface Batch {
   id: number;
   code: string;
   beerName: string;
-  status: Status;
   volume: number | string;
   notes?: string;
   recipeId?: number | string;
@@ -73,6 +59,7 @@ export interface Batch {
   createdAt?: string;
   batchIngredients: BatchIngredient[] | null;
   batchSteps: BatchSteps[];
+  status: string;
 }
 
 type BatchUpdate = Omit<Batch, "volume" | "recipeId">;
@@ -85,13 +72,12 @@ export const getAllBatchesAPI = async () => {
 
 export const getBatchByIdAPI = async (id: number) => {
   const res = await axios.get(`${BASE_URL}/api/batch/${id}`);
-  console.log(res.data);
   return res.data.data;
 };
 
 export const createBatchAPI = async (data: BatchInput) => {
   const res = await axios.post(`${BASE_URL}/api/batch`, data);
-  console.log(res.data);
+  // console.log(res.data);
   return res.data;
 };
 
@@ -103,6 +89,13 @@ export const updateBatchByIdAPI = async (
   return res.data;
 };
 
+export const updateFeedBackBatchSteps = async (
+  id: number,
+  updateData: Partial<BatchSteps>
+) => {
+  const res = await axios.put(`${BASE_URL}/api/batch-step/${id}`, updateData);
+  return res.data;
+};
 // export const deleteBatchByIdAPI = async (id: number) => {
 //   const res = await axios.delete(`${BASE_URL}/api/batch/${id}`);
 //   return res.data;

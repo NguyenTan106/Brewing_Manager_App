@@ -45,20 +45,20 @@ model IngredientImport {
 }
 
 model Batch {
-  id               Int               @id @default(autoincrement())
-  code             String            @unique
-  beerName         String
-  volume           Float
-  notes            String?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  beerName  String
+  volume    Float
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   createdById      Int
   createdBy        User              @relation(fields: [createdById], references: [id])
   recipeId         Int // liên kết công thức (optional)
   recipe           Recipe            @relation(fields: [recipeId], references: [id])
   batchIngredients BatchIngredient[]
-  batchSteps BatchStep[]
+  batchSteps       BatchStep[]
 
   @@index([recipeId])
   @@index([createdById])
@@ -69,16 +69,18 @@ model BatchStep {
   batchId        Int
   recipeStepId   Int
   stepOrder      Int
+  name           String
+  feedback       String?
+  actualDuration String?
   startedAt      DateTime?
   scheduledEndAt DateTime?
 
-  batch        Batch       @relation(fields: [batchId], references: [id])
-  recipeStep   RecipeStep  @relation(fields: [recipeStepId], references: [id])
+  batch      Batch      @relation(fields: [batchId], references: [id])
+  recipeStep RecipeStep @relation(fields: [recipeStepId], references: [id])
 
   @@unique([batchId, stepOrder])
   @@index([batchId])
 }
-
 
 model BatchIngredient {
   id           Int   @id @default(autoincrement())
@@ -107,19 +109,18 @@ model Recipe {
 }
 
 model RecipeStep {
-  id              Int      @id @default(autoincrement())
+  id              Int    @id @default(autoincrement())
   recipeId        Int
   stepOrder       Int
   name            String
   durationMinutes Int
 
-  recipe      Recipe      @relation(fields: [recipeId], references: [id])
-  batchSteps  BatchStep[]
+  recipe     Recipe      @relation(fields: [recipeId], references: [id])
+  batchSteps BatchStep[]
 
   @@unique([recipeId, stepOrder])
   @@index([recipeId])
 }
-
 
 model RecipeIngredient {
   id           Int   @id @default(autoincrement())

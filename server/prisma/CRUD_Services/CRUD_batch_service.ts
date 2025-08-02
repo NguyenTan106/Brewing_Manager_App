@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { format } from "date-fns-tz";
 import { paginate } from "../pagination";
+import { format } from "date-fns-tz";
 
 const prisma = new PrismaClient();
 
@@ -111,6 +111,7 @@ const getBatchById = async (
         : data.recipe?.name,
     };
 
+    const status = getBatchStatus(data.batchSteps);
     return {
       message: "Thành công",
       data: {
@@ -126,6 +127,7 @@ const getBatchById = async (
         batchIngredients,
         recipe,
         batchSteps: data.batchSteps,
+        status,
       },
     };
   } catch (error) {
@@ -138,19 +140,38 @@ export interface BatchSteps {
   batchId: number;
   recipeStepId: number;
   stepOrder: number;
-  startedAt: string;
-  scheduledEndAt: string;
+  startedAt: string | Date | null;
+  scheduledEndAt: string | Date | null;
 }
+
+const getBatchStatus = (batchSteps: BatchSteps[]) => {
+  const now = new Date();
+  const sortedSteps = batchSteps.sort((a, b) => a.stepOrder - b.stepOrder);
+
+  for (const step of sortedSteps) {
+    if (now < new Date(step.startedAt ?? "")) {
+      return `Sắp tới: Bước ${step.stepOrder}`;
+    }
+    if (
+      now >= new Date(step.startedAt ?? "") &&
+      now <= new Date(step.scheduledEndAt ?? "")
+    ) {
+      return `Đang thực hiện: Bước ${step.stepOrder}`;
+    }
+  }
+
+  return "Đã hoàn thành";
+};
 
 const createBatch = async (
   beerName: string,
   volume: number,
   notes: string,
   recipeId: number,
-  createdById: number,
-  batchSteps: BatchSteps[]
+  createdById: number
 ): Promise<{ message: string; data: any }> => {
   try {
+    // 1. Tạo mã tự động
     const vnNow = new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" })
     );
@@ -190,6 +211,10 @@ const createBatch = async (
       return { message: "Không có công thức đã chọn", data: [] };
     }
 
+    const defaultVolume = 60;
+    const scaleRatio = volume / defaultVolume;
+    const insufficientIngredients: string[] = [];
+
     const activeIngredients = recipe.recipeIngredients.filter(
       (ri) => ri.ingredient && !ri.ingredient.isDeleted
     );
@@ -197,10 +222,6 @@ const createBatch = async (
     if (activeIngredients.length === 0) {
       return { message: "Cần bổ sung nguyên liệu cho công thức", data: [] };
     }
-
-    const defaultVolume = 60;
-    const scaleRatio = volume / defaultVolume;
-    const insufficientIngredients: string[] = [];
 
     for (const ri of activeIngredients) {
       const amountToUse = ri.amountNeeded * scaleRatio;
@@ -246,14 +267,36 @@ const createBatch = async (
         },
       });
 
-      await tx.batchStep.createMany({
-        data: batchSteps.map((bt) => ({
+      const recipeSteps = await tx.recipeStep.findMany({
+        where: { recipeId },
+        orderBy: { stepOrder: "asc" },
+      });
+
+      const now = new Date();
+      let currentStartTime = new Date(now); // thời gian bắt đầu bước đầu tiên
+
+      const batchSteps = recipeSteps.map((step) => {
+        const startedAt = new Date(currentStartTime); // copy thời gian bắt đầu
+        const scheduledEndAt = new Date(
+          startedAt.getTime() + step.durationMinutes * 60 * 1000
+        );
+
+        // chuẩn bị dữ liệu để tạo
+        const batchStepData = {
           batchId: newBatch.id,
-          recipeStepId: bt.recipeStepId,
-          stepOrder: bt.stepOrder,
-          startedAt: bt.startedAt,
-          scheduledEndAt: bt.scheduledEndAt,
-        })),
+          recipeStepId: step.id,
+          stepOrder: step.stepOrder,
+          name: step.name,
+          startedAt,
+          scheduledEndAt,
+        };
+
+        currentStartTime = scheduledEndAt; // cập nhật cho bước tiếp theo
+        return batchStepData;
+      });
+
+      await tx.batchStep.createMany({
+        data: batchSteps,
       });
 
       // c. Ghi lại batchIngredient
@@ -284,9 +327,17 @@ const createBatch = async (
       },
     });
 
+    if (!fullBatch) {
+      return {
+        message: "Thêm mẻ thất bại",
+        data: null,
+      };
+    }
+    const status = getBatchStatus(fullBatch.batchSteps);
+
     return {
       message: "Thêm mẻ thành công",
-      data: fullBatch,
+      data: { ...fullBatch, status },
     };
   } catch (e) {
     console.error("Lỗi khi tạo mẻ mới:", e);
@@ -294,11 +345,65 @@ const createBatch = async (
   }
 };
 
+export const updateFeedbackBatchSteps = async (
+  id: number,
+  updateData: {
+    id: number;
+    feedback: string;
+    actualDuration: string;
+  }[]
+) => {
+  try {
+    const existing = await prisma.batch.findUnique({
+      where: { id },
+    });
+    if (!existing) {
+      return { message: "Không tim thấy mẻ", data: [] };
+    }
+    // console.log("Dữ liệu cập nhật batchStep:", updateData);
+    const updateBatchStep = await Promise.all(
+      updateData.map((u) =>
+        prisma.batchStep.update({
+          where: { id: u.id },
+          data: {
+            feedback: u.feedback,
+            actualDuration: u.actualDuration,
+          },
+        })
+      )
+    );
+    return {
+      message: "Cập nhật feedback thành công",
+      data: updateBatchStep,
+    };
+  } catch (e) {
+    console.error("Lỗi khi cập nhật mẻ:", e);
+    throw new Error("Không thể cập nhật mẻ");
+  }
+};
+
+// updateFeedbackBatchSteps(1, [
+//   {
+//     batchStepId: 1,
+//     feedback: "Bước này diễn ra suôn sẻ.",
+//     actualDuration: "00:12:30",
+//   },
+//   {
+//     batchStepId: 2,
+//     feedback: "Cần kiểm tra nhiệt độ thường xuyên.",
+//     actualDuration: "00:08:45",
+//   },
+//   {
+//     batchStepId: 3,
+//     feedback: "Hơi chậm do máy bơm yếu.",
+//     actualDuration: "00:15:10",
+//   },
+// ]).then((result) => console.log(result));
+
 const updateBatchById = async (
   id: number,
   updateData: {
     beerName?: string;
-    status?: string;
     notes?: string;
   }
 ): Promise<{ message: string; data: any }> => {
@@ -390,15 +495,20 @@ const getBatchPage = async (page: number, limit: number) => {
       batchSteps: true,
     },
     orderBy: { id: "desc" },
-    enhanceItem: async (i) => ({
-      ...i,
-      recipe: {
-        ...i.recipe,
-        name: i.recipe?.isDeleted
-          ? `${i.recipe.name} (đã bị xóa)`
-          : i.recipe?.name,
-      },
-    }),
+    enhanceItem: async (batch) => {
+      const status = getBatchStatus(batch.batchSteps);
+
+      return {
+        ...batch,
+        recipe: {
+          ...batch.recipe,
+          name: batch.recipe?.isDeleted
+            ? `${batch.recipe.name} (đã bị xóa)`
+            : batch.recipe?.name,
+        },
+        status,
+      };
+    },
   });
 };
 

@@ -33,7 +33,6 @@ const tokenize = (text: string) => {
     .split(""); // tách ký tự
 
   // Kết hợp từ + ký tự, bỏ trùng bằng Set
-  // return Array.from(new Set([...words, ...chars]));
   return [...words, ...chars];
 };
 

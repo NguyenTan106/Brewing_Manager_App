@@ -25,6 +25,7 @@ import {
   paginationBatchController,
   getTotalBatchesController,
   getGetBatchStatsByWeekMonthYearController,
+  updateFeedbackBatchStepsController,
 } from "./routes/api_batch";
 
 import {
@@ -93,6 +94,7 @@ app.use("/api", updateBatchByIdController);
 app.use("/api", paginationBatchController);
 app.use("/api", getTotalBatchesController);
 app.use("/api", getGetBatchStatsByWeekMonthYearController);
+app.use("/api", updateFeedbackBatchStepsController);
 
 //recipe
 app.use("/api", getAllRecipesController);

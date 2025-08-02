@@ -7,11 +7,7 @@ import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import BatchDetailModal from "./BatchDetailModal";
 import AddNewBatchModal from "./AddNewBatchModal";
 import { paginationBatchAPI } from "../../services/pagination_API";
-import {
-  type Batch,
-  statusLabelMap,
-  Status,
-} from "../../services/CRUD/CRUD_API_Batch";
+import { type Batch } from "../../services/CRUD/CRUD_API_Batch";
 import {
   Table,
   TableBody,
@@ -22,50 +18,22 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { searchBatchAPI } from "@/services/search_API";
-
+import UpdateFeedbackBatchStepModal from "./UpdateFeedbackBatchStepModal";
 export default function BatchManager() {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const statusOptions: { label: string; value: Status }[] = Object.entries(
-    statusLabelMap
-  ).map(([key, label]) => ({
-    label,
-    value: key as Status,
-  }));
+  const [
+    showUpdateFeedbackBatchStepModal,
+    setShowUpdateFeedbackBatchStepModal,
+  ] = useState(false);
   const [searchItem, setSearchItem] = useState("");
   const firstLoad = useRef(true);
-
-  const getStatusBadge = (status: Status) => {
-    switch (status) {
-      case Status.boiling:
-        return <Badge className="bg-red-100 text-red-700">Nấu sôi</Badge>;
-      case Status.fermenting:
-        return <Badge className="bg-yellow-100 text-yellow-700">Lên men</Badge>;
-      case Status.cold_crashing:
-        return <Badge className="bg-blue-100 text-blue-700">Làm lạnh</Badge>;
-      case Status.done:
-        return <Badge className="bg-green-100 text-green-700">Hoàn tất</Badge>;
-      case Status.cancel:
-        return (
-          <Badge className="bg-gray-300 text-gray-800 line-through">Hủy</Badge>
-        );
-      case Status.mash:
-        return (
-          <Badge className="bg-orange-100 text-orange-700">
-            Ngâm và nấu mạch nha
-          </Badge>
-        );
-      default:
-        return <Badge className="bg-gray-100 text-gray-600">{status}</Badge>;
-    }
-  };
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -88,7 +56,15 @@ export default function BatchManager() {
       localStorage.setItem("batch_page", currentPage.toString());
       localStorage.setItem("batch_limit", limit.toString());
 
-      handlePaginationAPI(currentPage, limit);
+      const fetchData = () => {
+        handlePaginationAPI(currentPage, limit);
+      };
+
+      fetchData(); // Gọi lần đầu tiên khi effect chạy
+
+      const interval = setInterval(fetchData, 10000); // Gọi lại mỗi 10 giây
+
+      return () => clearInterval(interval); // Xóa interval khi unmount hoặc dependency thay đổi
     }
   }, [currentPage, limit, isInitialized]);
 
@@ -150,6 +126,12 @@ export default function BatchManager() {
     }
   };
 
+  const handleOpenFeedbackModal = async (id: number) => {
+    const batch = await getBatchByIdAPI(id);
+    setSelectedBatch(batch);
+    setShowUpdateFeedbackBatchStepModal(true);
+  };
+
   return (
     <>
       <BatchDetailModal
@@ -157,19 +139,21 @@ export default function BatchManager() {
         handleClose={() => setShowDetailModal(false)}
         selectedBatch={selectedBatch}
         setSelectedBatch={setSelectedBatch}
-        getStatusBadge={getStatusBadge}
         handleGetAllBatchesAPI={handleGetAllBatchesAPI}
-        statusOptions={statusOptions}
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
       <AddNewBatchModal
         showAddModal={showAddModal}
         handleClose={() => setShowAddModal(false)}
-        statusOptions={statusOptions}
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
+      <UpdateFeedbackBatchStepModal
+        showUpdateFeedbackBatchStepModal={showUpdateFeedbackBatchStepModal}
+        handleClose={() => setShowUpdateFeedbackBatchStepModal(false)}
+        selectedBatch={selectedBatch}
+      />
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
           <p className="text-3xl font-bold">Danh sách mẻ: </p>
@@ -225,9 +209,7 @@ export default function BatchManager() {
                 <TableRow key={i.id}>
                   <TableCell className="px-4 py-3">{i.code}</TableCell>
                   <TableCell className="px-4 py-3">{i.beerName}</TableCell>
-                  <TableCell className="px-4 py-3">
-                    {getStatusBadge(i.status)}
-                  </TableCell>
+                  <TableCell className="px-4 py-3">{i.status}</TableCell>
                   <TableCell className="px-4 py-3">{i.volume}</TableCell>
                   <TableCell className="px-4 py-3">
                     {i.recipe?.name || "Chưa có công thức nào"}
@@ -256,6 +238,16 @@ export default function BatchManager() {
                     >
                       📋 <span className="hidden sm:inline">Chi tiết</span>
                     </Button>
+                    {i.status == "Đã hoàn thành" && (
+                      <Button
+                        title="Xem chi tiết nguyên liệu"
+                        variant="outline"
+                        onClick={() => handleOpenFeedbackModal(i.id)}
+                        style={{ padding: "5px 10px", fontSize: "14px" }}
+                      >
+                        📋 <span className="hidden sm:inline">Nhận xét</span>
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))

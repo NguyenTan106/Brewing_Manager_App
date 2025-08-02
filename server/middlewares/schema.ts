@@ -38,17 +38,6 @@ export const batchSchema = z.object({
       error: "Người tạo không được để trống",
     })
     .min(1, "Người tạo không hợp lệ"),
-  batchSteps: z
-    .array(
-      z.object({
-        batchId: z.number(),
-        recipeStepId: z.number(),
-        stepOrder: z.number().positive(),
-        startedAt: z.string(),
-        scheduledEndAt: z.string(),
-      })
-    )
-    .nonempty(),
 });
 
 export const recipeUpdateSchema = z.object({
@@ -95,7 +84,6 @@ export const recipeSchema = z.object({
   steps: z
     .array(
       z.object({
-        recipeId: z.number(),
         name: z.string(),
         durationMinutes: z.number(),
         stepOrder: z.number().positive(),

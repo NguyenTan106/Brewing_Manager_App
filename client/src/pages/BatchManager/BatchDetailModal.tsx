@@ -1,10 +1,6 @@
-import { useState, type JSX } from "react";
+import { useState } from "react";
 
-import {
-  type Batch,
-  // type Recipe,
-  Status,
-} from "../../services/CRUD/CRUD_API_Batch";
+import { type Batch } from "../../services/CRUD/CRUD_API_Batch";
 import UpdateBatchModal from "./UpdateBatchModal";
 import RecipeDetailModalFromBatch from "./RecipeDetailModalFromBatch";
 import {
@@ -22,9 +18,7 @@ interface Props {
   showDetailModal: boolean;
   handleClose: () => void;
   selectedBatch: Batch | null;
-  getStatusBadge: (type: Status) => JSX.Element;
   handleGetAllBatchesAPI: () => Promise<void>;
-  statusOptions: { label: string; value: Status }[];
   setSelectedBatch: React.Dispatch<React.SetStateAction<Batch | null>>;
   handlePaginationAPI: () => void;
 }
@@ -34,23 +28,12 @@ export default function BatchDetailModal({
   handleClose,
   selectedBatch,
   setSelectedBatch,
-  getStatusBadge,
   handleGetAllBatchesAPI,
-  statusOptions,
   handlePaginationAPI,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDetailRecipeModal, setShowDetailRecipeModal] = useState(false);
-  const now = new Date();
-  const currentStep = selectedBatch?.batchSteps.find(
-    (step) => new Date(step.startedAt) > now
-  );
-  // console.log("Steps:", currentStep);
-  const currentRecipeStep = selectedBatch?.recipe?.steps.find(
-    (step) => step.id === currentStep?.recipeStepId
-  );
-  const test = selectedBatch?.batchSteps.map((step) => step.startedAt);
-  console.log(currentRecipeStep);
+
   return (
     <>
       <UpdateBatchModal
@@ -58,7 +41,6 @@ export default function BatchDetailModal({
         showUpdateModal={showUpdateModal}
         handleGetAllBatchesAPI={handleGetAllBatchesAPI}
         selectedBatch={selectedBatch}
-        statusOptions={statusOptions}
         setSelectedBatch={setSelectedBatch}
         handlePaginationAPI={handlePaginationAPI}
       />
@@ -102,11 +84,7 @@ export default function BatchDetailModal({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground pt-1">Trạng thái</p>
-                <p className="text-base pt-1">
-                  {currentRecipeStep
-                    ? currentRecipeStep.name
-                    : "Chưa bắt đầu hoặc đã hoàn tất"}
-                </p>
+                <p className="text-base pt-1">{selectedBatch?.status}</p>
               </div>
 
               <div>

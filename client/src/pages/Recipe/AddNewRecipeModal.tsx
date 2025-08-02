@@ -35,8 +35,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FaPlus } from "react-icons/fa";
-import mammoth from "mammoth";
-import TurndownService from "turndown";
+// import mammoth from "mammoth";
+// import TurndownService from "turndown";
 import { toast } from "sonner";
 import { checkUser } from "@/components/Auth/Check";
 import ReactMarkdown from "react-markdown";
@@ -110,30 +110,30 @@ export default function AddNewRecipeModal({
     label: ing.name,
   }));
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    try {
-      const arrayBuffer = await file.arrayBuffer();
+  //   try {
+  //     const arrayBuffer = await file.arrayBuffer();
 
-      // B1: Chuyển docx → HTML
-      const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
+  //     // B1: Chuyển docx → HTML
+  //     const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
 
-      // B2: Chuyển HTML → Markdown
-      const turndownService = new TurndownService();
-      const markdown = turndownService.turndown(html);
+  //     // B2: Chuyển HTML → Markdown
+  //     const turndownService = new TurndownService();
+  //     const markdown = turndownService.turndown(html);
 
-      // B3: Gán vào form
-      setForm((prev) => ({
-        ...prev,
-        instructions: markdown,
-      }));
-    } catch (error) {
-      console.error("Lỗi khi xử lý file:", error);
-      toast.error("Không thể đọc file Word. Vui lòng thử lại.");
-    }
-  };
+  //     // B3: Gán vào form
+  //     setForm((prev) => ({
+  //       ...prev,
+  //       instructions: markdown,
+  //     }));
+  //   } catch (error) {
+  //     console.error("Lỗi khi xử lý file:", error);
+  //     toast.error("Không thể đọc file Word. Vui lòng thử lại.");
+  //   }
+  // };
 
   return (
     <>
@@ -389,7 +389,6 @@ export default function AddNewRecipeModal({
                     style={{ fontSize: "0.95rem" }}
                     className="col-span-full"
                     onClick={() => {
-                      const durationMinutes = currentStep.durationMinutes;
                       const name = currentStep.name;
                       if (!name) {
                         return toast.warning("Yêu cầu nhập đầy đủ thông tin");

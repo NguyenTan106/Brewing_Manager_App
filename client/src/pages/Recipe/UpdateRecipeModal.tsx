@@ -34,11 +34,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FaPlus, FaTrash } from "react-icons/fa";
-import mammoth from "mammoth";
-import TurndownService from "turndown";
+// import mammoth from "mammoth";
+// import TurndownService from "turndown";
 import { toast } from "sonner";
 import { minutesToOtherTimes } from "./MinutesToOtherTimes";
 import ReactMarkdown from "react-markdown";
+import { AxiosError } from "axios";
 
 interface Props {
   showUpdateModal: boolean;
@@ -65,6 +66,7 @@ export default function UpdateRecipeModal({
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<RecipeUpate>>({});
   const [currentStep, setCurrentStep] = useState<RecipeStep>({
+    recipeId: 0,
     stepOrder: 1,
     durationMinutes: 0,
     name: "",
@@ -84,6 +86,7 @@ export default function UpdateRecipeModal({
         steps.length > 0 ? Math.max(...steps.map((s) => s.stepOrder)) + 1 : 1;
 
       setCurrentStep({
+        recipeId: selectedRecipe.id,
         stepOrder: nextStepOrder,
         durationMinutes: 0,
         name: "",
@@ -91,9 +94,10 @@ export default function UpdateRecipeModal({
 
       // Cập nhật editForm nếu cần
       setEditForm({
+        id: selectedRecipe.id,
         name: selectedRecipe.name || "",
         description: selectedRecipe.description || "",
-        note: selectedRecipe.note || "",
+        notes: selectedRecipe.notes || "",
         instructions: selectedRecipe.instructions || "",
         recipeIngredients: selectedRecipeIngredient.map((ri) => ({
           id: ri.id,
@@ -106,53 +110,30 @@ export default function UpdateRecipeModal({
     }
   }, [showUpdateModal, selectedRecipe, selectedRecipeIngredient]);
 
-  const handleRemoveStep = (index: number) => {
-    const updatedSteps = [...(editForm.steps ?? [])];
-    updatedSteps.splice(index, 1);
+  // const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    // Optionally re-index lại stepOrder cho đẹp
-    const reindexedSteps = updatedSteps.map((s, i) => ({
-      ...s,
-      stepOrder: i + 1,
-    }));
+  //   try {
+  //     const arrayBuffer = await file.arrayBuffer();
 
-    setEditForm({
-      ...editForm,
-      steps: reindexedSteps,
-    });
+  //     // B1: Chuyển docx → HTML
+  //     const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
 
-    // Cập nhật lại stepOrder cho bước tiếp theo
-    setCurrentStep({
-      stepOrder: reindexedSteps.length + 1,
-      durationMinutes: 0,
-      name: "",
-    });
-  };
+  //     // B2: Chuyển HTML → Markdown
+  //     const turndownService = new TurndownService();
+  //     const markdown = turndownService.turndown(html);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-
-      // B1: Chuyển docx → HTML
-      const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
-
-      // B2: Chuyển HTML → Markdown
-      const turndownService = new TurndownService();
-      const markdown = turndownService.turndown(html);
-
-      // B3: Gán vào form
-      setEditForm((prev) => ({
-        ...prev,
-        instructions: markdown,
-      }));
-    } catch (error) {
-      console.error("Lỗi khi xử lý file:", error);
-      toast.error("Không thể đọc file Word. Vui lòng thử lại.");
-    }
-  };
+  //     // B3: Gán vào form
+  //     setEditForm((prev) => ({
+  //       ...prev,
+  //       instructions: markdown,
+  //     }));
+  //   } catch (error) {
+  //     console.error("Lỗi khi xử lý file:", error);
+  //     toast.error("Không thể đọc file Word. Vui lòng thử lại.");
+  //   }
+  // };
 
   const handleUpdateRecipeByIdAPI = async (id: number) => {
     if (!id) return;
@@ -169,10 +150,10 @@ export default function UpdateRecipeModal({
       }
 
       if (
-        selectedRecipe?.name == editForm.name &&
-        selectedRecipe?.description == editForm.description &&
-        selectedRecipe?.instructions == editForm.instructions &&
-        selectedRecipe?.note == editForm.note &&
+        (selectedRecipe?.name ?? "") == (editForm.name ?? "") &&
+        (selectedRecipe?.description ?? "") == (editForm.description ?? "") &&
+        (selectedRecipe?.instructions ?? "") == (editForm.instructions ?? "") &&
+        (selectedRecipe?.notes ?? "") === (editForm.notes ?? "") &&
         JSON.stringify(
           editForm.recipeIngredients.map((i) => i.amountNeeded)
         ) ===
@@ -194,14 +175,21 @@ export default function UpdateRecipeModal({
         return;
       }
       const data = await updateRecipeByIdAPI(id, editForm);
-      toast.success("Cập nhật công thức thành công");
+      toast.success(data.message);
       handleClose();
       handlePaginationAPI();
       setSelectedRecipe(data.data);
       setSelectedRecipeIngredient(data.data.recipeIngredients);
     } catch (err) {
-      console.error("Lỗi khi cập nhật mẻ:", err);
-      toast.error("Lỗi khi cập nhật mẻ");
+      const error = err as AxiosError<{ message?: string }>;
+
+      console.error("Lỗi khi cập nhật công thức:", error);
+
+      const message =
+        error.response?.data?.message ||
+        "Lỗi không xác định khi cập nhật công thức";
+
+      toast.error(message);
     }
   };
 
@@ -416,11 +404,11 @@ export default function UpdateRecipeModal({
                 style={{ fontSize: "0.95rem" }}
                 rows={3}
                 placeholder="VD: 20"
-                value={editForm?.note ?? ""}
+                value={editForm?.notes ?? ""}
                 onChange={(e) =>
                   setEditForm({
                     ...editForm,
-                    note: e.target.value,
+                    notes: e.target.value,
                   })
                 }
               />
@@ -505,11 +493,14 @@ export default function UpdateRecipeModal({
                     ...editForm,
                     steps: [...(editForm.steps ?? []), currentStep],
                   });
-                  setCurrentStep({
-                    stepOrder: (editForm.steps?.length ?? 0) + 1,
-                    durationMinutes: 0,
-                    name: "",
-                  });
+                  if (selectedRecipe) {
+                    setCurrentStep({
+                      recipeId: selectedRecipe.id,
+                      stepOrder: currentStep.stepOrder + 1,
+                      durationMinutes: 0,
+                      name: "",
+                    });
+                  }
                 }}
               >
                 <FaPlus /> Thêm bước
@@ -536,12 +527,14 @@ export default function UpdateRecipeModal({
                     ...editForm,
                     steps: filtered,
                   });
-
-                  setCurrentStep({
-                    stepOrder: maxStepOrder, // quay lại đúng stepOrder vừa bị xóa
-                    durationMinutes: 0,
-                    name: "",
-                  });
+                  if (selectedRecipe) {
+                    setCurrentStep({
+                      recipeId: selectedRecipe.id,
+                      stepOrder: maxStepOrder, // quay lại đúng stepOrder vừa bị xóa
+                      durationMinutes: 0,
+                      name: "",
+                    });
+                  }
                 }}
               >
                 <FaTrash className="mr-1" /> Xóa bước cuối
@@ -555,19 +548,18 @@ export default function UpdateRecipeModal({
                     <ReactMarkdown>{p.name}</ReactMarkdown>
                   </div>
 
-                  {editForm.steps && idx < editForm.steps.length - 1 && (
-                    <div className="relative my-5 mt-4 h-6">
-                      <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
-                        ↓
+                  {p.durationMinutes != 0 &&
+                    editForm.steps &&
+                    idx < editForm.steps.length && (
+                      <div className="relative mt-4 h-6">
+                        <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
+                          ↓
+                        </div>
+                        <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
+                          {minutesToOtherTimes(p.durationMinutes)}
+                        </div>
                       </div>
-                      <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
-                        {minutesToOtherTimes(p.durationMinutes)}
-                      </div>
-                    </div>
-                  )}
-                  {editForm.steps && idx == editForm.steps.length - 1 && (
-                    <div className="relative mt-4 h-6"></div>
-                  )}
+                    )}
                 </div>
               ))}
           </div>

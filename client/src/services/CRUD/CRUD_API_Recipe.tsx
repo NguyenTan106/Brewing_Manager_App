@@ -27,7 +27,7 @@ export interface RecipeIngredientUpdate {
 
 export interface RecipeStep {
   id?: number;
-  recipeId?: string;
+  recipeId?: number;
   stepOrder: number;
   name: string;
   durationMinutes: number;
@@ -38,7 +38,7 @@ export interface Recipe {
   name: string;
   recipeIngredients: RecipeIngredientInput[];
   description?: string;
-  note?: string;
+  notes?: string;
   instructions?: string;
   createdAt: string;
   updatedAt?: string;
@@ -52,7 +52,7 @@ export interface RecipeUpate {
   name: string;
   recipeIngredients: RecipeIngredientUpdate[];
   description?: string;
-  note?: string;
+  notes?: string;
   instructions?: string;
   createdAt: string;
   steps: RecipeStep[];
@@ -81,6 +81,7 @@ export const updateRecipeByIdAPI = async (
   updatedData: Partial<RecipeUpate>
 ) => {
   const res = await axios.put(`${BASE_URL}/api/recipe/${id}`, updatedData);
+  console.log(res.data);
   return res.data;
 };
 
