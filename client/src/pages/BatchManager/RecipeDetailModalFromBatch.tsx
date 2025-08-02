@@ -1,4 +1,7 @@
-import type { Batch } from "../../services/CRUD/CRUD_API_Batch";
+import {
+  getBatchByIdAPI,
+  type Batch,
+} from "../../services/CRUD/CRUD_API_Batch";
 import {
   Dialog,
   DialogContent,
@@ -19,20 +22,40 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { minutesToOtherTimes } from "../Recipe/MinutesToOtherTimes";
+import { Card } from "@/components/ui/card";
+import { useState } from "react";
+import UpdateFeedbackBatchStepModal from "./UpdateFeedbackBatchStepModal";
 
 interface Props {
   handleClose: () => void;
   showDetailRecipeModal: boolean;
   selectedBatch: Batch | null;
+  setSelectedBatch: React.Dispatch<React.SetStateAction<Batch | null>>;
 }
 
 export default function RecipeDetailModalFromBatch({
   handleClose,
   showDetailRecipeModal,
   selectedBatch,
+  setSelectedBatch,
 }: Props) {
+  const [
+    showUpdateFeedbackBatchStepModal,
+    setShowUpdateFeedbackBatchStepModal,
+  ] = useState(false);
+  const handleOpenFeedbackModal = async (id: number) => {
+    const batch = await getBatchByIdAPI(id);
+    setSelectedBatch(batch);
+    setShowUpdateFeedbackBatchStepModal(true);
+  };
   return (
     <>
+      <UpdateFeedbackBatchStepModal
+        showUpdateFeedbackBatchStepModal={showUpdateFeedbackBatchStepModal}
+        handleClose={() => setShowUpdateFeedbackBatchStepModal(false)}
+        selectedBatch={selectedBatch}
+      />
+
       <Dialog
         open={showDetailRecipeModal}
         onOpenChange={(open) => !open && handleClose()}
@@ -115,19 +138,90 @@ export default function RecipeDetailModalFromBatch({
                 <p className="text-sm text-muted-foreground">
                   Các bước thực hiện
                 </p>
-                <p className="text-base ">
+                <div className="text-base ">
                   {selectedBatch?.batchSteps &&
                     selectedBatch?.batchSteps.map((p, idx) => (
                       <div key={idx}>
-                        {/* Hiển thị bước */}
-                        <div className="p-2 border rounded shadow-sm text-center">
-                          <strong className="text-xl">
-                            Bước {p.stepOrder}:{" "}
-                          </strong>
-                          <ReactMarkdown>{p.name}</ReactMarkdown>
-                        </div>
+                        <Card className="p-4 my-2 shadow-sm gap-4">
+                          <div className="flex items-center justify-between ">
+                            <h3 className="text-xl font-semibold">
+                              Bước {p.stepOrder}
+                            </h3>
+                            <span className="text-lg text-green-700 italic">
+                              Thời gian dự kiến:{" "}
+                              {minutesToOtherTimes(
+                                (Number(new Date(p.scheduledEndAt)) -
+                                  Number(new Date(p.startedAt))) /
+                                  1000 /
+                                  60
+                              )}
+                            </span>
+                          </div>
+                          {(Number(new Date(p.scheduledEndAt)) -
+                            Number(new Date(p.startedAt))) /
+                            1000 /
+                            60 !=
+                            0 &&
+                            selectedBatch?.batchSteps &&
+                            idx < selectedBatch?.batchSteps.length && (
+                              <div className="grid gap-4 ">
+                                {/* Thời gian thực tế (editable nếu cần) */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  <div className="col-span-full">
+                                    <p className="text-sm text-muted-foreground">
+                                      Hành động chi tiết:
+                                    </p>
+                                    <p className="text-base font-medium">
+                                      <ReactMarkdown>{p.name}</ReactMarkdown>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-muted-foreground">
+                                      Thời gian bắt đầu thực tế
+                                    </p>
+                                    <p className="text-base font-medium">
+                                      {selectedBatch?.id}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm text-muted-foreground">
+                                      Thời gian kết thúc thực tế
+                                    </p>
+                                    <p className="text-base font-medium">
+                                      {selectedBatch?.id}
+                                    </p>
+                                  </div>
+                                  <div className="col-span-full">
+                                    <p className="text-sm text-muted-foreground">
+                                      Nhận xét
+                                    </p>
+                                    <p className="text-base font-medium">
+                                      {selectedBatch?.id}
+                                    </p>
+                                  </div>
+                                </div>
 
-                        {/* Hiển thị mũi tên + thời gian (nếu không phải bước cuối) */}
+                                <div className="flex flex-col gap-1 w-full min-w-0">
+                                  <Button
+                                    title="Xem chi tiết nguyên liệu"
+                                    variant="outline"
+                                    onClick={() =>
+                                      handleOpenFeedbackModal(Number(p.id))
+                                    }
+                                    style={{
+                                      padding: "5px 10px",
+                                      fontSize: "14px",
+                                    }}
+                                  >
+                                    📋{" "}
+                                    <span className="hidden sm:inline">
+                                      Nhận xét
+                                    </span>
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                        </Card>
                         {(Number(new Date(p.scheduledEndAt)) -
                           Number(new Date(p.startedAt))) /
                           1000 /
@@ -135,26 +229,14 @@ export default function RecipeDetailModalFromBatch({
                           0 &&
                           selectedBatch?.batchSteps &&
                           idx < selectedBatch?.batchSteps.length && (
-                            <div className="relative my-5 mt-4 h-6">
-                              {/* Mũi tên ở giữa */}
-                              <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
-                                ↓
-                              </div>
-
-                              {/* Thời gian nằm bên phải mũi tên */}
-                              <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
-                                {minutesToOtherTimes(
-                                  (Number(new Date(p.scheduledEndAt)) -
-                                    Number(new Date(p.startedAt))) /
-                                    1000 /
-                                    60
-                                )}
-                              </div>
+                            <div className="text-4xl text-gray-500 text-center">
+                              {" "}
+                              ↓
                             </div>
                           )}
                       </div>
                     ))}
-                </p>
+                </div>
               </div>
 
               <div className="col-span-full">

@@ -217,7 +217,7 @@ export default function RecipeDetailModal({
 
                       {/* Hiển thị mũi tên + thời gian (nếu không phải bước cuối) */}
                       {p.durationMinutes != 0 &&
-                        idx < selectedRecipe?.steps.length && (
+                        (
                           <div className="relative my-5 mt-4 h-6">
                             {/* Mũi tên ở giữa */}
                             <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">

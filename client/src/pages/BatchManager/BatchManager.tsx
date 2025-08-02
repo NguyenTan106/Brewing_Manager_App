@@ -28,10 +28,7 @@ export default function BatchManager() {
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [
-    showUpdateFeedbackBatchStepModal,
-    setShowUpdateFeedbackBatchStepModal,
-  ] = useState(false);
+
   const [searchItem, setSearchItem] = useState("");
   const firstLoad = useRef(true);
 
@@ -126,11 +123,7 @@ export default function BatchManager() {
     }
   };
 
-  const handleOpenFeedbackModal = async (id: number) => {
-    const batch = await getBatchByIdAPI(id);
-    setSelectedBatch(batch);
-    setShowUpdateFeedbackBatchStepModal(true);
-  };
+
 
   return (
     <>
@@ -149,11 +142,6 @@ export default function BatchManager() {
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
-      <UpdateFeedbackBatchStepModal
-        showUpdateFeedbackBatchStepModal={showUpdateFeedbackBatchStepModal}
-        handleClose={() => setShowUpdateFeedbackBatchStepModal(false)}
-        selectedBatch={selectedBatch}
-      />
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
           <p className="text-3xl font-bold">Danh sách mẻ: </p>
@@ -238,16 +226,6 @@ export default function BatchManager() {
                     >
                       📋 <span className="hidden sm:inline">Chi tiết</span>
                     </Button>
-                    {i.status == "Đã hoàn thành" && (
-                      <Button
-                        title="Xem chi tiết nguyên liệu"
-                        variant="outline"
-                        onClick={() => handleOpenFeedbackModal(i.id)}
-                        style={{ padding: "5px 10px", fontSize: "14px" }}
-                      >
-                        📋 <span className="hidden sm:inline">Nhận xét</span>
-                      </Button>
-                    )}
                   </TableCell>
                 </TableRow>
               ))

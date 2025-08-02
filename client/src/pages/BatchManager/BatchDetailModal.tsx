@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-
 interface Props {
   showDetailModal: boolean;
   handleClose: () => void;
@@ -48,7 +47,9 @@ export default function BatchDetailModal({
         showDetailRecipeModal={showDetailRecipeModal}
         handleClose={() => setShowDetailRecipeModal(false)}
         selectedBatch={selectedBatch}
+        setSelectedBatch={setSelectedBatch}
       />
+
       <Dialog
         open={showDetailModal}
         onOpenChange={(open) => !open && handleClose()}

@@ -4,6 +4,7 @@ import { type Ingredient } from "./CRUD_API_Ingredient";
 import type { RecipeStep } from "./CRUD_API_Recipe";
 
 export interface BatchSteps {
+  durationMinutes: number;
   id?: number | undefined;
   batchId?: number | undefined;
   recipeStepId: number;
