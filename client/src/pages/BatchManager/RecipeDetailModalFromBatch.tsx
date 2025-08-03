@@ -24,11 +24,12 @@ import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { minutesToOtherTimes } from "../Recipe/MinutesToOtherTimes";
 import { Card } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UpdateFeedbackBatchStepModal from "./UpdateFeedbackBatchStepModal";
 import { getBatchStepByIdAPI } from "../../services/CRUD/CRUD_API_Batch";
 import { cn } from "@/lib/utils";
 import CountdownTimer from "./CountdownTimer";
+import { marked } from "marked";
 interface Props {
   handleClose: () => void;
   showDetailRecipeModal: boolean;
@@ -238,8 +239,22 @@ export default function RecipeDetailModalFromBatch({
                                     <p className="text-sm text-muted-foreground">
                                       Hành động chi tiết:
                                     </p>
-                                    <div className="text-base font-medium">
-                                      <ReactMarkdown>{p.name}</ReactMarkdown>
+                                    <div className="text-base font-medium ">
+                                      <ReactMarkdown
+                                        components={{
+                                          ul: ({ node, ...props }) => (
+                                            <ul
+                                              style={{
+                                                listStyleType: "disc",
+                                                paddingLeft: "1.5rem",
+                                              }}
+                                              {...props}
+                                            />
+                                          ),
+                                        }}
+                                      >
+                                        {p.name}
+                                      </ReactMarkdown>
                                     </div>
                                   </div>
                                   <div>
