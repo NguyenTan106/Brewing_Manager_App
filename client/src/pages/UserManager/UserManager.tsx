@@ -109,7 +109,7 @@ export default function UserManager() {
               <TableRow>
                 <TableCell
                   colSpan={8}
-                  className="text-center text-gray-100 px-4 py-3"
+                  className="text-center text-muted-foreground px-4 py-3"
                 >
                   Không có người dùng nào
                 </TableCell>

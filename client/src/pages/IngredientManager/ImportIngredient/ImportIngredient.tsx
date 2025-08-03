@@ -161,18 +161,6 @@ export function ImportIngredient({
                 placeholder="VD: Malt nền cho nhiều loại bia, màu sáng, vị ngũ cốc nhẹ"
               />
             </div>
-            <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
-              <Label className="text-base">
-                <strong>Người nhập:</strong>
-              </Label>
-              <Input
-                style={{ fontSize: "0.95rem" }}
-                required
-                disabled
-                value={importIngredientForm.createdById}
-                placeholder="VD: 20"
-              />
-            </div>
           </div>
         </div>
         <DialogFooter>

@@ -22,13 +22,11 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { searchBatchAPI } from "@/services/search_API";
-import UpdateFeedbackBatchStepModal from "./UpdateFeedbackBatchStepModal";
 export default function BatchManager() {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-
   const [searchItem, setSearchItem] = useState("");
   const firstLoad = useRef(true);
 
@@ -57,13 +55,21 @@ export default function BatchManager() {
         handlePaginationAPI(currentPage, limit);
       };
 
-      fetchData(); // Gọi lần đầu tiên khi effect chạy
-
-      const interval = setInterval(fetchData, 10000); // Gọi lại mỗi 10 giây
+      fetchData(); // Gọi lần đầu tiên khi effect
+      const interval = setInterval(fetchData, 1000); // Gọi lại mỗi 10 giây
 
       return () => clearInterval(interval); // Xóa interval khi unmount hoặc dependency thay đổi
     }
   }, [currentPage, limit, isInitialized]);
+
+  useEffect(() => {
+    if (selectedBatch?.id != null) {
+      const item = batches.find((e) => e.id === selectedBatch.id);
+      if (item && JSON.stringify(item) !== JSON.stringify(selectedBatch)) {
+        setSelectedBatch(item);
+      }
+    }
+  }, [batches]);
 
   const handlePaginationAPI = async (page: number, limit: number) => {
     const data = await paginationBatchAPI(page, limit);
@@ -122,8 +128,6 @@ export default function BatchManager() {
       toast.error("Lỗi tìm kiếm");
     }
   };
-
-
 
   return (
     <>
@@ -188,7 +192,10 @@ export default function BatchManager() {
           <TableBody className="divide-y divide-gray-200">
             {batches.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center text-muted">
+                <TableCell
+                  colSpan={8}
+                  className="text-center text-muted-foregroundd"
+                >
                   Không có mẻ nào
                 </TableCell>
               </TableRow>

@@ -224,7 +224,7 @@ export default function RecipeManager() {
               <TableRow>
                 <TableCell
                   colSpan={8}
-                  className="text-center text-muted px-4 py-3"
+                  className="text-center text-muted-foreground px-4 py-3"
                 >
                   Không có công thức nào
                 </TableCell>

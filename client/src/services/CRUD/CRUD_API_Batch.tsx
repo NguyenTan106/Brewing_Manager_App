@@ -15,6 +15,10 @@ export interface BatchSteps {
   startedAt: string;
   scheduledEndAt: string;
 }
+export interface BatchStepFeedBack {
+  feedback?: string;
+  actualDuration?: string;
+}
 
 export interface RecipeIngredient {
   id: number;
@@ -76,6 +80,11 @@ export const getBatchByIdAPI = async (id: number) => {
   return res.data.data;
 };
 
+export const getBatchStepByIdAPI = async (id: number) => {
+  const res = await axios.get(`${BASE_URL}/api/batch-step/${id}`);
+  return res.data;
+};
+
 export const createBatchAPI = async (data: BatchInput) => {
   const res = await axios.post(`${BASE_URL}/api/batch`, data);
   // console.log(res.data);
@@ -90,9 +99,9 @@ export const updateBatchByIdAPI = async (
   return res.data;
 };
 
-export const updateFeedBackBatchSteps = async (
+export const updateFeedBackBatchStep = async (
   id: number,
-  updateData: Partial<BatchSteps>
+  updateData: BatchStepFeedBack
 ) => {
   const res = await axios.put(`${BASE_URL}/api/batch-step/${id}`, updateData);
   return res.data;

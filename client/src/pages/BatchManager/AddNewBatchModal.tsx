@@ -25,11 +25,33 @@ import {
   type Recipe,
 } from "../../services/CRUD/CRUD_API_Batch";
 import { getAllRecipesAPI } from "../../services/CRUD/CRUD_API_Recipe";
+import { sendAlertEmailAPI } from "@/services/send_mail_API";
+import { minutesToOtherTimes } from "../Recipe/MinutesToOtherTimes";
+import { marked } from "marked";
+import renderNewBatchEmail from "@/components/SendMail/renderNewBatchEmail";
 interface Props {
   showAddModal: boolean;
   handleClose: () => void;
   handlePaginationAPI: () => void;
 }
+
+interface BatchIngredient {
+  ingredient: {
+    name: string;
+    unit: string;
+    type: string;
+  };
+  amountUsed: number;
+}
+
+interface BatchStep {
+  stepOrder: number;
+  name: string;
+  startedAt: string; // ISO string
+  scheduledEndAt: string;
+  notes?: string;
+}
+
 export default function AddNewBatchModal({
   showAddModal,
   handleClose,
@@ -76,7 +98,10 @@ export default function AddNewBatchModal({
     if (data.data) {
       toast.success(data.message);
     }
+    // console.log(data.data);
 
+    const { subject, html, text } = renderNewBatchEmail(data);
+    sendAlertEmailAPI(subject, text, html);
     handlePaginationAPI();
     clearForm();
   };

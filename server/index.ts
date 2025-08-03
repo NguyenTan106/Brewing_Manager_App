@@ -25,7 +25,8 @@ import {
   paginationBatchController,
   getTotalBatchesController,
   getGetBatchStatsByWeekMonthYearController,
-  updateFeedbackBatchStepsController,
+  updateFeedbackBatchStepController,
+  getBatchStepByIdController,
 } from "./routes/api_batch";
 
 import {
@@ -63,6 +64,8 @@ import {
   deleteUserByIdController,
 } from "./routes/api_user";
 
+import { sendAlertEmailService } from "./routes/api_send_email";
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -94,7 +97,8 @@ app.use("/api", updateBatchByIdController);
 app.use("/api", paginationBatchController);
 app.use("/api", getTotalBatchesController);
 app.use("/api", getGetBatchStatsByWeekMonthYearController);
-app.use("/api", updateFeedbackBatchStepsController);
+app.use("/api", updateFeedbackBatchStepController);
+app.use("/api", getBatchStepByIdController);
 
 //recipe
 app.use("/api", getAllRecipesController);
@@ -125,6 +129,9 @@ app.use("/api", getAllUsersController);
 app.use("/api", getUserByIdController);
 app.use("/api", updateUserByIdController);
 app.use("/api", deleteUserByIdController);
+
+// email
+app.use("/api", sendAlertEmailService);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

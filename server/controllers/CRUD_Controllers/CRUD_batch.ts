@@ -7,7 +7,8 @@ import {
   createBatch,
   deleteBacthById,
   updateBatchById,
-  updateFeedbackBatchSteps,
+  updateFeedbackBatchStep,
+  getBatchStepById,
 } from "../../prisma/CRUD_Services/CRUD_batch_service";
 import { batchSchema } from "../../middlewares/schema";
 import { logActivity } from "../../prisma/logActivity";
@@ -32,6 +33,19 @@ const handleGetBatchById = async (req: Request, res: Response) => {
     console.error("Lỗi trong controller handleGetBatchById:", e);
     res.status(500).json({
       message: "Lỗi server khi tìm mẻ",
+    });
+  }
+};
+
+const handleGetBatchStepById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const handle = await getBatchStepById(id);
+    res.status(200).json(handle);
+  } catch (e) {
+    console.error("Lỗi trong controller handleGetBatchStepById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi tìm các bước nấu",
     });
   }
 };
@@ -144,11 +158,11 @@ const handleDeleteBacthById = async (req: Request, res: Response) => {
   }
 };
 
-const handleUpdateFeedbackBatchSteps = async (req: Request, res: Response) => {
+const handleUpdateFeedbackBatchStep = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
     const updateData = req.body;
-    const updated = await updateFeedbackBatchSteps(id, updateData);
+    const updated = await updateFeedbackBatchStep(id, updateData);
     res.status(200).json(updated);
   } catch (e) {
     console.error("Lỗi trong controller handleUpdateFeedbackBatchSteps:", e);
@@ -163,5 +177,6 @@ export {
   handleCreateBatch,
   handleDeleteBacthById,
   handleUpdateBatchById,
-  handleUpdateFeedbackBatchSteps,
+  handleUpdateFeedbackBatchStep,
+  handleGetBatchStepById,
 };

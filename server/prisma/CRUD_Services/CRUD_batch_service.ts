@@ -144,6 +144,28 @@ export interface BatchSteps {
   scheduledEndAt: string | Date | null;
 }
 
+const getBatchStepById = async (id: number) => {
+  try {
+    const batchStep = await prisma.batchStep.findUnique({
+      where: { id },
+    });
+    if (!batchStep) {
+      return { message: "Chưa có bước nào được tạo", data: [] };
+    }
+    return {
+      message: "Thành công",
+      data: batchStep,
+    };
+  } catch (e) {
+    console.error("Lỗi khi lấy danh sách cách bước nấu:", e);
+    throw new Error("Lỗi server khi truy xuất các bước nấu");
+  }
+};
+
+// getBatchStepById(1)
+//   .then(() => console.log("Thành công"))
+//   .catch(() => console.log("Thất bại"));
+
 const getBatchStatus = (batchSteps: BatchSteps[]) => {
   const now = new Date();
   const sortedSteps = batchSteps.sort((a, b) => a.stepOrder - b.stepOrder);
@@ -322,6 +344,7 @@ const createBatch = async (
             ingredient: true,
           },
         },
+        recipe: true,
         createdBy: true,
         batchSteps: true,
       },
@@ -345,13 +368,12 @@ const createBatch = async (
   }
 };
 
-export const updateFeedbackBatchSteps = async (
+export const updateFeedbackBatchStep = async (
   id: number,
   updateData: {
-    id: number;
     feedback: string;
     actualDuration: string;
-  }[]
+  }
 ) => {
   try {
     const existing = await prisma.batch.findUnique({
@@ -361,17 +383,11 @@ export const updateFeedbackBatchSteps = async (
       return { message: "Không tim thấy mẻ", data: [] };
     }
     // console.log("Dữ liệu cập nhật batchStep:", updateData);
-    const updateBatchStep = await Promise.all(
-      updateData.map((u) =>
-        prisma.batchStep.update({
-          where: { id: u.id },
-          data: {
-            feedback: u.feedback,
-            actualDuration: u.actualDuration,
-          },
-        })
-      )
-    );
+    const updateBatchStep = await prisma.batchStep.update({
+      where: { id },
+      data: updateData,
+    });
+
     return {
       message: "Cập nhật feedback thành công",
       data: updateBatchStep,
@@ -519,4 +535,5 @@ export {
   deleteBacthById,
   updateBatchById,
   getBatchPage,
+  getBatchStepById,
 };
