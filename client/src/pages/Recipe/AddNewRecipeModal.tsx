@@ -364,6 +364,26 @@ export default function AddNewRecipeModal({
                         })
                       }
                     />
+                    <div className="text-sm mt-1 text-gray-500">
+                      <span>Ghi chú:</span>{" "}
+                      <ReactMarkdown
+                        components={{
+                          ul: ({ node, ...props }) => (
+                            <ul
+                              style={{
+                                listStyleType: "disc",
+                                paddingLeft: "1.5rem",
+                              }}
+                              {...props}
+                            />
+                          ),
+                        }}
+                      >
+                        {
+                          "- 1 giờ: 60 phút \n- 1 ngày: 1440 phút \n- 1 tháng (30 ngày): 43200 phút"
+                        }
+                      </ReactMarkdown>
+                    </div>
                   </div>
                   <div className="col-span-full">
                     <Label className="text-base">
