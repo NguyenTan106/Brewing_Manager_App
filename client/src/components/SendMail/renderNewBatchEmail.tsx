@@ -35,7 +35,9 @@ export default function renderNewBatchEmail(data: { data: FullBatch }) {
   const steps = data.data.batchSteps as BatchStep[];
   const html = `
   <div style="font-family:Arial,sans-serif;padding:20px;border:1px solid #e0e0e0;border-radius:8px;">
-    <h2 style="color:#2c3e50;">🍺 Mẻ bia mới đã được tạo thành công!</h2>
+    <h2 style="color:#2c3e50;">🍺 Mẻ bia mới đã được tạo thành công bởi ${
+      data.data.createdBy?.username
+    }!</h2>
     <ul style="font-size:16px;line-height:1.6;">
       <li><strong>Tên mẻ:</strong> ${data.data.beerName}</li>
       <li><strong>Thể tích:</strong> ${data.data.volume} lít</li>
@@ -45,6 +47,9 @@ export default function renderNewBatchEmail(data: { data: FullBatch }) {
       <li><strong>Thời gian tạo:</strong> ${new Date(
         data.data.createdAt ?? ""
       ).toLocaleString("vi-VN")}</li>
+       <li><strong>Người tạo:</strong> ${
+         data.data.createdBy?.username || "Không rõ"
+       }</li>
     </ul>
 
     <h3 style="color:#2980b9;">📦 Nguyên liệu sử dụng:</h3>

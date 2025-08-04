@@ -23,7 +23,9 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { checkUser } from "./Auth/Check";
-
+import { useState } from "react";
+import AccountDetailModal from "@/pages/Login/AccountDetailModal";
+import { getUserByIdAPI, type User } from "@/services/CRUD/CRUD_API_User";
 export function NavUser({
   user,
 }: {
@@ -35,9 +37,20 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const users = checkUser();
-
+  const [showDetailAccountModal, setShowDetailAccountModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const handleGetUserByIdAPI = async (id: number) => {
+    const data = await getUserByIdAPI(id);
+    setSelectedUser(data.data);
+    setShowDetailAccountModal(true);
+  };
   return (
     <SidebarMenu>
+      <AccountDetailModal
+        showDetailAccountModal={showDetailAccountModal}
+        handleClose={() => setShowDetailAccountModal(false)}
+        selectedUser={selectedUser}
+      />
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -82,7 +95,11 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  if (users) handleGetUserByIdAPI(users?.id);
+                }}
+              >
                 <IconUserCircle />
                 Tài khoản
               </DropdownMenuItem>

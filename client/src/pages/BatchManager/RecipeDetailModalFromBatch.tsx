@@ -1,5 +1,4 @@
 import {
-  getBatchByIdAPI,
   type Batch,
   type BatchSteps,
 } from "../../services/CRUD/CRUD_API_Batch";
@@ -29,7 +28,6 @@ import UpdateFeedbackBatchStepModal from "./UpdateFeedbackBatchStepModal";
 import { getBatchStepByIdAPI } from "../../services/CRUD/CRUD_API_Batch";
 import { cn } from "@/lib/utils";
 import CountdownTimer from "./CountdownTimer";
-import { marked } from "marked";
 interface Props {
   handleClose: () => void;
   showDetailRecipeModal: boolean;
@@ -57,7 +55,10 @@ export default function RecipeDetailModalFromBatch({
     setShowUpdateFeedbackBatchStepModal(true);
   };
 
-  const getCurrentStepOrder = (status: string, batchSteps: any[]): number => {
+  const getCurrentStepOrder = (
+    status: string,
+    batchSteps: BatchSteps[]
+  ): number => {
     if (status === "Đã hoàn thành") {
       return batchSteps[batchSteps.length - 1]?.stepOrder || 0;
     }

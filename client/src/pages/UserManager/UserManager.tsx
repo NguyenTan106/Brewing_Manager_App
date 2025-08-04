@@ -91,17 +91,19 @@ export default function UserManager() {
               <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">
                 Vai trò
               </TableHead>
-              <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
+              <TableHead className="px-4 py-3 text-left ">
                 Số điện thoại
               </TableHead>
-              <TableHead className="px-4 py-3 text-left">Chi nhánh</TableHead>
+              <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
+                Chi nhánh
+              </TableHead>
               <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
                 Ngày tạo
               </TableHead>
               <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">
                 Ngày cập nhật
               </TableHead>
-              <TableHead className="px-4 py-3 text-left hidden lg:table-cell"></TableHead>
+              <TableHead className="px-4 py-3 text-left "></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-200">
@@ -122,10 +124,10 @@ export default function UserManager() {
                   <TableCell className="px-4 py-3 hidden 2xl:table-cell">
                     {i.role}
                   </TableCell>
+                  <TableCell className="px-4 py-3">{i.phone}</TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
-                    {i.phone}
+                    {i.branch}
                   </TableCell>
-                  <TableCell className="px-4 py-3">{i.branch}</TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
                     {i.createdAt &&
                       new Date(i.createdAt).toLocaleString("vi-VN", {
