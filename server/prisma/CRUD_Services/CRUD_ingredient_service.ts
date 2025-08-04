@@ -22,6 +22,9 @@ const getAllIngredients = async (): Promise<{ message: string; data: any }> => {
       where: {
         isDeleted: false,
       },
+      include: {
+        IngredientCostHistory: true,
+      },
     });
     if (data.length === 0) {
       return { message: "Chưa có nguyên liệu nào", data: [] };

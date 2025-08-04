@@ -29,6 +29,7 @@ model Ingredient {
   batchIngredients  BatchIngredient[]
   recipeIngredients RecipeIngredient[]
   IngredientImport  IngredientImport[]
+  IngredientCostHistory IngredientCostHistory[]
 }
 
 model IngredientImport {
@@ -42,6 +43,16 @@ model IngredientImport {
   createdBy    User       @relation(fields: [createdById], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+}
+
+model IngredientCostHistory{
+  id Int @id @default(autoincrement())
+  ingredientId Int 
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  cost Float
+  createdAt DateTime @default(now())
+  note String?
+  @@index([ingredientId, createdAt])
 }
 
 model Batch {
