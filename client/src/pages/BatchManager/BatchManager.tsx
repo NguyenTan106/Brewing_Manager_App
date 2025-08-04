@@ -179,7 +179,7 @@ export default function BatchManager() {
               <TableHead className="px-4 py-3 text-left">Tên mẻ</TableHead>
               <TableHead className="px-4 py-3 text-left">Trạng thái</TableHead>
               <TableHead className="px-4 py-3 text-left">
-                Khối lượng (lít)
+                Thể tích (lít)
               </TableHead>
               <TableHead className="px-4 py-3 text-left">Công thức</TableHead>
               <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">

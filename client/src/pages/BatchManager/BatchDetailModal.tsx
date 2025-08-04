@@ -80,7 +80,7 @@ export default function BatchDetailModal({
                 <p className="text-base ">{selectedBatch?.beerName}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Khối lượng</p>
+                <p className="text-sm text-muted-foreground">Thể tích</p>
                 <p className="text-base">{selectedBatch?.volume}L</p>
               </div>
               <div>
@@ -111,6 +111,7 @@ export default function BatchDetailModal({
                   {selectedBatch?.notes}
                 </p>
               </div>
+
               <div className="">
                 <p className="text-sm text-muted-foreground">Ngày tạo</p>
                 <p className="text-base">

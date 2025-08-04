@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { paginate } from "../pagination";
 import { format } from "date-fns-tz";
+import { getIngredientStatus } from "./CRUD_ingredient_service";
 
 const prisma = new PrismaClient();
 
@@ -357,6 +358,22 @@ const createBatch = async (
       };
     }
     const status = getBatchStatus(fullBatch.batchSteps);
+    // ✅ Thêm cost và status trực tiếp vào mỗi ingredient
+    for (const bi of fullBatch.batchIngredients) {
+      const latestCost = await prisma.ingredientCostHistory.findFirst({
+        where: { ingredientId: bi.ingredientId },
+        orderBy: { createdAt: "desc" },
+        select: { cost: true },
+      });
+
+      // @ts-ignore
+      bi.ingredient.cost = latestCost?.cost ?? 0;
+      // @ts-ignore
+      bi.ingredient.status = await getIngredientStatus(
+        bi.ingredient.quantity,
+        bi.ingredient.lowStockThreshold
+      );
+    }
 
     return {
       message: "Thêm mẻ thành công",

@@ -3,7 +3,7 @@ import { paginate } from "../pagination";
 const prisma = new PrismaClient();
 // use `prisma` in your application to read and write data in your DB
 
-const getIngredientStatus = async (
+export const getIngredientStatus = async (
   quantity: number,
   threshold: number
 ): Promise<string> => {
@@ -22,19 +22,26 @@ const getAllIngredients = async (): Promise<{ message: string; data: any }> => {
       where: {
         isDeleted: false,
       },
-      include: {
-        IngredientCostHistory: true,
-      },
     });
     if (data.length === 0) {
       return { message: "Chưa có nguyên liệu nào", data: [] };
     }
     const result = await Promise.all(
-      data.map(async (i) => ({
-        ...i,
-        status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
-      }))
+      data.map(async (i) => {
+        const latestCost = await prisma.ingredientCostHistory.findFirst({
+          where: { ingredientId: i.id },
+          orderBy: { createdAt: "desc" },
+          select: { cost: true },
+        });
+
+        return {
+          ...i,
+          cost: latestCost?.cost ?? null,
+          status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
+        };
+      })
     );
+
     return {
       message: "Thành công",
       data: result,
@@ -55,8 +62,14 @@ const getIngredientById = async (
     if (!data) {
       return { message: "Không tìm thấy nguyên liệu", data: [] };
     }
+    const latestCost = await prisma.ingredientCostHistory.findFirst({
+      where: { ingredientId: id },
+      orderBy: { createdAt: "desc" },
+      select: { cost: true },
+    });
     const result = {
       ...data,
+      cost: latestCost?.cost ?? null,
       status: await getIngredientStatus(data.quantity, data.lowStockThreshold),
     };
     return {
@@ -66,6 +79,32 @@ const getIngredientById = async (
   } catch (e) {
     console.error(e);
     process.exit(1);
+  }
+};
+
+const createIngredientCost = async (
+  ingredientId: number,
+  cost: number,
+  note?: string
+) => {
+  try {
+    if (!ingredientId || cost <= 0) {
+      throw new Error("Dữ liệu không hợp lệ");
+    }
+    const newCost = await prisma.ingredientCostHistory.create({
+      data: {
+        ingredientId: Number(ingredientId),
+        cost: Number(cost),
+        note,
+      },
+    });
+    return {
+      message: "Thêm giá nhập mới thành công",
+      data: newCost,
+    };
+  } catch (e) {
+    console.error("Lỗi khi tạo giá nhập mới:", e);
+    throw new Error("Không thể thêm giá nhập mới");
   }
 };
 
@@ -275,10 +314,19 @@ const getIngredientPage = async (page: number, limit: number) => {
     model: "ingredient",
     where: { isDeleted: false },
     orderBy: { id: "asc" },
-    enhanceItem: async (i) => ({
-      ...i,
-      status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
-    }),
+    enhanceItem: async (i) => {
+      const latestCost = await prisma.ingredientCostHistory.findFirst({
+        where: { ingredientId: i.id },
+        orderBy: { createdAt: "desc" },
+        select: { cost: true },
+      });
+
+      return {
+        ...i,
+        cost: latestCost?.cost ?? null,
+        status: await getIngredientStatus(i.quantity, i.lowStockThreshold),
+      };
+    },
     useSoftDelete: true,
   });
 };
@@ -293,4 +341,5 @@ export {
   createType,
   deleteType,
   getIngredientPage,
+  createIngredientCost,
 };

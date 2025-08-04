@@ -116,6 +116,15 @@ export default function IngredientManager() {
     return () => clearTimeout(delayDebounce);
   }, [searchItem, currentPage, limit]);
 
+  useEffect(() => {
+    if (selectedIngredient?.id != null) {
+      const item = ingredients.find((e) => e.id === selectedIngredient.id);
+      if (item && JSON.stringify(item) !== JSON.stringify(selectedIngredient)) {
+        setSelectedIngredient(item);
+      }
+    }
+  }, [ingredients]);
+
   const handleSearchIngredientAPI = async (query: string) => {
     try {
       const res = await searchIngredientAPI(query);
@@ -195,6 +204,9 @@ export default function IngredientManager() {
               <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
                 Đơn vị
               </TableHead>
+              <TableHead className="px-4 py-3 text-left ">
+                Giá nhập (VNĐ/1)
+              </TableHead>
               <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
                 Trạng thái
               </TableHead>
@@ -231,6 +243,9 @@ export default function IngredientManager() {
                   </TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
                     {i.unit}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    {i.cost || "Chưa có"}
                   </TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
                     <Badge

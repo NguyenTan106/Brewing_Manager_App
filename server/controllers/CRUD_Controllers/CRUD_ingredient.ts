@@ -7,6 +7,7 @@ import {
   createIngredient,
   updateIngredientById,
   deleteIngredientById,
+  createIngredientCost,
 } from "../../prisma/CRUD_Services/CRUD_ingredient_service";
 import { ingredientSchema } from "../../middlewares/schema";
 import { compareAndLogChanges } from "../../services/logActivityService";
@@ -86,6 +87,38 @@ const handleCreateIngredient = async (req: Request, res: Response) => {
         message: err.toString(),
       });
     }
+  }
+};
+
+const handleCreateNewCost = async (req: Request, res: Response) => {
+  try {
+    const { ingredientId, cost, note } = req.body;
+
+    const result = await createIngredientCost(ingredientId, cost, note);
+    const data = result.data;
+
+    const logcreatedAt = new Date(data.createdAt).toLocaleString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour12: false,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    res.status(201).json(result);
+    await logActivity(
+      "create",
+      "IngredientCostHistory",
+      data.id,
+      `Thêm giá nhập mới là ${data.cost} vào ${logcreatedAt}`
+      // userId // nếu có
+    );
+  } catch (e) {
+    console.error("Lỗi trong controller handleCreateNewCost:", e);
+    res.status(500).json({
+      message: "Lỗi server khi thêm giá nhập mới",
+    });
   }
 };
 
@@ -179,4 +212,5 @@ export {
   handleCreateIngredient,
   handleUpdateIngredientById,
   handleDeleteIngredientById,
+  handleCreateNewCost,
 };

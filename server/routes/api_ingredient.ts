@@ -7,6 +7,7 @@ import {
   handleCreateIngredient,
   handleUpdateIngredientById,
   handleDeleteIngredientById,
+  handleCreateNewCost,
 } from "../controllers/CRUD_Controllers/CRUD_ingredient";
 import {
   handleGetTotalIngredients,
@@ -33,6 +34,11 @@ const getAllIngredientByIdController = router.get(
 const createIngredientController = router.post(
   "/ingredient",
   handleCreateIngredient
+);
+
+const createIngredientCostController = router.post(
+  "/ingredient-cost",
+  handleCreateNewCost
 );
 
 const updateIngredientByIdController = router.put(
@@ -76,4 +82,5 @@ export {
   paginationIngredientController,
   getTotalIngredientsController,
   getIngredientStockStatusController,
+  createIngredientCostController
 };

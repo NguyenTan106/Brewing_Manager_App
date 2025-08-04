@@ -7,6 +7,7 @@ export interface Ingredient {
   type: string;
   unit: string;
   quantity: number | string;
+  cost?: number;
   lowStockThreshold: number | string;
   lastImportDate: string | null;
   notes?: string;
@@ -27,6 +28,15 @@ export const getIngredientByIdAPI = async (id: number) => {
 
 export const createIngredientAPI = async (data: IngredientInput) => {
   const res = await axios.post(`${BASE_URL}/api/ingredient/`, data);
+  return res.data;
+};
+
+export const createIngredientCostAPI = async (data: {
+  ingredientId: number;
+  cost: string;
+  note: string;
+}) => {
+  const res = await axios.post(`${BASE_URL}/api/ingredient-cost/`, data);
   return res.data;
 };
 

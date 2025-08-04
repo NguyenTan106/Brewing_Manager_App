@@ -27,6 +27,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getBadgeClass } from "./IngredientUtils";
 import { toast } from "sonner";
+import { FaPlus } from "react-icons/fa";
+import AddNewIngredientCost from "./AddNewIngredientCost";
 
 interface Props {
   showDetailModal: boolean;
@@ -48,7 +50,7 @@ export default function IngredientDetailModal({
   handlePaginationAPI,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-
+  const [showIngredientCostModal, setShowIngredientCostModal] = useState(false);
   const handleOpenUpdateModal = () => {
     setShowUpdateModal(true);
     setShowDetailModal(false);
@@ -68,6 +70,12 @@ export default function IngredientDetailModal({
 
   return (
     <>
+      <AddNewIngredientCost
+        showIngredientCostModal={showIngredientCostModal}
+        handleClose={() => setShowIngredientCostModal(false)}
+        selectedIngredient={selectedIngredient}
+        handlePaginationAPI={handlePaginationAPI}
+      />
       <IngredientUpdateModal
         handleClose={() => setShowUpdateModal(false)}
         selectedIngredient={selectedIngredient}
@@ -107,14 +115,40 @@ export default function IngredientDetailModal({
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground">Loại</p>
-                <p className="text-base">
+                <p className="text-sm text-muted-foreground pt-1">Loại</p>
+                <p className="text-base pt-2">
                   {getIngredientIcon(selectedIngredient?.type || "")}
                   {selectedIngredient?.type}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Số lượng</p>
+                <p className="text-sm text-muted-foreground">
+                  Giá nhập (VND/1)
+                </p>
+                <div className="flex items-center gap-3 flex-wrap pt-1">
+                  <p className="text-base">
+                    {selectedIngredient?.cost || "Chưa có"}
+                  </p>
+                  <Button
+                    title="Thêm giá nhập nguyên liệu"
+                    onClick={() => setShowIngredientCostModal(true)}
+                    variant="outline"
+                    style={{ padding: "0px 10px" }}
+                  >
+                    <FaPlus /> <span className="hidden sm:inline">Thêm</span>
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Nhà cung cấp</p>
+                <p className="text-base">Chưa có</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Ngày hết hạn</p>
+                <p className="text-base">Chưa có</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Số lượng tồn</p>
                 <p className="text-base">
                   {Number(selectedIngredient?.quantity).toFixed(2)}{" "}
                   {selectedIngredient?.unit}

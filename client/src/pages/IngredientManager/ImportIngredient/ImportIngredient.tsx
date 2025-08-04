@@ -164,17 +164,19 @@ export function ImportIngredient({
           </div>
         </div>
         <DialogFooter>
-          <DialogClose className="flex gap-3">
-            <Button
-              className=""
-              variant="outline"
-              onClick={() => handleImportIngredientAPI()}
-            >
-              <span className="d-none d-sm-inline">Nhập kho</span>
-            </Button>
-            <Button variant="secondary" onClick={handleClose}>
-              Đóng
-            </Button>
+          <DialogClose className="flex gap-3" asChild>
+            <div>
+              <Button
+                className=""
+                variant="outline"
+                onClick={() => handleImportIngredientAPI()}
+              >
+                <span className="d-none d-sm-inline">Nhập kho</span>
+              </Button>
+              <Button variant="secondary" onClick={handleClose}>
+                Đóng
+              </Button>
+            </div>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
