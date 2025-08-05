@@ -9,6 +9,7 @@ import {
   updateBatchById,
   updateFeedbackBatchStep,
   getBatchStepById,
+  cancelBatchById,
 } from "../../prisma/CRUD_Services/CRUD_batch_service";
 import { batchSchema } from "../../middlewares/schema";
 import { logActivity } from "../../prisma/logActivity";
@@ -158,6 +159,36 @@ const handleDeleteBacthById = async (req: Request, res: Response) => {
   }
 };
 
+const handleCancelBacthById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const logCancelledDate = new Date().toLocaleString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour12: false,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const cancelled = await cancelBatchById(id);
+    res.status(200).json(cancelled);
+    const data = cancelled.data;
+    await logActivity(
+      "cancel",
+      "Batch",
+      data.id,
+      `Hủy mẻ ${data.code}: "${data.beerName}": ${data.volume}L vào ngày ${logCancelledDate}`
+      // userId // nếu có
+    );
+  } catch (e) {
+    console.error("Lỗi trong controller handleCancelBacthById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi hủy mẻ",
+    });
+  }
+};
+
 const handleUpdateFeedbackBatchStep = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
@@ -179,4 +210,5 @@ export {
   handleUpdateBatchById,
   handleUpdateFeedbackBatchStep,
   handleGetBatchStepById,
+  handleCancelBacthById,
 };

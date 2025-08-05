@@ -99,6 +99,11 @@ export const updateBatchByIdAPI = async (
   return res.data;
 };
 
+export const cancelBatchByIdAPI = async (id: number) => {
+  const res = await axios.put(`${BASE_URL}/api/batch-cancel/${id}`);
+  return res.data;
+};
+
 export const updateFeedBackBatchStep = async (
   id: number,
   updateData: BatchStepFeedBack

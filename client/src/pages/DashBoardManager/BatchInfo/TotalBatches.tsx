@@ -84,21 +84,21 @@ export function TotalBatches({ totalBatches }: Props) {
           </h2>
         </div>
         <div>
-          <p className="text-sm text-gray-500">Đang lên men</p>
+          <p className="text-sm text-gray-500">Đang thực hiện</p>
           <h2 className="text-3xl font-bold text-amber-700">
-            {totalBatches?.totalBatchesInFermenting ?? 0}
+            {totalBatches?.totalInProgress ?? 0}
           </h2>
         </div>
         <div>
           <p className="text-sm text-gray-500">Đã hoàn thành</p>
           <h2 className="text-3xl font-bold text-amber-700">
-            {totalBatches?.totalBatchesDone ?? 0}
+            {totalBatches?.totalDone ?? 0}
           </h2>
         </div>
         <div>
           <p className="text-sm text-gray-500">Đã hủy</p>
           <h2 className="text-3xl font-bold text-amber-700">
-            {totalBatches?.totalBatchesCancel ?? 0}
+            {totalBatches?.totalCancel ?? 0}
           </h2>
         </div>
       </div>

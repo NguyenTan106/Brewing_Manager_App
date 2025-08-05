@@ -11,8 +11,21 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { cancelBatchByIdAPI } from "../../services/CRUD/CRUD_API_Batch";
+import { toast } from "sonner";
 interface Props {
   showDetailModal: boolean;
   handleClose: () => void;
@@ -32,6 +45,18 @@ export default function BatchDetailModal({
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDetailRecipeModal, setShowDetailRecipeModal] = useState(false);
+
+  const handleCancelIngredientAPI = async (id: number) => {
+    const cancelled = await cancelBatchByIdAPI(id);
+    const errorMessage = cancelled.message;
+    if (cancelled.data == null) {
+      toast.error(`${errorMessage}`);
+      return;
+    }
+    toast.success(`${errorMessage}`);
+    handlePaginationAPI();
+    handleClose();
+  };
 
   return (
     <>
@@ -147,6 +172,41 @@ export default function BatchDetailModal({
             >
               ✏️ <span className="d-none d-sm-inline">Chỉnh sửa</span>
             </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  className=""
+                  variant="destructive"
+                  style={{
+                    padding: "5px 10px",
+                    fontSize: "14px",
+                  }}
+                >
+                  🗑️ <span className="d-none d-sm-inline">Hủy</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Bạn có chắc muốn hủy mẻ này?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Mẻ này sẽ chuyển trạng thái thành đã hủy, các liên kết của
+                    nguyên liệu này sẽ bị ảnh hưởng
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() =>
+                      handleCancelIngredientAPI(selectedBatch?.id ?? 0)
+                    }
+                  >
+                    Xác nhận
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
 
             <Button variant="secondary" onClick={handleClose}>
               Đóng

@@ -38,6 +38,7 @@ export function ImportIngredient({
   const [importIngredientForm, setImportIngredientForm] = useState({
     ingredientId: "",
     amount: "",
+    totalCost: "",
     notes: "",
     createdById: user?.id ?? 0,
   });
@@ -55,6 +56,7 @@ export function ImportIngredient({
     setImportIngredientForm({
       ingredientId: "",
       amount: "",
+      totalCost: "",
       notes: "",
       createdById: user?.id ?? 0,
     });
@@ -63,7 +65,8 @@ export function ImportIngredient({
   const handleImportIngredientAPI = async () => {
     if (
       importIngredientForm?.ingredientId === "" ||
-      importIngredientForm?.amount === ""
+      importIngredientForm?.amount === "" ||
+      importIngredientForm?.totalCost === ""
     ) {
       toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
@@ -72,6 +75,7 @@ export function ImportIngredient({
     const imported = await importIngredientAPI({
       ingredientId: importIngredientForm?.ingredientId,
       amount: importIngredientForm?.amount,
+      totalCost: importIngredientForm?.totalCost,
       notes: importIngredientForm?.notes,
       createdById: importIngredientForm.createdById,
     });
@@ -144,6 +148,40 @@ export function ImportIngredient({
               </Label>
               {selectedIngredient?.unit}
             </div>
+            <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+              <Label className="text-base">
+                <strong>Tổng giá:</strong>
+              </Label>
+              <Input
+                style={{ fontSize: "0.95rem" }}
+                required
+                type="number"
+                value={importIngredientForm.totalCost}
+                onChange={(e) =>
+                  setImportIngredientForm({
+                    ...importIngredientForm,
+                    totalCost: e.target.value,
+                  })
+                }
+                placeholder="VD: 100000 VNĐ"
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+              <Label className="text-base">
+                <strong>Giá nhập (VNĐ/1) hiện tại:</strong>
+              </Label>
+              <Input
+                style={{
+                  fontSize: "0.95rem",
+                  backgroundColor: "gray",
+                  fontWeight: "bold",
+                }}
+                disabled
+                type="number"
+                value={selectedIngredient?.cost}
+              />
+            </div>
+
             <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
               <Label className="text-base">
                 <strong>Ghi chú:</strong>

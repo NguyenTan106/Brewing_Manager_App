@@ -9,6 +9,7 @@ import {
   handleUpdateBatchById,
   handleUpdateFeedbackBatchStep,
   handleGetBatchStepById,
+  handleCancelBacthById,
 } from "../controllers/CRUD_Controllers/CRUD_batch";
 
 import {
@@ -34,6 +35,11 @@ const updateFeedbackBatchStepController = router.put(
 const deleteBatchByIdController = router.delete(
   "/batch/:id",
   handleDeleteBacthById
+);
+
+const cancelBatchByIdController = router.put(
+  "/batch-cancel/:id",
+  handleCancelBacthById
 );
 
 const paginationBatchController = router.get(
@@ -67,4 +73,5 @@ export {
   getGetBatchStatsByWeekMonthYearController,
   updateFeedbackBatchStepController,
   getBatchStepByIdController,
+  cancelBatchByIdController,
 };

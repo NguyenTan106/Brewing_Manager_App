@@ -48,9 +48,13 @@ const getAllBatches = async (): Promise<{
     if (validate.length === 0) {
       return { message: "Chưa có mẻ nào được tạo", data: [] };
     }
+    const result = validate.map((batch, index) => ({
+      ...batch,
+      status: getBatchStatus(batch.batchSteps, batch.isCancelled ?? false),
+    }));
     return {
       message: "Thành công",
-      data: validate,
+      data: result,
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách mẻ nấu:", error);
@@ -112,7 +116,7 @@ const getBatchById = async (
         : data.recipe?.name,
     };
 
-    const status = getBatchStatus(data.batchSteps);
+    const status = getBatchStatus(data.batchSteps, data.isCancelled ?? false);
     return {
       message: "Thành công",
       data: {
@@ -123,6 +127,7 @@ const getBatchById = async (
         recipeId: data.recipeId,
         createdById: data.createdById,
         createdBy: data.createdBy,
+        isCancelled: data.isCancelled,
         recipeName: recipe.name,
         createdAt: data.createdAt,
         batchIngredients,
@@ -167,23 +172,35 @@ const getBatchStepById = async (id: number) => {
 //   .then(() => console.log("Thành công"))
 //   .catch(() => console.log("Thất bại"));
 
-const getBatchStatus = (batchSteps: BatchSteps[]) => {
+export const getBatchStatus = (
+  batchSteps: BatchSteps[],
+  isCancelled: boolean
+): string => {
+  if (isCancelled) return "Đã hủy";
+
   const now = new Date();
-  const sortedSteps = batchSteps.sort((a, b) => a.stepOrder - b.stepOrder);
+  const sortedSteps = [...batchSteps].sort((a, b) => a.stepOrder - b.stepOrder);
 
   for (const step of sortedSteps) {
-    if (now < new Date(step.startedAt ?? "")) {
+    const start = step.startedAt ? new Date(step.startedAt) : null;
+    const end = step.scheduledEndAt ? new Date(step.scheduledEndAt) : null;
+
+    if (start && now < start) {
       return `Sắp tới: Bước ${step.stepOrder}`;
     }
-    if (
-      now >= new Date(step.startedAt ?? "") &&
-      now <= new Date(step.scheduledEndAt ?? "")
-    ) {
+
+    if (start && end && now >= start && now <= end) {
       return `Đang thực hiện: Bước ${step.stepOrder}`;
     }
   }
 
-  return "Đã hoàn thành";
+  const allStarted = sortedSteps.every((step) => !!step.startedAt);
+  if (allStarted) return "Đã hoàn thành";
+
+  const noneStarted = sortedSteps.every((step) => !step.startedAt);
+  if (noneStarted) return "Chưa bắt đầu";
+
+  return "Đang chờ bước tiếp theo";
 };
 
 const createBatch = async (
@@ -357,7 +374,12 @@ const createBatch = async (
         data: null,
       };
     }
-    const status = getBatchStatus(fullBatch.batchSteps);
+
+    const batchStatus = getBatchStatus(
+      fullBatch.batchSteps,
+      fullBatch.isCancelled ?? false
+    );
+
     // ✅ Thêm cost và status trực tiếp vào mỗi ingredient
     for (const bi of fullBatch.batchIngredients) {
       const latestCost = await prisma.ingredientCostHistory.findFirst({
@@ -377,7 +399,7 @@ const createBatch = async (
 
     return {
       message: "Thêm mẻ thành công",
-      data: { ...fullBatch, status },
+      data: { ...fullBatch, status: batchStatus },
     };
   } catch (e) {
     console.error("Lỗi khi tạo mẻ mới:", e);
@@ -500,6 +522,42 @@ const deleteBacthById = async (
   }
 };
 
+const cancelBatchById = async (
+  id: number
+): Promise<{ message: string; data: any }> => {
+  try {
+    const existing = await prisma.batch.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      return { message: "Không tìm thấy mẻ", data: null };
+    }
+
+    if (existing.isCancelled) {
+      return { message: "Mẻ đã bị hủy trước đó", data: existing };
+    }
+
+    const canceled = await prisma.batch.update({
+      where: { id },
+      data: {
+        isCancelled: true,
+      },
+    });
+
+    return {
+      message: "Hủy mẻ thành công",
+      data: canceled,
+    };
+  } catch (e) {
+    console.error("Lỗi khi hủy mẻ:", e);
+    return {
+      message: "Đã xảy ra lỗi khi hủy mẻ",
+      data: null,
+    };
+  }
+};
+
 const getBatchPage = async (page: number, limit: number) => {
   return paginate({
     page,
@@ -529,7 +587,7 @@ const getBatchPage = async (page: number, limit: number) => {
     },
     orderBy: { id: "desc" },
     enhanceItem: async (batch) => {
-      const status = getBatchStatus(batch.batchSteps);
+      const status = getBatchStatus(batch.batchSteps, batch.isCancelled);
 
       return {
         ...batch,
@@ -539,7 +597,7 @@ const getBatchPage = async (page: number, limit: number) => {
             ? `${batch.recipe.name} (đã bị xóa)`
             : batch.recipe?.name,
         },
-        status,
+        status: status,
       };
     },
   });
@@ -553,4 +611,5 @@ export {
   updateBatchById,
   getBatchPage,
   getBatchStepById,
+  cancelBatchById,
 };

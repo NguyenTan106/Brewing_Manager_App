@@ -37,6 +37,7 @@ model IngredientImport {
   ingredientId Int
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
   amount       Float
+  totalCost    Float?
   importedAt   DateTime   @default(now())
   notes        String? // Ghi chú nếu cần
   createdById  Int
@@ -57,14 +58,14 @@ model IngredientCostHistory {
 }
 
 model Batch {
-  id        Int      @id @default(autoincrement())
-  code      String   @unique
-  beerName  String
-  volume    Float
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id               Int               @id @default(autoincrement())
+  code             String            @unique
+  beerName         String
+  volume           Float
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  isCancelled      Boolean?          @default(false)
   createdById      Int
   createdBy        User              @relation(fields: [createdById], references: [id])
   recipeId         Int // liên kết công thức (optional)

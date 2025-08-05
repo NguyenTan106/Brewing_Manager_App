@@ -4,6 +4,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 export interface ImportIngredient {
   ingredientId: string;
   amount: string;
+  totalCost: string;
   notes?: string;
   createdById: number;
 }

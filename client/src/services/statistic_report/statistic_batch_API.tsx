@@ -3,9 +3,9 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export interface TotalBatchesInfo {
   total: number;
-  totalBatchesInFermenting: number;
-  totalBatchesDone: number;
-  totalBatchesCancel: number;
+  totalInProgress: number;
+  totalDone: number;
+  totalCancel: number;
   byTime: {
     weeklyTotal: number;
     monthlyTotal: number;

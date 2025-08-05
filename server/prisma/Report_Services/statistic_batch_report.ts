@@ -11,6 +11,7 @@ import {
   subDays,
 } from "date-fns";
 import { addDays, isBefore, isAfter, parse } from "date-fns";
+import { getBatchStatus } from "../CRUD_Services/CRUD_batch_service";
 const prisma = new PrismaClient();
 
 const getTotalBaches = async (): Promise<{
@@ -18,7 +19,28 @@ const getTotalBaches = async (): Promise<{
   data: any;
 }> => {
   try {
-    const total = await prisma.batch.count();
+    const total = await prisma.batch.count({ where: { isCancelled: false } });
+    const totalCancel = await prisma.batch.count({
+      where: { isCancelled: true },
+    });
+    const allBatches = await prisma.batch.findMany({
+      where: {
+        isCancelled: false, // chỉ tính các mẻ không bị hủy
+      },
+      include: {
+        batchSteps: true,
+      },
+    });
+
+    const result = allBatches.map((batch) => ({
+      id: batch.id,
+      status: getBatchStatus(batch.batchSteps, batch.isCancelled ?? false),
+    }));
+
+    const totalDone = result.filter((b) => b.status === "Đã hoàn thành").length;
+    const totalInProgress = result.filter((b) =>
+      b.status.includes("Đang thực hiện")
+    ).length;
 
     const now = new Date();
 
@@ -34,6 +56,7 @@ const getTotalBaches = async (): Promise<{
 
     const weeklyTotal = await prisma.batch.count({
       where: {
+        isCancelled: false,
         createdAt: {
           gte: weekStart,
           lte: weekEnd,
@@ -43,6 +66,7 @@ const getTotalBaches = async (): Promise<{
 
     const monthlyTotal = await prisma.batch.count({
       where: {
+        isCancelled: false,
         createdAt: {
           gte: monthStart,
           lte: monthEnd,
@@ -52,6 +76,7 @@ const getTotalBaches = async (): Promise<{
 
     const yearlyTotal = await prisma.batch.count({
       where: {
+        isCancelled: false,
         createdAt: {
           gte: yearStart,
           lte: yearEnd,
@@ -63,6 +88,9 @@ const getTotalBaches = async (): Promise<{
       message: "Thành công",
       data: {
         total,
+        totalInProgress,
+        totalDone,
+        totalCancel,
         byTime: {
           weeklyTotal,
           monthlyTotal,
@@ -79,8 +107,6 @@ const getTotalBaches = async (): Promise<{
 const getTotalBatchesByWeekMonthYear = async () => {
   const now = new Date();
 
-  const weekStart = startOfWeek(now);
-  const weekEnd = endOfWeek(now);
   const monthStart = startOfMonth(now);
   const monthEnd = endOfMonth(now);
   const yearStart = startOfYear(now);

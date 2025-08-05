@@ -16,6 +16,7 @@ export const ingredientSchema = z.object({
 export const ingredientImportSchema = z.object({
   ingredientId: z.preprocess((val) => Number(val), z.number()),
   amount: z.preprocess((val) => Number(val), z.number()),
+  totalCost: z.preprocess((val) => Number(val), z.number()),
   notes: z.string().optional(),
   createdById: z
     .number({

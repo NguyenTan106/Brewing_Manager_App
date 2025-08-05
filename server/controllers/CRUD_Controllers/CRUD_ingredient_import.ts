@@ -10,6 +10,7 @@ const handleImportIngredientById = async (req: Request, res: Response) => {
     const handle = await importIngredient({
       ingredientId: Number(parsed.ingredientId),
       amount: Number(parsed.amount),
+      totalCost: Number(parsed.totalCost),
       notes: parsed.notes || null,
       createdById: Number(parsed.createdById),
     });
