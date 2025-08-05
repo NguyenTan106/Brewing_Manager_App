@@ -40,6 +40,7 @@ import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { minutesToOtherTimes } from "./MinutesToOtherTimes";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface Props {
   handleClose: () => void;
@@ -204,7 +205,7 @@ export default function RecipeDetailModal({
                 <p className="text-sm text-muted-foreground">
                   Các bước thực hiện
                 </p>
-                <p className="text-base ">
+                <div className="text-base ">
                   {selectedRecipe?.steps.map((p, idx) => (
                     <div key={idx}>
                       {/* Hiển thị bước */}
@@ -212,27 +213,28 @@ export default function RecipeDetailModal({
                         <strong className="text-xl">
                           Bước {p.stepOrder}:{" "}
                         </strong>
-                        <ReactMarkdown>{p.name}</ReactMarkdown>
+                        <div>
+                          <ReactMarkdown>{p.name}</ReactMarkdown>
+                        </div>
                       </div>
 
                       {/* Hiển thị mũi tên + thời gian (nếu không phải bước cuối) */}
-                      {p.durationMinutes != 0 &&
-                        (
-                          <div className="relative my-5 mt-4 h-6">
-                            {/* Mũi tên ở giữa */}
-                            <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
-                              ↓
-                            </div>
-
-                            {/* Thời gian nằm bên phải mũi tên */}
-                            <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
-                              {minutesToOtherTimes(p.durationMinutes)}
-                            </div>
+                      {p.durationMinutes != 0 && (
+                        <div className="relative my-5 mt-4 h-6">
+                          {/* Mũi tên ở giữa */}
+                          <div className="absolute left-1/2 -top-2 transform -translate-x-1/2 text-4xl text-gray-500">
+                            ↓
                           </div>
-                        )}
+
+                          {/* Thời gian nằm bên phải mũi tên */}
+                          <div className="absolute left-1/2 top-1 transform -translate-x-2 ml-6 text-sm text-gray-600 italic">
+                            {minutesToOtherTimes(p.durationMinutes)}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
-                </p>
+                </div>
               </div>
               <div className="col-span-full">
                 <p className="text-sm text-muted-foreground">Ngày tạo</p>
@@ -300,10 +302,11 @@ export default function RecipeDetailModal({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-
-            <Button variant="outline" onClick={handleClose}>
-              Đóng
-            </Button>
+            <DialogClose asChild>
+              <Button variant="outline" onClick={handleClose}>
+                Đóng
+              </Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>

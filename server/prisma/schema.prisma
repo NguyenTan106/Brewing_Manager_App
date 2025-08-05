@@ -37,7 +37,7 @@ model IngredientImport {
   ingredientId Int
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
   amount       Float
-  totalCost    Float?
+  totalCost    Float
   importedAt   DateTime   @default(now())
   notes        String? // Ghi chú nếu cần
   createdById  Int
@@ -65,7 +65,7 @@ model Batch {
   notes            String?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-  isCancelled      Boolean?          @default(false)
+  isCancelled      Boolean           @default(false)
   createdById      Int
   createdBy        User              @relation(fields: [createdById], references: [id])
   recipeId         Int // liên kết công thức (optional)
@@ -159,7 +159,7 @@ model User {
   id               Int                @id @default(autoincrement())
   username         String             @unique
   password         String // hashed password
-  phone            String?
+  phone            String
   role             Role // enum: 'SUPER_ADMIN' | 'ADMIN'
   branch           String? // tên chi nhánh, chỉ dành cho ADMIN
   createdAt        DateTime           @default(now())

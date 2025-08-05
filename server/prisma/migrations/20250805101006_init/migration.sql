@@ -23,6 +23,7 @@ CREATE TABLE "IngredientImport" (
     "id" SERIAL NOT NULL,
     "ingredientId" INTEGER NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
+    "totalCost" DOUBLE PRECISION NOT NULL,
     "importedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "notes" TEXT,
     "createdById" INTEGER NOT NULL,
@@ -30,6 +31,17 @@ CREATE TABLE "IngredientImport" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "IngredientImport_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "IngredientCostHistory" (
+    "id" SERIAL NOT NULL,
+    "ingredientId" INTEGER NOT NULL,
+    "cost" DOUBLE PRECISION NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "note" TEXT,
+
+    CONSTRAINT "IngredientCostHistory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -41,6 +53,7 @@ CREATE TABLE "Batch" (
     "notes" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isCancelled" BOOLEAN NOT NULL DEFAULT false,
     "createdById" INTEGER NOT NULL,
     "recipeId" INTEGER NOT NULL,
 
@@ -53,6 +66,9 @@ CREATE TABLE "BatchStep" (
     "batchId" INTEGER NOT NULL,
     "recipeStepId" INTEGER NOT NULL,
     "stepOrder" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
+    "feedback" TEXT,
+    "actualDuration" TEXT,
     "startedAt" TIMESTAMP(3),
     "scheduledEndAt" TIMESTAMP(3),
 
@@ -123,7 +139,7 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "phone" TEXT,
+    "phone" TEXT NOT NULL,
     "role" "Role" NOT NULL,
     "branch" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -143,6 +159,9 @@ CREATE TABLE "Type" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Ingredient_name_key" ON "Ingredient"("name");
+
+-- CreateIndex
+CREATE INDEX "IngredientCostHistory_ingredientId_createdAt_idx" ON "IngredientCostHistory"("ingredientId", "createdAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Batch_code_key" ON "Batch"("code");
@@ -179,6 +198,9 @@ ALTER TABLE "IngredientImport" ADD CONSTRAINT "IngredientImport_ingredientId_fke
 
 -- AddForeignKey
 ALTER TABLE "IngredientImport" ADD CONSTRAINT "IngredientImport_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "IngredientCostHistory" ADD CONSTRAINT "IngredientCostHistory_ingredientId_fkey" FOREIGN KEY ("ingredientId") REFERENCES "Ingredient"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Batch" ADD CONSTRAINT "Batch_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
