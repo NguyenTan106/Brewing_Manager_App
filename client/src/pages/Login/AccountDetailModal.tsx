@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import type { User } from "@/services/CRUD/CRUD_API_User";
 import { PencilLine } from "lucide-react"; // icon đẹp hơn
 
@@ -16,15 +16,15 @@ interface Props {
   showDetailAccountModal: boolean;
   handleClose: () => void;
   selectedUser: User | null;
-  handleShowUpdateModal: () => void; // thêm props này
+  // handleShowUpdateModal: () => void; // thêm props này
 }
 
 export default function AccountDetailModal({
   showDetailAccountModal,
   handleClose,
   selectedUser,
-  handleShowUpdateModal,
-}: Props) {
+}: // handleShowUpdateModal,
+Props) {
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "Chưa có";
     return new Date(dateStr).toLocaleString("vi-VN", {
@@ -105,7 +105,7 @@ export default function AccountDetailModal({
           <Button
             variant="secondary"
             className="bg-blue-600 text-white hover:bg-blue-500 flex items-center gap-1"
-            onClick={handleShowUpdateModal}
+            // onClick={handleShowUpdateModal}
           >
             <PencilLine className="w-4 h-4" />
             <span>Chỉnh sửa</span>

@@ -243,6 +243,7 @@ export default function RecipeDetailModalFromBatch({
                                     <div className="text-base font-medium ">
                                       <ReactMarkdown
                                         components={{
+                                          // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                           ul: ({ node, ...props }) => (
                                             <ul
                                               style={{
