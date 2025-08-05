@@ -69,7 +69,12 @@ import { sendAlertEmailService } from "./routes/api_send_email";
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://brewing-manager-app-client.vercel.app",
+    credentials: true, // nếu bạn dùng cookie hoặc header auth
+  })
+);
 app.use(express.json());
 
 //ingredient
