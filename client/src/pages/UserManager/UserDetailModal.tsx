@@ -38,7 +38,6 @@ export default function UserDetailModal({
   handleClose,
   selectedUser,
   handleGetAllUserAPI,
-  setSelectedUser,
 }: Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const currentUserId = checkUser();
@@ -67,13 +66,12 @@ export default function UserDetailModal({
         handleClose={() => setShowUpdateModal(false)}
         selectedUser={selectedUser}
         handleGetAllUserAPI={handleGetAllUserAPI}
-        setSelectedUser={setSelectedUser}
       />
       <Dialog
         open={showDetailModal}
         onOpenChange={(open) => !open && handleClose()}
       >
-        <DialogContent className="w-full max-w-[95vw] sm:max-w-[400px] md:max-w-[500px]   max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-full max-w-[95vw] sm:max-w-[400px] md:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-800">
               Chi tiết người dùng
@@ -102,6 +100,24 @@ export default function UserDetailModal({
               <div>
                 <p className="text-sm text-muted-foreground">Số điện thoại</p>
                 <p className="text-base">{selectedUser?.phone}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Họ tên</p>
+                <p className="text-base">{selectedUser?.fullname}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="text-base">{selectedUser?.email}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Sinh nhật</p>
+                <p className="text-base">{selectedUser?.birthday}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  Tổng số mẻ đã tạo
+                </p>
+                <p className="text-base">{selectedUser?.totalBatch}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Chi nhánh</p>

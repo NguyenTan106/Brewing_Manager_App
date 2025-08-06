@@ -11,9 +11,13 @@ export interface User {
   username: string;
   role: Role;
   phone: string;
+  email: string;
+  fullname: string;
+  birthday: string;
   branch?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  totalBatch?: number;
 }
 
 export const getAllUsersAPI = async () => {

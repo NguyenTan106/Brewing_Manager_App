@@ -6,7 +6,7 @@ export interface Ingredient {
   name: string;
   type: string;
   unit: string;
-  quantity: number | string;
+  quantity: number;
   cost?: number;
   lowStockThreshold: number | string;
   lastImportDate: string | null;

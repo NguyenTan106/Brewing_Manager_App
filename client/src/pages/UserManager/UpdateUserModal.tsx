@@ -18,7 +18,6 @@ interface Props {
   handleClose: () => void;
   selectedUser: User | null;
   handleGetAllUserAPI: () => void;
-  setSelectedUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 export default function UpdateUserModal({
@@ -26,7 +25,6 @@ export default function UpdateUserModal({
   showUpdateModal,
   handleClose,
   selectedUser,
-  setSelectedUser,
 }: Props) {
   const [editForm, setEditForm] = useState<Partial<User>>({});
   useEffect(() => {
@@ -51,7 +49,6 @@ export default function UpdateUserModal({
       toast.success(data.message);
     }
     handleGetAllUserAPI();
-    setSelectedUser(data.data);
     handleClose();
   };
   return (
@@ -108,6 +105,46 @@ export default function UpdateUserModal({
                   value={editForm?.phone ?? ""}
                   onChange={(e) =>
                     setEditForm({ ...editForm, phone: e.target.value })
+                  }
+                  style={{ fontSize: "0.95rem" }}
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
+                  <strong>Email:</strong>
+                </Label>
+                <Input
+                  placeholder="VD: a@gmail.com"
+                  value={editForm?.email ?? ""}
+                  type="email"
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, email: e.target.value })
+                  }
+                  style={{ fontSize: "0.95rem" }}
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
+                  <strong>Họ tên:</strong>
+                </Label>
+                <Input
+                  placeholder="VD: Nguyễn Văn A"
+                  value={editForm?.fullname ?? ""}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, fullname: e.target.value })
+                  }
+                  style={{ fontSize: "0.95rem" }}
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
+                  <strong>Sinh nhật:</strong>
+                </Label>
+                <Input
+                  value={editForm?.birthday ?? ""}
+                  type="date"
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, birthday: e.target.value })
                   }
                   style={{ fontSize: "0.95rem" }}
                 />

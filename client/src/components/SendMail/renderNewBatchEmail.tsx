@@ -31,11 +31,15 @@ export default function renderNewBatchEmail(data: { data: FullBatch }) {
     <h2 style="color:#1e88e5; text-align:center;">🍺 MẺ BIA MỚI ĐƯỢC TẠO</h2>
     <p style="font-size:16px; color:#555;">Xin chào,</p>
     <p style="font-size:16px; color:#555;">Một mẻ bia mới vừa được tạo thành công bởi <strong>${
-      data.data.createdBy?.username || "Không rõ"
+      data.data.createdBy?.fullname || "Không rõ"
     }</strong>. Dưới đây là thông tin chi tiết:</p>
 
     <table style="width:100%; border-collapse:collapse; margin:16px 0;">
       <tbody>
+        <tr style="background-color:#f1f1f1;">
+          <td style="padding:8px;"><strong>Mã mẻ:</strong></td>
+          <td style="padding:8px;">${data.data.code}</td>
+        </tr>
         <tr>
           <td style="padding:8px;"><strong>Tên mẻ:</strong></td>
           <td style="padding:8px;">${data.data.beerName}</td>
@@ -57,7 +61,7 @@ export default function renderNewBatchEmail(data: { data: FullBatch }) {
         <tr>
           <td style="padding:8px;"><strong>Người tạo:</strong></td>
           <td style="padding:8px;">${
-            data.data.createdBy?.username || "Không rõ"
+            data.data.createdBy?.fullname || "Không rõ"
           }</td>
         </tr>
       </tbody>

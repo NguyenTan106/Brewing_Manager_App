@@ -30,6 +30,9 @@ const getAllBatches = async (): Promise<{
           select: {
             username: true,
             phone: true,
+            email: true,
+            fullname: true,
+            birthday: true,
             branch: true,
           },
         },
@@ -84,6 +87,9 @@ const getBatchById = async (
           select: {
             username: true,
             phone: true,
+            email: true,
+            fullname: true,
+            birthday: true,
             branch: true,
           },
         },

@@ -29,6 +29,9 @@ export default function AddNewUserModal({
     password: "",
     role: "ADMIN" as Role,
     phone: "",
+    email: "",
+    fullname: "",
+    birthday: "",
     branch: "",
   });
 
@@ -38,6 +41,9 @@ export default function AddNewUserModal({
       password: "",
       role: "ADMIN" as Role,
       phone: "",
+      email: "",
+      fullname: "",
+      birthday: "",
       branch: "",
     });
   };
@@ -46,6 +52,9 @@ export default function AddNewUserModal({
       form.username === "" ||
       form.password === "" ||
       form.phone === "" ||
+      form.email === "" ||
+      form.fullname === "" ||
+      form.birthday === "" ||
       form.branch === ""
     ) {
       toast.warning("Vui lòng điền đầy đủ thông tin");
@@ -124,7 +133,11 @@ export default function AddNewUserModal({
                   <strong>Vai trò:</strong>
                 </Label>
                 <Input
-                  style={{ fontSize: "0.95rem" }}
+                  style={{
+                    fontSize: "0.95rem",
+                    backgroundColor: "gray",
+                    fontWeight: "bold",
+                  }}
                   required
                   disabled
                   value={form.role}
@@ -142,6 +155,48 @@ export default function AddNewUserModal({
                   required
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  placeholder="VD: 0942510317"
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
+                  <strong>Email:</strong>
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
+                  required
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="VD: a@gmail.com"
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
+                  <strong>Họ tên:</strong>
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
+                  required
+                  value={form.fullname}
+                  onChange={(e) =>
+                    setForm({ ...form, fullname: e.target.value })
+                  }
+                  placeholder="VD: Nguyễn Văn A"
+                />
+              </div>
+              <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
+                <Label className="text-base">
+                  <strong>Sinh nhật:</strong>
+                </Label>
+                <Input
+                  style={{ fontSize: "0.95rem" }}
+                  required
+                  type="date"
+                  value={form.birthday}
+                  onChange={(e) =>
+                    setForm({ ...form, birthday: e.target.value })
+                  }
                   placeholder="VD: 0942510317"
                 />
               </div>

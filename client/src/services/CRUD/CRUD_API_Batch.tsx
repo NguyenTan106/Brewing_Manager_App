@@ -48,6 +48,9 @@ export interface Recipe {
 export interface UserInfo {
   username: string;
   phone: string;
+  email: string;
+  fullname: string;
+  birthday: string;
   branch: string;
 }
 

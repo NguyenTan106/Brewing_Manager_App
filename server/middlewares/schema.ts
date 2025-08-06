@@ -100,6 +100,9 @@ export const userSchema = z.object({
     message: "Role không hợp lệ",
   }),
   phone: z.string().min(10, "Số điện thoại phải có ít nhất 10 chữ số"),
+  email: z.string().min(1, "Email không được để trống"),
+  fullname: z.string().min(1, "Họ tên không được để trống"),
+  birthday: z.string().min(1, "Sinh nhật không được để trống"),
   branch: z.string().optional(),
 });
 // .refine(

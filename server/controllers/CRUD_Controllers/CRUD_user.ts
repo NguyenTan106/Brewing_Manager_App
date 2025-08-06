@@ -18,6 +18,9 @@ const handleCreateNewUser = async (req: Request, res: Response) => {
       parsed.password,
       parsed.role,
       parsed.phone,
+      parsed.email,
+      parsed.fullname,
+      parsed.birthday,
       parsed.branch
     );
     res.status(200).json(result);
@@ -79,8 +82,17 @@ const handleGetUserById = async (req: Request, res: Response) => {
 const handleUpdateUserById = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const { username, role, phone, branch } = req.body;
-    const result = await updateUserById(id, { username, role, phone, branch });
+    const { username, role, phone, email, fullname, birthday, branch } =
+      req.body;
+    const result = await updateUserById(id, {
+      username,
+      role,
+      phone,
+      email,
+      fullname,
+      birthday,
+      branch,
+    });
     res.status(200).json(result);
   } catch (e) {
     console.error("Lỗi trong controller handleUpdateUserById:", e);

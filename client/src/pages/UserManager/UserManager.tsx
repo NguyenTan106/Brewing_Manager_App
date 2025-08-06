@@ -29,6 +29,14 @@ export default function UserManager() {
     handleGetAllUserAPI();
   }, []);
 
+  useEffect(() => {
+    if (selectedUser?.id != null) {
+      const item = users.find((e) => e.id === selectedUser.id);
+      if (item && JSON.stringify(item) !== JSON.stringify(selectedUser)) {
+        setSelectedUser(item);
+      }
+    }
+  }, [users]);
   const handleGetAllUserAPI = async () => {
     const data = await getAllUsersAPI();
     setUsers(data.data);

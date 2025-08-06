@@ -73,9 +73,18 @@ Props) {
                 label="Số điện thoại"
                 value={displayField(selectedUser?.phone)}
               />
-              <Info label="Email" value="Chưa có" />
-              <Info label="Họ tên" value="Chưa có" />
-              <Info label="Sinh nhật" value="Chưa có" />
+              <Info
+                label="Email"
+                value={displayField(selectedUser?.email) || "Chưa có"}
+              />
+              <Info
+                label="Họ tên"
+                value={displayField(selectedUser?.fullname) || "Chưa có"}
+              />
+              <Info
+                label="Sinh nhật"
+                value={displayField(selectedUser?.birthday) || "Chưa có"}
+              />
             </div>
           </div>
 
@@ -91,7 +100,10 @@ Props) {
                 label="Chi nhánh"
                 value={displayField(selectedUser?.branch)}
               />
-              <Info label="Số mẻ đã tạo" value="Chưa có" />
+              <Info
+                label="Số mẻ đã tạo"
+                value={displayField(selectedUser?.totalBatch) || "Chưa có"}
+              />
               <Info label="Vai trò" value={displayField(selectedUser?.role)} />
               <Info
                 label="Ngày tạo"
@@ -102,14 +114,6 @@ Props) {
         </div>
 
         <DialogFooter className="mt-4">
-          <Button
-            variant="secondary"
-            className="bg-blue-600 text-white hover:bg-blue-500 flex items-center gap-1"
-            // onClick={handleShowUpdateModal}
-          >
-            <PencilLine className="w-4 h-4" />
-            <span>Chỉnh sửa</span>
-          </Button>
           <Button variant="outline" onClick={handleClose}>
             Đóng
           </Button>

@@ -11,6 +11,9 @@ const createNewUser = async (
   password: string,
   role: Role,
   phone: string,
+  email: string,
+  fullname: string,
+  birthday: string,
   branch?: string
 ): Promise<{ message: string; data: any }> => {
   try {
@@ -33,6 +36,9 @@ const createNewUser = async (
         password: hashedPassword,
         role,
         phone,
+        email,
+        fullname,
+        birthday,
         branch: role === "ADMIN" ? branch : null,
       },
     });
@@ -118,18 +124,27 @@ const getAllUsers = async (): Promise<{
         username: true,
         role: true,
         phone: true,
+        email: true,
+        fullname: true,
+        birthday: true,
         branch: true,
         createdAt: true,
         updatedAt: true,
+        Batch: true,
       },
     });
+
+    const dataWithBatchCount = data.map((user) => ({
+      ...user,
+      totalBatch: user.Batch.length,
+    }));
 
     if (data.length === 0) {
       return { message: "Chưa có người dùng nào được", data: [] };
     }
     return {
       message: "Thành công",
-      data: data,
+      data: dataWithBatchCount,
     };
   } catch (error) {
     console.error("Lỗi khi lấy danh sách người dùng :", error);
@@ -151,9 +166,13 @@ const getUserById = async (
         username: true,
         role: true,
         phone: true,
+        email: true,
+        fullname: true,
+        birthday: true,
         branch: true,
         createdAt: true,
         updatedAt: true,
+        Batch: true,
       },
     });
 
@@ -162,7 +181,7 @@ const getUserById = async (
     }
     return {
       message: "Thành công",
-      data: data,
+      data: { ...data, totalBatch: data.Batch.length },
     };
   } catch (error) {
     console.error("Lỗi khi lấy người dùng:", error);
@@ -176,6 +195,9 @@ const updateUserById = async (
     username: string;
     role?: Role;
     phone: string;
+    email: string;
+    fullname: string;
+    birthday: string;
     branch: string;
   }
 ): Promise<{

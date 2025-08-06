@@ -46,7 +46,7 @@ export function AddIngredient({
     name: "",
     type: "",
     unit: "",
-    quantity: "",
+    quantity: 0,
     lowStockThreshold: "",
     lastImportDate: "",
     notes: "",
@@ -66,7 +66,7 @@ export function AddIngredient({
       name: "",
       type: "",
       unit: "",
-      quantity: "",
+      quantity: 0,
       lowStockThreshold: "",
       lastImportDate: "",
       notes: "",
@@ -78,7 +78,6 @@ export function AddIngredient({
       form.name === "" ||
       form.type === "" ||
       form.unit === "" ||
-      form.quantity === "" ||
       form.lowStockThreshold === "" ||
       form.lastImportDate === ""
     ) {
@@ -90,7 +89,7 @@ export function AddIngredient({
       name: form.name,
       type: form.type,
       unit: form.unit,
-      quantity: parseFloat(form.quantity), // ✅ ép về number
+      quantity: Number(form.quantity), // ✅ ép về number
       lowStockThreshold: parseFloat(form.lowStockThreshold),
       lastImportDate: form.lastImportDate,
       notes: form.notes,
@@ -151,7 +150,7 @@ export function AddIngredient({
                 />
               </div>
             </div>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-4">
               <Label className="text-base">
                 <strong>Loại nguyên liệu: </strong>
               </Label>
@@ -191,8 +190,7 @@ export function AddIngredient({
                   📚 <span className="hidden sm:inline">Chi tiết</span>
                 </Button>
               </div>
-            </div>
-            <div className="flex flex-wrap gap-4">
+
               <div className="flex flex-col gap-1 w-full md:w-[41%] min-w-0">
                 <Label className="text-base">
                   <strong>Đơn vị: </strong>
@@ -205,25 +203,8 @@ export function AddIngredient({
                   placeholder="VD: g, kg"
                 />
               </div>
-              <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
-                <Label className="text-base">
-                  <strong>Số lượng:</strong>
-                </Label>
-                <Input
-                  style={{ fontSize: "0.95rem" }}
-                  required
-                  type="number"
-                  value={form.quantity}
-                  onChange={(e) =>
-                    setForm({ ...form, quantity: e.target.value })
-                  }
-                  placeholder="VD: 20"
-                />
-              </div>
-            </div>
 
-            <div className="flex flex-wrap gap-4">
-              <div className="flex flex-col gap-1 w-full md:w-[41%] min-w-0">
+              <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
                 <Label className="text-base">
                   <strong>Giới hạn cảnh báo:</strong>
                 </Label>
@@ -239,7 +220,7 @@ export function AddIngredient({
                 />
               </div>
 
-              <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
+              <div className="flex flex-col gap-1 w-full min-w-0">
                 <Label className="text-base">
                   <strong>Ngày nhập kho gần nhất:</strong>
                 </Label>
@@ -255,9 +236,7 @@ export function AddIngredient({
                   placeholder="VD: 2025-07-15T14:30"
                 />
               </div>
-            </div>
 
-            <div className="flex flex-wrap gap-4">
               <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
                 <Label className="text-base">
                   <strong>Ghi chú:</strong>
@@ -272,6 +251,7 @@ export function AddIngredient({
               </div>
             </div>
           </div>
+
           <DialogFooter>
             <Button
               className=""
