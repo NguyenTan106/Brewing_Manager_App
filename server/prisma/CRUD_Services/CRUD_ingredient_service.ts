@@ -67,9 +67,13 @@ const getIngredientById = async (
       orderBy: { createdAt: "desc" },
       select: { cost: true },
     });
+    const allCost = await prisma.ingredientCostHistory.findMany({
+      where: { ingredientId: data.id },
+    });
     const result = {
       ...data,
       cost: latestCost?.cost ?? null,
+      allCost: allCost,
       status: await getIngredientStatus(data.quantity, data.lowStockThreshold),
     };
     return {

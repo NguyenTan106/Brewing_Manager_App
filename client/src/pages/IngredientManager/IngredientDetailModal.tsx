@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { getBadgeClass } from "./IngredientUtils";
 import { toast } from "sonner";
 import { FaPlus } from "react-icons/fa";
-import AddNewIngredientCost from "./AddNewIngredientCost";
+import AddNewIngredientCost from "./IngredientCostDetailModal";
 
 interface Props {
   showDetailModal: boolean;
@@ -135,7 +135,7 @@ export default function IngredientDetailModal({
                     variant="outline"
                     style={{ padding: "0px 10px" }}
                   >
-                    <FaPlus /> <span className="hidden sm:inline">Thêm</span>
+                    📚 <span className="hidden sm:inline">Chi tiết</span>
                   </Button>
                 </div>
               </div>

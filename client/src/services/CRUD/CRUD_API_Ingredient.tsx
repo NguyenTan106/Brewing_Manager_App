@@ -8,10 +8,19 @@ export interface Ingredient {
   unit: string;
   quantity: number;
   cost?: number;
+  allCost?: IngredientCostHistory[];
   lowStockThreshold: number | string;
   lastImportDate: string | null;
   notes?: string;
   status: string;
+}
+
+export interface IngredientCostHistory {
+  id: number;
+  ingredientId: number;
+  cost: number;
+  createdAt: string;
+  note: string;
 }
 
 type IngredientInput = Omit<Ingredient, "id" | "status">;

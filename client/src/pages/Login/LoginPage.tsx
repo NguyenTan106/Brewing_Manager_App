@@ -29,7 +29,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-screen p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-center text-xl">Đăng nhập</CardTitle>

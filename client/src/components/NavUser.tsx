@@ -116,7 +116,7 @@ export function NavUser({
             <DropdownMenuItem
               onClick={() => {
                 localStorage.clear();
-                window.location.href = "/login";
+                window.location.href = "/";
               }}
             >
               <IconLogout />
