@@ -17,13 +17,11 @@ const api_user_1 = require("./routes/api_user");
 const api_send_email_1 = require("./routes/api_send_email");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 8080;
-// app.use(
-//   cors({
-//     origin: "https://brewing-manager-app-client.vercel.app",
-//     credentials: true, // nếu bạn dùng cookie hoặc header auth
-//   })
-// );
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: "https://brewing-manager-app-client.vercel.app",
+    credentials: true, // nếu bạn dùng cookie hoặc header auth
+}));
+// app.use(cors());
 app.use(express_1.default.json());
 //ingredient
 app.use("/api", api_ingredient_1.getAllIngredientsController);
