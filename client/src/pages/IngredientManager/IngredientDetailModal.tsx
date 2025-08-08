@@ -27,7 +27,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getBadgeClass } from "./IngredientUtils";
 import { toast } from "sonner";
-import { FaPlus } from "react-icons/fa";
 import AddNewIngredientCost from "./IngredientCostDetailModal";
 
 interface Props {
@@ -127,7 +126,9 @@ export default function IngredientDetailModal({
                 </p>
                 <div className="flex items-center gap-3 flex-wrap pt-1">
                   <p className="text-base">
-                    {selectedIngredient?.cost || "Chưa có"}
+                    {(selectedIngredient?.cost &&
+                      selectedIngredient?.cost.toFixed(2)) ||
+                      "Chưa có"}
                   </p>
                   <Button
                     title="Thêm giá nhập nguyên liệu"
@@ -141,7 +142,10 @@ export default function IngredientDetailModal({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Nhà cung cấp</p>
-                <p className="text-base">Chưa có</p>
+                <p className="text-base">
+                  {" "}
+                  {selectedIngredient?.supplier?.name || "Chưa có"}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Ngày hết hạn</p>

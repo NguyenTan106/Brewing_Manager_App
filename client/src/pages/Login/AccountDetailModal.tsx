@@ -10,7 +10,6 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 // import { toast } from "sonner";
 import type { User } from "@/services/CRUD/CRUD_API_User";
-import { PencilLine } from "lucide-react"; // icon đẹp hơn
 
 interface Props {
   showDetailAccountModal: boolean;

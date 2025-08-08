@@ -22,6 +22,9 @@ const getAllIngredients = async (): Promise<{ message: string; data: any }> => {
       where: {
         isDeleted: false,
       },
+      include: {
+        supplier: true, // bao gồm thông tin nhà cung cấp
+      },
     });
     if (data.length === 0) {
       return { message: "Chưa có nguyên liệu nào", data: [] };
@@ -58,6 +61,9 @@ const getIngredientById = async (
   try {
     const data = await prisma.ingredient.findUnique({
       where: { id: id, isDeleted: false },
+      include: {
+        supplier: true, // bao gồm thông tin nhà cung cấp
+      },
     });
     if (!data) {
       return { message: "Không tìm thấy nguyên liệu", data: [] };
@@ -70,6 +76,7 @@ const getIngredientById = async (
     const allCost = await prisma.ingredientCostHistory.findMany({
       where: { ingredientId: data.id },
       orderBy: { createdAt: "desc" },
+      take: 5,
     });
     const result = {
       ...data,
@@ -118,6 +125,7 @@ const createIngredient = async (
   type: string,
   unit: string,
   quantity: number,
+  supplierId: number,
   lowStockThreshold: number,
   lastImportDate: Date,
   notes: string
@@ -146,6 +154,7 @@ const createIngredient = async (
         type,
         unit,
         quantity: Number(quantity),
+        supplierId: Number(supplierId),
         lowStockThreshold: Number(lowStockThreshold),
         lastImportDate: vnNow,
         notes,
@@ -169,6 +178,7 @@ const updateIngredientById = async (
     type?: string;
     unit?: string;
     quantity?: number;
+    supplierId?: number;
     lowStockThreshold?: number;
     lastImportDate?: Date;
     notes?: string;
@@ -318,6 +328,9 @@ const getIngredientPage = async (page: number, limit: number) => {
     limit,
     model: "ingredient",
     where: { isDeleted: false },
+    include: {
+      supplier: true, // bao gồm thông tin nhà cung cấp
+    },
     orderBy: { id: "asc" },
     enhanceItem: async (i) => {
       const latestCost = await prisma.ingredientCostHistory.findFirst({

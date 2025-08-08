@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 import { toast } from "sonner";
+import { getAllSuppliersAPI } from "@/services/CRUD/CRUD_API_Supplier";
 type Props = {
   handleClose: () => void;
   selectedIngredient: Ingredient | null;
@@ -48,26 +49,39 @@ export default function IngredientUpdateModal({
   const [editForm, setEditForm] = useState<Partial<Ingredient>>({});
   const [type, setType] = useState<Type[]>([]);
   const [selectedTypeId, setSelectedTypeId] = useState<string>("");
+  const [selectedSupplierId, setSelectedSupplierId] = useState<string>("");
+  const [suppliers, setSuppliers] = useState<{ id: number; name: string }[]>(
+    []
+  );
   useEffect(() => {
     if (selectedIngredient) {
-      setEditForm(selectedIngredient);
-
       const matchedType = type.find(
         (t) => t.typeName === selectedIngredient.type
       );
 
+      const matchedSupplier = suppliers.find(
+        (s) => s.id === selectedIngredient.supplierId
+      );
+
       if (matchedType) {
         setSelectedTypeId(matchedType.id.toString());
+      } else {
+        setSelectedTypeId("");
       }
+      if (matchedSupplier && matchedSupplier.id !== 0) {
+        setSelectedSupplierId(matchedSupplier.id.toString());
+      } else {
+        setSelectedSupplierId("");
+      }
+
+      setEditForm(selectedIngredient);
     }
-  }, [selectedIngredient, type]);
+  }, [selectedIngredient, type, suppliers]);
 
   useEffect(() => {
     handleGetAllTypesAPI();
-    if (selectedIngredient) {
-      setEditForm(selectedIngredient);
-    }
-  }, [selectedIngredient]);
+    handleGetAllSuppliersAPI();
+  }, []);
 
   const handleGetAllTypesAPI = async () => {
     const data = await getAllTypesAPI();
@@ -81,8 +95,8 @@ export default function IngredientUpdateModal({
         editForm.name === "" ||
         editForm.type === "" ||
         editForm.unit === "" ||
-        // editForm.quantity === "" ||
-        // editForm.lowStockThreshold === "" ||
+        editForm.lowStockThreshold === "" ||
+        editForm.supplierId === 0 ||
         editForm.lastImportDate === null
       ) {
         toast.warning("Vui lòng điền đầy đủ thông tin");
@@ -96,6 +110,7 @@ export default function IngredientUpdateModal({
         selectedIngredient?.name == editForm.name &&
         selectedIngredient?.type == editForm.type &&
         selectedIngredient?.unit == editForm.unit &&
+        selectedIngredient?.supplierId == editForm.supplierId &&
         selectedIngredient?.notes == editForm.notes
       ) {
         toast.warning("Không có thay đổi nào để cập nhật");
@@ -104,13 +119,22 @@ export default function IngredientUpdateModal({
       await updateIngredientByIdAPI(id, editForm);
 
       handleClose();
-      // handleGetAllIngredientsAPI();
       handlePaginationAPI();
       toast.success("Cập nhật nguyên liệu thành công");
     } catch (err) {
       console.error("Lỗi khi cập nhật nguyên liệu:", err);
       toast.error("Lỗi khi cập nhật nguyên liệu");
     }
+  };
+
+  const handleGetAllSuppliersAPI = async () => {
+    const data = await getAllSuppliersAPI();
+    setSuppliers(
+      data.data.map((supplier: { id: number; name: string }) => ({
+        id: supplier.id,
+        name: supplier.name,
+      }))
+    );
   };
 
   const toDatetimeLocalValue = (date: string) => {
@@ -200,10 +224,8 @@ export default function IngredientUpdateModal({
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
 
-              <div className="flex flex-wrap gap-4">
-                <div className="flex flex-col gap-1 w-full md:w-[41%] min-w-0">
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
                   <Label className="text-base">
                     <strong>Đơn vị:</strong>
                   </Label>
@@ -216,7 +238,7 @@ export default function IngredientUpdateModal({
                     }
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
                   <Label className="text-base">
                     <strong>Số lượng:</strong>
                   </Label>
@@ -233,18 +255,13 @@ export default function IngredientUpdateModal({
                     onChange={(e) =>
                       setEditForm({
                         ...editForm,
-                        quantity:
-                          e.target.value === ""
-                            ? ""
-                            : parseFloat(e.target.value),
+                        quantity: Number(e.target.value),
                       })
                     }
                   />
                 </div>
-              </div>
 
-              <div className="flex flex-wrap gap-4">
-                <div className="flex flex-col gap-1 w-full md:w-[41%] min-w-0">
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
                   <Label className="text-base">
                     <strong>Giới hạn cảnh báo:</strong>
                   </Label>
@@ -264,7 +281,7 @@ export default function IngredientUpdateModal({
                     }
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-full md:w-[55%] min-w-0">
+                <div className="flex flex-col gap-1 w-full md:w-[48%] min-w-0">
                   <Label className="text-base">
                     <strong>Ngày nhập kho gần nhất:</strong>
                   </Label>
@@ -286,8 +303,43 @@ export default function IngredientUpdateModal({
                     placeholder="VD: 2025-07-15T14:30"
                   />
                 </div>
-              </div>
-              <div className="flex flex-wrap gap-4">
+                <div className="flex flex-col gap-1 w-full min-w-0">
+                  <Label className="text-base">
+                    <strong>Nhà cung cấp:</strong>
+                  </Label>
+                  <Select
+                    value={selectedSupplierId}
+                    onValueChange={(value) => {
+                      setSelectedSupplierId(value);
+                      const selected = suppliers.find(
+                        (t) => t.id.toString() === value
+                      );
+                      setEditForm((prev) => ({
+                        ...prev,
+                        supplierId: selected?.id ?? 0,
+                      }));
+                    }}
+                  >
+                    <SelectTrigger
+                      className="w-full"
+                      style={{ fontSize: "0.95rem" }}
+                    >
+                      <SelectValue placeholder="Chọn nhà cung cấp" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {suppliers.map((t) => (
+                        <SelectItem
+                          style={{ fontSize: "0.95rem" }}
+                          key={t.id}
+                          value={t.id.toString()}
+                        >
+                          {t.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="flex flex-col gap-1 w-full md:w-[100%] min-w-0">
                   <Label className="text-base font-bold">Ghi chú:</Label>
                   <Textarea
@@ -302,6 +354,7 @@ export default function IngredientUpdateModal({
                 </div>
               </div>
             </div>
+
             <DialogFooter>
               <Button
                 variant="secondary"

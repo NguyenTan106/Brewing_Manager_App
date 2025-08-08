@@ -65,6 +65,25 @@ import {
 } from "./routes/api_user";
 
 import { sendAlertEmailService } from "./routes/api_send_email";
+import {
+  createNewSupplierController,
+  getAllSuppliersController,
+  getSupplierByIdController,
+  updateSupplierByIdController,
+  deleteSupplierByIdController,
+} from "./routes/api_supplier";
+
+import {
+  createNewBeerProductController,
+  getAllBeerProductsController,
+  getBeerProductByIdController,
+} from "./routes/api_beer_product";
+
+import {
+  createNewProductController,
+  getAllProductsController,
+  getProductByIdController,
+} from "./routes/api_product";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -138,6 +157,23 @@ app.use("/api", deleteUserByIdController);
 
 // email
 app.use("/api", sendAlertEmailService);
+
+// supplier
+app.use("/api", createNewSupplierController);
+app.use("/api", getAllSuppliersController);
+app.use("/api", getSupplierByIdController);
+app.use("/api", updateSupplierByIdController);
+app.use("/api", deleteSupplierByIdController);
+
+// beer product
+app.use("/api", createNewBeerProductController);
+app.use("/api", getAllBeerProductsController);
+app.use("/api", getBeerProductByIdController);
+
+// product
+app.use("/api", createNewProductController);
+app.use("/api", getAllProductsController);
+app.use("/api", getProductByIdController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

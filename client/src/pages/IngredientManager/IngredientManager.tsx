@@ -5,7 +5,7 @@ import {
 } from "../../services/CRUD/CRUD_API_Ingredient";
 import IngredientDetailModal from "./IngredientDetailModal";
 import { getIngredientIcon, getBadgeClass } from "./IngredientUtils";
-import { AddIngredient } from "./AddNewIngredient";
+import { AddNewIngredient } from "./AddNewIngredient";
 import { paginationIngredientAPI } from "../../services/pagination_API";
 import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
 import { type Ingredient } from "../../services/CRUD/CRUD_API_Ingredient";
@@ -143,7 +143,7 @@ export default function IngredientManager() {
         selectedIngredient={selectedIngredient}
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
-      <AddIngredient
+      <AddNewIngredient
         showAddIngredientModal={showAddIngredientModal}
         handleClose={() => setShowAddIngredientModal(false)}
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
@@ -245,7 +245,7 @@ export default function IngredientManager() {
                     {i.unit}
                   </TableCell>
                   <TableCell className="px-4 py-3">
-                    {i.cost || "Chưa có"}
+                    {i.cost?.toFixed(2) || "Chưa có"}
                   </TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
                     <Badge

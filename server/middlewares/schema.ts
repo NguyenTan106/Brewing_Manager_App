@@ -1,4 +1,5 @@
 // src/validators/ingredient.validator.ts
+import { StatusBeerProduct } from "@prisma/client";
 import { z } from "zod";
 
 export const ingredientSchema = z.object({
@@ -6,6 +7,7 @@ export const ingredientSchema = z.object({
   type: z.string().min(1, "Loại không được để trống"),
   unit: z.string().min(1, "Đơn vị không được để trống"),
   quantity: z.number().min(0, "Số lượng phải >= 0"),
+  supplierId: z.number().min(0, "Nhà cung cấp không được để trống"),
   lowStockThreshold: z.number().min(0, "Ngưỡng cảnh báo phải >= 0"),
   lastImportDate: z
     .string()
@@ -118,3 +120,34 @@ export const userSchema = z.object({
 //     path: ["branch"],
 //   }
 // );
+
+export const supplierSchema = z.object({
+  name: z.string().min(1, "Username không được để trống"),
+  contactName: z.string().min(1, "Tên liên hệ không được để trống"),
+  phone: z.string().min(10, "Số điện thoại phải có ít nhất 10 chữ số"),
+  email: z.string().optional(),
+  address: z.string().optional(),
+});
+export const beerProductSchema = z.object({
+  batchId: z.number().min(1, "Batch ID không được để trống"),
+  productId: z.number().min(1, "Product ID không được để trống"),
+  quantity: z.number().min(1, "Số lượng phải lớn hơn 0"),
+  productionDate: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), "Ngày sản xuất không hợp lệ"),
+  expiryDate: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), "Ngày hết hạn không hợp lệ"),
+  status: z.enum(StatusBeerProduct, {
+    message: "Trạng thái không hợp lệ",
+  }),
+  createdById: z.number().min(1, "Người tạo không được để trống"),
+  notes: z.string().optional(),
+});
+export const productSchema = z.object({
+  code: z.string().min(1, "Mã sản phẩm không được để trống"),
+  name: z.string().min(1, "Tên sản phẩm không được để trống"),
+  volume: z.number().min(1, "Thể tích sản phẩm phải lớn hơn 0"),
+  unitType: z.string().min(1, "Đơn vị không được để trống"),
+  description: z.string().optional(),
+});

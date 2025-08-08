@@ -11,10 +11,10 @@ import LoginPage from "./pages/Login/LoginPage";
 import RequireAuth from "./components/Auth/RequireAuth";
 import RedirectIfAuthenticated from "./components/Auth/RedirectIfAuthenticated";
 import SuperAdminRoute from "./components/Auth/SuperAdminRoute";
+import SupplierManager from "./pages/SupplierManager/SupplierManager";
 import { Toaster } from "sonner";
-
-
-
+import BeerProductManager from "./pages/BeerProductManager/BeerProductManager";
+import ProductManager from "./pages/BeerProductManager/ProductManager/ProductManager";
 function App() {
   return (
     <>
@@ -49,6 +49,9 @@ function App() {
             <Route path="ingredients" element={<IngredientManager />} />
             <Route path="batchs" element={<BatchManager />} />
             <Route path="recipes" element={<RecipeManager />} />
+            <Route path="suppliers" element={<SupplierManager />} />
+            <Route path="product-types" element={<ProductManager />} />
+            <Route path="beer-products" element={<BeerProductManager />} />
             <Route path="activity-logs" element={<ActivityLogManager />} />
             <Route
               path="users"
