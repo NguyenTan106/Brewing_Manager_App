@@ -10,6 +10,7 @@ import {
   handleUpdateFeedbackBatchStep,
   handleGetBatchStepById,
   handleCancelBacthById,
+  handleGetAllCompletedBatches,
 } from "../controllers/CRUD_Controllers/CRUD_batch";
 
 import {
@@ -20,6 +21,11 @@ import {
 import { handlePaginationBatch } from "../controllers/pagination";
 
 const getAllBatchesController = router.get("/batches", handleGetAllBatches);
+const getAllCompletedBatchesController = router.get(
+  "/completed-batches",
+  handleGetAllCompletedBatches
+);
+
 const getBatchByIdController = router.get("/batch/:id", handleGetBatchById);
 const createBatchController = router.post("/batch/", handleCreateBatch);
 const updateBatchByIdController = router.put(
@@ -74,4 +80,5 @@ export {
   updateFeedbackBatchStepController,
   getBatchStepByIdController,
   cancelBatchByIdController,
+  getAllCompletedBatchesController,
 };

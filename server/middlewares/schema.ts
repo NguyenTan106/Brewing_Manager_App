@@ -131,7 +131,7 @@ export const supplierSchema = z.object({
 export const beerProductSchema = z.object({
   batchId: z.number().min(1, "Batch ID không được để trống"),
   productId: z.number().min(1, "Product ID không được để trống"),
-  quantity: z.number().min(1, "Số lượng phải lớn hơn 0"),
+  quantity: z.string(),
   productionDate: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)), "Ngày sản xuất không hợp lệ"),

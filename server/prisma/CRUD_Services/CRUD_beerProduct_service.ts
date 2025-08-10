@@ -24,7 +24,7 @@ const createNewBeerProduct = async (
     const todayEnd = new Date(vnNow);
     todayEnd.setHours(23, 59, 59, 999);
 
-    const todayBatches = await prisma.batch.findMany({
+    const todayBatches = await prisma.beerProduct.findMany({
       where: {
         createdAt: {
           gte: todayStart,
@@ -43,8 +43,8 @@ const createNewBeerProduct = async (
         batchId: Number(batchId),
         productId: Number(productId),
         quantity: Number(quantity),
-        productionDate,
-        expiryDate,
+        productionDate: new Date(productionDate),
+        expiryDate: new Date(expiryDate),
         status,
         createdById: Number(createdById),
         notes,

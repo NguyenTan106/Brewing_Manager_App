@@ -13,14 +13,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import { FaPlus } from "react-icons/fa";
 import {
   type BeerProduct,
   getAllBeerProductsAPI,
   getBeerProductByIdAPI,
+  BeerProductStatusMapToUI,
+  BeerProductStatusDB,
 } from "@/services/CRUD/CRUD_API_BeerProduct";
 import BeerProductDetailModal from "./BeerProductDetailModal";
+import AddNewBeerProductModal from "./AddNewBeerProductModal";
+
 export default function BeerProductManager() {
   const [beerProducts, setBeerProducts] = useState<BeerProduct[]>([]);
   const [showAddNewBeerProductModal, setShowAddNewBeerProductModal] =
@@ -28,6 +31,7 @@ export default function BeerProductManager() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedBeerProduct, setSelectedBeerProduct] =
     useState<BeerProduct | null>(null);
+
   useEffect(() => {
     handleGetAllBeerProductsAPI();
   }, []);
@@ -53,8 +57,15 @@ export default function BeerProductManager() {
     setSelectedBeerProduct(data.data);
     setShowDetailModal(true);
   };
+
   return (
     <>
+      <AddNewBeerProductModal
+        showAddNewBeerProductModal={showAddNewBeerProductModal}
+        handleClose={() => setShowAddNewBeerProductModal(false)}
+        handleGetAllBeerProductsAPI={handleGetAllBeerProductsAPI}
+      />
+
       <BeerProductDetailModal
         showDetailModal={showDetailModal}
         handleClose={() => setShowDetailModal(false)}
@@ -63,7 +74,7 @@ export default function BeerProductManager() {
       />
       <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
-          <p className="text-3xl font-bold">Lô thành phẩm:</p>
+          <p className="text-3xl font-bold">Danh sách lô thành phẩm:</p>
           <div className="relative w-full lg:w-[150%]">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -77,7 +88,7 @@ export default function BeerProductManager() {
         </div>
         <div className="flex flex-row gap-5">
           <Button
-            // onClick={() => setShowAddIngredientModal(true)}
+            onClick={() => setShowAddNewBeerProductModal(true)}
             title="Thêm nguyên liệu mới"
             className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
           >
@@ -131,13 +142,37 @@ export default function BeerProductManager() {
                     {i.product?.unitType}
                   </TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
-                    <Badge key={idx}>{i.status}</Badge>
+                    <Badge key={idx}>
+                      {
+                        BeerProductStatusMapToUI[
+                          i.status as BeerProductStatusDB
+                        ]
+                      }
+                    </Badge>
                   </TableCell>
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
-                    {i.productionDate}
+                    {i.productionDate &&
+                      new Date(i.productionDate).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                   </TableCell>
                   <TableCell className="px-4 py-3">
-                    {i.expiryDate || "Chưa có"}
+                    {i.expiryDate &&
+                      new Date(i.expiryDate).toLocaleString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                        hour12: false,
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                   </TableCell>
 
                   <TableCell className="px-4 py-3">

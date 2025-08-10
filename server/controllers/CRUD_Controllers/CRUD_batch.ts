@@ -10,6 +10,7 @@ import {
   updateFeedbackBatchStep,
   getBatchStepById,
   cancelBatchById,
+  getAllCompletedBatches,
 } from "../../prisma/CRUD_Services/CRUD_batch_service";
 import { batchSchema } from "../../middlewares/schema";
 import { logActivity } from "../../prisma/logActivity";
@@ -21,6 +22,18 @@ const handleGetAllBatches = async (req: Request, res: Response) => {
     console.error("Lỗi trong controller handleGetAllBatchs:", e);
     res.status(500).json({
       message: "Lỗi server khi tìm mẻ",
+    });
+  }
+};
+
+const handleGetAllCompletedBatches = async (req: Request, res: Response) => {
+  try {
+    const handle = await getAllCompletedBatches();
+    res.status(200).json(handle);
+  } catch (e) {
+    console.error("Lỗi trong controller handleGetAllCompletedBatches:", e);
+    res.status(500).json({
+      message: "Lỗi server khi tìm mẻ đã hoàn thành",
     });
   }
 };
@@ -211,4 +224,5 @@ export {
   handleUpdateFeedbackBatchStep,
   handleGetBatchStepById,
   handleCancelBacthById,
+  handleGetAllCompletedBatches,
 };

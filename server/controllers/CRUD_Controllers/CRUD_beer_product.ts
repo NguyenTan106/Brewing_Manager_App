@@ -15,7 +15,7 @@ const handleCreateNewBeerProduct = async (req: Request, res: Response) => {
     const result = await createNewBeerProduct(
       parsed.batchId,
       parsed.productId,
-      parsed.quantity,
+      Number(parsed.quantity),
       parsed.productionDate,
       parsed.expiryDate,
       parsed.status,
@@ -29,7 +29,7 @@ const handleCreateNewBeerProduct = async (req: Request, res: Response) => {
         const errMessage = e._zod.def;
         const err = errMessage.map((e) => e.message);
         console.error(
-          "Lỗi trong controller handleCreateNewSupplier:",
+          "Lỗi trong controller handleCreateNewBeerProduct:",
           err.toString()
         );
         res.status(500).json({

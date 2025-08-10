@@ -89,7 +89,7 @@ model Product {
 model BeerProduct {
   id             Int               @id @default(autoincrement())
   code           String            @unique // Mã sản phẩm duy nhất BP20250801-01
-  batchId        Int
+  batchId        Int               @unique
   batch          Batch             @relation(fields: [batchId], references: [id])
   productId      Int
   product        Product           @relation(fields: [productId], references: [id]) // Mã sản phẩm duy nhất
@@ -128,7 +128,7 @@ model Batch {
   recipe           Recipe            @relation(fields: [recipeId], references: [id])
   batchIngredients BatchIngredient[]
   batchSteps       BatchStep[]
-  BeerProduct      BeerProduct[]
+  beerProduct      BeerProduct?
 
   @@index([recipeId])
   @@index([createdById])

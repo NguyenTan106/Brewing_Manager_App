@@ -1,4 +1,8 @@
-import type { BeerProduct } from "@/services/CRUD/CRUD_API_BeerProduct";
+import {
+  BeerProductStatusDB,
+  BeerProductStatusMapToUI,
+  type BeerProduct,
+} from "@/services/CRUD/CRUD_API_BeerProduct";
 import { useState } from "react";
 import {
   Dialog,
@@ -22,6 +26,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import UpdateBeerProductModal from "./UpdateBeerProductModal";
 interface Props {
   showDetailModal: boolean;
   handleClose: () => void;
@@ -40,12 +45,19 @@ Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showBeerProductCostModal, setShowBeerProductCostModal] =
     useState(false);
-  const handleOpenUpdateModal = () => {
+  const handleShowUpdateModal = () => {
     setShowUpdateModal(true);
     handleGetAllBeerProductsAPI();
   };
   return (
     <>
+      <UpdateBeerProductModal
+        showUpdateModal={showUpdateModal}
+        handleClose={() => setShowUpdateModal(false)}
+        selectedBeerProduct={selectedBeerProduct}
+        handleGetAllBeerProductsAPI={handleGetAllBeerProductsAPI}
+      />
+
       <Dialog
         open={showDetailModal}
         onOpenChange={(open) => !open && handleClose()}
@@ -82,7 +94,13 @@ Props) {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Trạng thái</p>
-                <p className="text-base">{selectedBeerProduct?.status}</p>
+                <p className="text-base">
+                  {
+                    BeerProductStatusMapToUI[
+                      selectedBeerProduct?.status as BeerProductStatusDB
+                    ]
+                  }
+                </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Số lượng</p>
@@ -141,7 +159,7 @@ Props) {
             <Button
               variant="secondary"
               className="bg-blue-600 text-white hover:bg-blue-500"
-              //   onClick={() => handleShowUpdateModal()}
+              onClick={() => handleShowUpdateModal()}
               style={{
                 padding: "5px 10px",
                 fontSize: "14px",

@@ -27,6 +27,7 @@ import {
   getGetBatchStatsByWeekMonthYearController,
   updateFeedbackBatchStepController,
   getBatchStepByIdController,
+  getAllCompletedBatchesController,
 } from "./routes/api_batch";
 
 import {
@@ -124,6 +125,7 @@ app.use("/api", getTotalBatchesController);
 app.use("/api", getGetBatchStatsByWeekMonthYearController);
 app.use("/api", updateFeedbackBatchStepController);
 app.use("/api", getBatchStepByIdController);
+app.use("/api", getAllCompletedBatchesController);
 
 //recipe
 app.use("/api", getAllRecipesController);
