@@ -2,8 +2,10 @@ import { ZodError } from "zod";
 import { Request, Response } from "express";
 import {
   createNewProduct,
+  deleteProductById,
   getAllProducts,
   getProductById,
+  updateProductById,
 } from "../../prisma/CRUD_Services/CRUD_product_service";
 import { productSchema } from "../../middlewares/schema";
 
@@ -13,7 +15,7 @@ const handleCreateNewProduct = async (req: Request, res: Response) => {
     const result = await createNewProduct(
       parsed.code,
       parsed.name,
-      parsed.volume,
+      Number(parsed.volume),
       parsed.unitType,
       parsed.description
     );
@@ -60,4 +62,36 @@ const handleGetProductById = async (req: Request, res: Response) => {
   }
 };
 
-export { handleCreateNewProduct, handleGetAllProducts, handleGetProductById };
+const handleUpdateProductById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const result = await updateProductById(id, req.body);
+    res.status(200).json(result);
+  } catch (e) {
+    console.error("Lỗi trong controller handleUpdateProductById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi cập nhật loại bia",
+    });
+  }
+};
+
+const handleDeleteProductById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const result = await deleteProductById(id);
+    res.status(200).json(result);
+  } catch (e) {
+    console.error("Lỗi trong controller handleDeleteProductById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi xóa loại bia",
+    });
+  }
+};
+
+export {
+  handleCreateNewProduct,
+  handleGetAllProducts,
+  handleGetProductById,
+  handleUpdateProductById,
+  handleDeleteProductById,
+};

@@ -24,7 +24,7 @@ import {
   updateBatchByIdController,
   paginationBatchController,
   getTotalBatchesController,
-  getGetBatchStatsByWeekMonthYearController,
+  getTotalBatchesByTimeController,
   updateFeedbackBatchStepController,
   getBatchStepByIdController,
   getAllCompletedBatchesController,
@@ -78,12 +78,16 @@ import {
   createNewBeerProductController,
   getAllBeerProductsController,
   getBeerProductByIdController,
+  updateBeerProductByIdController,
+  deleteBeerProductByIdController,
 } from "./routes/api_beer_product";
 
 import {
   createNewProductController,
   getAllProductsController,
   getProductByIdController,
+  updateProductByIdController,
+  deleteProductByIdController,
 } from "./routes/api_product";
 
 const app = express();
@@ -122,7 +126,7 @@ app.use("/api", deleteBatchByIdController);
 app.use("/api", updateBatchByIdController);
 app.use("/api", paginationBatchController);
 app.use("/api", getTotalBatchesController);
-app.use("/api", getGetBatchStatsByWeekMonthYearController);
+app.use("/api", getTotalBatchesByTimeController);
 app.use("/api", updateFeedbackBatchStepController);
 app.use("/api", getBatchStepByIdController);
 app.use("/api", getAllCompletedBatchesController);
@@ -171,11 +175,15 @@ app.use("/api", deleteSupplierByIdController);
 app.use("/api", createNewBeerProductController);
 app.use("/api", getAllBeerProductsController);
 app.use("/api", getBeerProductByIdController);
+app.use("/api", updateBeerProductByIdController);
+app.use("/api", deleteBeerProductByIdController);
 
 // product
 app.use("/api", createNewProductController);
 app.use("/api", getAllProductsController);
 app.use("/api", getProductByIdController);
+app.use("/api", updateProductByIdController);
+app.use("/api", deleteProductByIdController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

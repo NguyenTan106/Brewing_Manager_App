@@ -2,6 +2,7 @@ import {
   BeerProductStatusDB,
   BeerProductStatusMapToUI,
   type BeerProduct,
+  deleteBeerProductByIdAPI,
 } from "@/services/CRUD/CRUD_API_BeerProduct";
 import { useState } from "react";
 import {
@@ -43,11 +44,20 @@ export default function BeerProductDetailModal({
 }: //   handlePaginationAPI,
 Props) {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [showBeerProductCostModal, setShowBeerProductCostModal] =
-    useState(false);
   const handleShowUpdateModal = () => {
     setShowUpdateModal(true);
+  };
+
+  const handleDeleteBeerProductById = async (id: number) => {
+    const response = await deleteBeerProductByIdAPI(id);
+    const errorMessage = response.message;
+    if (response.data == null) {
+      toast.error(`${errorMessage}`);
+      return;
+    }
+    toast.success(`${errorMessage}`);
     handleGetAllBeerProductsAPI();
+    handleClose();
   };
   return (
     <>
@@ -193,12 +203,9 @@ Props) {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Hủy</AlertDialogCancel>
                   <AlertDialogAction
-                  // onClick={() =>
-                  //   handleDeteleUserById(
-                  //     selectedUser?.id ?? 0,
-                  //     currentUserId?.id ?? 0
-                  //   )
-                  // }
+                    onClick={() =>
+                      handleDeleteBeerProductById(selectedBeerProduct?.id ?? 0)
+                    }
                   >
                     Xác nhận
                   </AlertDialogAction>

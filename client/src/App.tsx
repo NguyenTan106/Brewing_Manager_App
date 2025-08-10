@@ -15,6 +15,7 @@ import SupplierManager from "./pages/SupplierManager/SupplierManager";
 import { Toaster } from "sonner";
 import BeerProductManager from "./pages/BeerProductManager/BeerProductManager";
 import ProductManager from "./pages/BeerProductManager/ProductManager/ProductManager";
+import DashboardBatchManager from "./pages/DashBoardManager/BatchInfo/DashboardBatchManager";
 function App() {
   return (
     <>
@@ -46,6 +47,7 @@ function App() {
             }
           >
             <Route index element={<DashBoardManager />} />
+            <Route path="dashboard-batch" element={<DashboardBatchManager />} />
             <Route path="ingredients" element={<IngredientManager />} />
             <Route path="batchs" element={<BatchManager />} />
             <Route path="recipes" element={<RecipeManager />} />

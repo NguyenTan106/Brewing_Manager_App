@@ -104,120 +104,33 @@ const getTotalBaches = async (): Promise<{
   }
 };
 
-const getTotalBatchesByWeekMonthYear = async () => {
+const getTotalBatchesByTime = async () => {
   const now = new Date();
 
-  const monthStart = startOfMonth(now);
-  const monthEnd = endOfMonth(now);
   const yearStart = startOfYear(now);
   const yearEnd = endOfYear(now);
 
-  // 📅 Thống kê theo từng ngày trong tuần
-  const weeklyCountByDay: Record<string, number> = {};
-  // Tạo các key ngày theo định dạng "MM-dd" và khởi tạo = 0
-  for (let i = 6; i >= 0; i--) {
-    const date = subDays(now, i); // lùi ngày
-    const label = format(date, "MM-dd");
-    weeklyCountByDay[label] = 0;
-  }
-
-  // Truy vấn tất cả batch trong 7 ngày gần nhất
-  const weeklyBatches = await prisma.batch.findMany({
-    where: {
-      createdAt: {
-        gte: subDays(now, 6),
-        lte: now,
-      },
-    },
-    select: {
-      createdAt: true,
-    },
-  });
-
-  // Đếm batch theo ngày
-  for (const b of weeklyBatches) {
-    const label = format(b.createdAt, "MM-dd");
-    if (weeklyCountByDay[label] !== undefined) {
-      weeklyCountByDay[label]++;
-    }
-  }
-
-  // 📅 Thống kê theo từng ngày trong tháng
-  const monthlyBatches = await prisma.batch.findMany({
-    where: {
-      createdAt: {
-        gte: monthStart,
-        lte: monthEnd,
-      },
-    },
-    select: {
-      createdAt: true,
-    },
-  });
-
-  const weeklyCountByMonth: Record<string, number> = {};
-
-  let currentStart = monthStart;
-
-  while (isBefore(currentStart, monthEnd)) {
-    const currentEnd = addDays(currentStart, 6);
-    const rangeLabel = `${format(currentStart, "dd/MM")} - ${format(
-      isAfter(currentEnd, monthEnd) ? monthEnd : currentEnd,
-      "dd/MM"
-    )}`;
-
-    weeklyCountByMonth[rangeLabel] = 0;
-    currentStart = addDays(currentStart, 7);
-  }
-
-  // Gán batch vào từng khoảng
-  for (const b of monthlyBatches) {
-    for (const range in weeklyCountByMonth) {
-      const [startStr, endStr] = range.split(" - ");
-      const year = now.getFullYear();
-
-      const start = parse(`${startStr}/${year}`, "dd/MM/yyyy", new Date());
-      const end = parse(`${endStr}/${year}`, "dd/MM/yyyy", new Date());
-
-      if (b.createdAt >= start && b.createdAt <= end) {
-        weeklyCountByMonth[range]++;
-        break;
-      }
-    }
-  }
-  // Lấy tất cả các mẻ trong năm hiện tại
-  const batches = await prisma.batch.findMany({
+  const result = await prisma.batch.groupBy({
+    by: ["createdAt"],
     where: {
       createdAt: {
         gte: yearStart,
         lte: yearEnd,
       },
     },
-    select: {
-      createdAt: true,
+    _count: {
+      _all: true,
     },
   });
 
-  // Tạo bộ đếm theo tháng
-  const monthlyCountByYear: Record<string, number> = {};
-
-  for (let i = 0; i < 12; i++) {
-    const monthKey = `${i + 1}`.padStart(2, "0"); // "01", "02", ..., "12"
-    monthlyCountByYear[monthKey] = 0;
-  }
-
-  for (const b of batches) {
-    const month = format(b.createdAt, "MM"); // Lấy số tháng "01"..."12"
-    if (monthlyCountByYear[month] !== undefined) {
-      monthlyCountByYear[month]++;
-    }
-  }
+  const data = result.map((item) => ({
+    date: item.createdAt.toISOString().split("T")[0],
+    totalBatches: item._count._all,
+  }));
 
   return {
-    weekly: weeklyCountByDay,
-    monthly: weeklyCountByMonth,
-    yearly: monthlyCountByYear,
+    data: data,
   };
 };
 
-export { getTotalBaches, getTotalBatchesByWeekMonthYear };
+export { getTotalBaches, getTotalBatchesByTime };

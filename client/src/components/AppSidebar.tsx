@@ -33,6 +33,7 @@ import {
   ChevronDown,
   NotebookText,
   ChevronRight,
+  BarChart3,
 } from "lucide-react";
 import { SidebarItem } from "./SidebarItem"; // tách riêng component
 import { NavUser } from "./NavUser";
@@ -177,7 +178,10 @@ export default function AppSidebar() {
   const menuGroups = [
     {
       label: "Báo cáo & Thống kê",
-      items: [{ title: "Trang chủ", path: "/", icon: House }],
+      items: [
+        { title: "Trang chủ", path: "/", icon: House },
+        { title: "Thống kê mẻ", path: "/dashboard-batch", icon: BarChart3 },
+      ],
     },
     {
       label: "Kho & Sản xuất",

@@ -15,7 +15,7 @@ import {
 
 import {
   handleGetTotalBatches,
-  handleGetTotalBatchesByDayWeekYear,
+  handleGetTotalBatchesByTime,
 } from "../controllers/Report_Controllers/statistic_batch_controller";
 
 import { handlePaginationBatch } from "../controllers/pagination";
@@ -58,9 +58,9 @@ const getTotalBatchesController = router.get(
   handleGetTotalBatches
 );
 
-const getGetBatchStatsByWeekMonthYearController = router.get(
-  "/total-batches-by-week-month-year",
-  handleGetTotalBatchesByDayWeekYear
+const getTotalBatchesByTimeController = router.get(
+  "/total-batches-by-time",
+  handleGetTotalBatchesByTime
 );
 
 const getBatchStepByIdController = router.get(
@@ -76,7 +76,7 @@ export {
   updateBatchByIdController,
   paginationBatchController,
   getTotalBatchesController,
-  getGetBatchStatsByWeekMonthYearController,
+  getTotalBatchesByTimeController,
   updateFeedbackBatchStepController,
   getBatchStepByIdController,
   cancelBatchByIdController,

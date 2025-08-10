@@ -103,6 +103,10 @@ model BeerProduct {
   isDeleted      Boolean           @default(false)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
+
+  @@index([status])
+  @@index([productId])
+  @@index([batchId])
 }
 
 enum StatusBeerProduct {

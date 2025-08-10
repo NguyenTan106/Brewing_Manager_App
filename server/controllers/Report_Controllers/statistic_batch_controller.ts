@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {
   getTotalBaches,
-  getTotalBatchesByWeekMonthYear,
+  getTotalBatchesByTime,
 } from "../../prisma/Report_Services/statistic_batch_report";
 
 const handleGetTotalBatches = async (req: Request, res: Response) => {
@@ -16,12 +16,9 @@ const handleGetTotalBatches = async (req: Request, res: Response) => {
   }
 };
 
-const handleGetTotalBatchesByDayWeekYear = async (
-  req: Request,
-  res: Response
-) => {
+const handleGetTotalBatchesByTime = async (req: Request, res: Response) => {
   try {
-    const handle = await getTotalBatchesByWeekMonthYear();
+    const handle = await getTotalBatchesByTime();
     res.status(200).json(handle);
   } catch (e) {
     console.error(
@@ -34,4 +31,4 @@ const handleGetTotalBatchesByDayWeekYear = async (
   }
 };
 
-export { handleGetTotalBatches, handleGetTotalBatchesByDayWeekYear };
+export { handleGetTotalBatches, handleGetTotalBatchesByTime };

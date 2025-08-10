@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Product } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const createNewProduct = async (
@@ -86,4 +86,89 @@ const getProductById = async (
   }
 };
 
-export { createNewProduct, getAllProducts, getProductById };
+const updateProductById = async (
+  id: number,
+  dataUpdated: Partial<Product>
+): Promise<{ message: string; data: any }> => {
+  try {
+    const existing = await prisma.product.findUnique({
+      where: { id, isDeleted: false },
+    });
+
+    if (!existing) {
+      return {
+        message: `Không tìm thấy sản phẩm bia với ID = ${id}`,
+        data: null,
+      };
+    }
+    const updatedBeerProduct = await prisma.product.update({
+      where: { id: id },
+      data: {
+        code: dataUpdated.code,
+        name: dataUpdated.name,
+        description: dataUpdated.description,
+        volume: Number(dataUpdated.volume),
+        unitType: dataUpdated.unitType,
+      },
+    });
+
+    return {
+      message: "Cập nhật loại bia thành công",
+      data: updatedBeerProduct,
+    };
+  } catch (e) {
+    console.error("Lỗi khi cập nhật loại bia:", e);
+    throw new Error("Không thể cập nhật loại bia");
+  }
+};
+
+const deleteProductById = async (
+  id: number
+): Promise<{ message: string; data: any }> => {
+  try {
+    const existing = await prisma.product.findFirst({
+      where: { id, isDeleted: false },
+      include: {
+        beerProducts: true,
+      },
+    });
+
+    if (!existing) {
+      return {
+        message: `Không tìm thấy loại sản phẩm với ID = ${id}`,
+        data: null,
+      };
+    }
+
+    // Nếu có beerProducts thì chặn xóa
+    if (existing.beerProducts.length > 0) {
+      return {
+        message: "Không thể xóa vì vẫn còn sản phẩm bia thuộc loại này",
+        data: null,
+      };
+    }
+
+    const deleted = await prisma.product.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    return {
+      message: "Xóa loại sản phẩm thành công",
+      data: deleted,
+    };
+  } catch (e) {
+    console.error("Lỗi khi xóa loại sản phẩm:", e);
+    throw new Error("Không thể xóa loại sản phẩm");
+  }
+};
+
+export {
+  createNewProduct,
+  getAllProducts,
+  getProductById,
+  updateProductById,
+  deleteProductById,
+};

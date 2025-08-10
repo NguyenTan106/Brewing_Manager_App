@@ -85,19 +85,20 @@ export default function ActivityLogManager() {
         selectedActivityLog={selectedActivityLog}
       />
 
-      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
-          <p className="text-3xl font-bold">Nhật kí hoạt động:</p>
-          <div className="relative w-full lg:w-[150%]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Tìm kiếm..."
-              className="pl-9"
-              // value={searchItem}
-              // onChange={(e) => setSearchItem(e.target.value)}
-            />
-          </div>
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p className="text-2xl sm:text-3xl font-bold whitespace-nowrap">
+          Nhật kí hoạt động:
+        </p>
+
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Tìm kiếm..."
+            className="pl-9"
+            // value={searchItem}
+            // onChange={(e) => setSearchItem(e.target.value)}
+          />
         </div>
       </div>
 

@@ -72,10 +72,13 @@ export default function BeerProductManager() {
         selectedBeerProduct={selectedBeerProduct}
         handleGetAllBeerProductsAPI={handleGetAllBeerProductsAPI}
       />
-      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
-          <p className="text-3xl font-bold">Danh sách lô thành phẩm:</p>
-          <div className="relative w-full lg:w-[150%]">
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p className="text-2xl sm:text-3xl font-bold whitespace-nowrap">
+          Danh sách lô thành phẩm:
+        </p>
+
+        <div className="relative w-full sm:w-72 flex gap-3">
+          <div>
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
@@ -85,8 +88,6 @@ export default function BeerProductManager() {
               // onChange={(e) => setSearchItem(e.target.value)}
             />
           </div>
-        </div>
-        <div className="flex flex-row gap-5">
           <Button
             onClick={() => setShowAddNewBeerProductModal(true)}
             title="Thêm nguyên liệu mới"
@@ -106,16 +107,11 @@ export default function BeerProductManager() {
             <TableRow>
               <TableHead className="px-4 py-3 text-left">ID</TableHead>
               <TableHead className="px-4 py-3 text-left">Mã lô</TableHead>
-              <TableHead className="px-4 py-3 text-left hidden 2xl:table-cell">
-                Số lượng
-              </TableHead>
+              <TableHead className="px-4 py-3 text-left ">Số lượng</TableHead>
               <TableHead className="px-4 py-3 text-left">Đơn vị</TableHead>
               <TableHead className="px-4 py-3 text-left ">Trạng thái</TableHead>
               <TableHead className="px-4 py-3 text-left ">
                 Ngày sản xuất
-              </TableHead>
-              <TableHead className="px-4 py-3 text-left hidden lg:table-cell">
-                Ngày hết hạn
               </TableHead>
               <TableHead className="px-4 py-3 text-left"></TableHead>
             </TableRow>
@@ -135,9 +131,7 @@ export default function BeerProductManager() {
                 <TableRow key={i.id}>
                   <TableCell className="px-4 py-3">{i.id}</TableCell>
                   <TableCell className="px-4 py-3">{i.code}</TableCell>
-                  <TableCell className="px-4 py-3 hidden 2xl:table-cell">
-                    {i.quantity}
-                  </TableCell>
+                  <TableCell className="px-4 py-3">{i.quantity}</TableCell>
                   <TableCell className="px-4 py-3">
                     {i.product?.unitType}
                   </TableCell>
@@ -153,18 +147,6 @@ export default function BeerProductManager() {
                   <TableCell className="px-4 py-3 hidden lg:table-cell">
                     {i.productionDate &&
                       new Date(i.productionDate).toLocaleString("vi-VN", {
-                        timeZone: "Asia/Ho_Chi_Minh",
-                        hour12: false,
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                  </TableCell>
-                  <TableCell className="px-4 py-3">
-                    {i.expiryDate &&
-                      new Date(i.expiryDate).toLocaleString("vi-VN", {
                         timeZone: "Asia/Ho_Chi_Minh",
                         hour12: false,
                         day: "2-digit",

@@ -81,3 +81,19 @@ export const createNewBeerProductAPI = async (data: BeerProduct) => {
   const res = await axios.post(`${BASE_URL}/api/beer-product`, data);
   return res.data;
 };
+
+export const updateBeerProductByIdAPI = async (
+  id: number,
+  updatedData: Partial<BeerProduct>
+) => {
+  const res = await axios.put(
+    `${BASE_URL}/api/beer-product/${id}`,
+    updatedData
+  );
+  return res.data;
+};
+
+export const deleteBeerProductByIdAPI = async (id: number) => {
+  const res = await axios.delete(`${BASE_URL}/api/beer-product/${id}`);
+  return res.data;
+};

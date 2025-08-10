@@ -1,4 +1,4 @@
-import { PrismaClient, StatusBeerProduct } from "@prisma/client";
+import { BeerProduct, PrismaClient, StatusBeerProduct } from "@prisma/client";
 const prisma = new PrismaClient();
 import { format } from "date-fns-tz";
 
@@ -117,4 +117,81 @@ const getBeerProductById = async (
   }
 };
 
-export { createNewBeerProduct, getAllBeerProducts, getBeerProductById };
+const updateBeerProductById = async (
+  id: number,
+  dataUpdated: Partial<BeerProduct>
+): Promise<{ message: string; data: any }> => {
+  try {
+    const existing = await prisma.beerProduct.findUnique({
+      where: { id, isDeleted: false },
+    });
+
+    if (!existing) {
+      return {
+        message: `Không tìm thấy sản phẩm bia với ID = ${id}`,
+        data: null,
+      };
+    }
+    const updatedBeerProduct = await prisma.beerProduct.update({
+      where: { id: id },
+      data: {
+        batchId: Number(dataUpdated.batchId),
+        productId: Number(dataUpdated.productId),
+        quantity: Number(dataUpdated.quantity),
+        productionDate: new Date(dataUpdated.productionDate ?? ""),
+        expiryDate: new Date(dataUpdated.expiryDate ?? ""),
+        status: dataUpdated.status,
+        createdById: Number(dataUpdated.createdById),
+        notes: dataUpdated.notes,
+      },
+    });
+
+    return {
+      message: "Cập nhật sản phẩm bia thành công",
+      data: updatedBeerProduct,
+    };
+  } catch (e) {
+    console.error("Lỗi khi cập nhật sản phẩm bia mới:", e);
+    throw new Error("Không thể cập nhật sản phẩm bia mới");
+  }
+};
+
+const deleteBeerProductById = async (
+  id: number
+): Promise<{ message: string; data: any }> => {
+  try {
+    const existing = await prisma.beerProduct.findUnique({
+      where: { id, isDeleted: false },
+    });
+
+    if (!existing) {
+      return {
+        message: `Không tìm thấy lô sản phẩm với ID = ${id}`,
+        data: null,
+      };
+    }
+
+    const deleted = await prisma.beerProduct.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    return {
+      message: "Xóa lô sản phẩm thành công",
+      data: deleted,
+    };
+  } catch (e) {
+    console.error("Lỗi khi xóa lô sản phẩm:", e);
+    throw new Error("Không thể xóa lô sản phẩm");
+  }
+};
+
+export {
+  createNewBeerProduct,
+  getAllBeerProducts,
+  getBeerProductById,
+  updateBeerProductById,
+  deleteBeerProductById,
+};

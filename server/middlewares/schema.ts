@@ -147,7 +147,7 @@ export const beerProductSchema = z.object({
 export const productSchema = z.object({
   code: z.string().min(1, "Mã sản phẩm không được để trống"),
   name: z.string().min(1, "Tên sản phẩm không được để trống"),
-  volume: z.number().min(1, "Thể tích sản phẩm phải lớn hơn 0"),
+  volume: z.string(),
   unitType: z.string().min(1, "Đơn vị không được để trống"),
   description: z.string().optional(),
 });

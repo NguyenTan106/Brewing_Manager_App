@@ -21,6 +21,7 @@ import {
   type Product,
 } from "@/services/CRUD/CRUD_API_Product";
 import ProductDetailModal from "./ProductDetailModal";
+import AddNewProductModal from "./AddNewProductModal";
 
 export default function ProductManager() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -54,16 +55,25 @@ export default function ProductManager() {
 
   return (
     <>
+      <AddNewProductModal
+        showAddNewProductModal={showAddNewProductModal}
+        handleClose={() => setShowAddNewProductModal(false)}
+        selectedProduct={selectedProduct}
+        handleGetAllProductsAPI={handleGetAllProductsAPI}
+      />
       <ProductDetailModal
         showDetailModal={showDetailModal}
         handleClose={() => setShowDetailModal(false)}
         selectedProduct={selectedProduct}
         handleGetAllProductsAPI={handleGetAllProductsAPI}
       />
-      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
-          <p className="text-3xl font-bold">Danh mục sản phẩm:</p>
-          <div className="relative w-full lg:w-[150%]">
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p className="text-2xl sm:text-3xl font-bold whitespace-nowrap">
+          Danh mục sản phẩm:
+        </p>
+
+        <div className="relative w-full sm:w-72 flex gap-3">
+          <div>
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
@@ -73,10 +83,8 @@ export default function ProductManager() {
               // onChange={(e) => setSearchItem(e.target.value)}
             />
           </div>
-        </div>
-        <div className="flex flex-row gap-5">
           <Button
-            // onClick={() => setShowAddIngredientModal(true)}
+            onClick={() => setShowAddNewProductModal(true)}
             title="Thêm nguyên liệu mới"
             className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
           >

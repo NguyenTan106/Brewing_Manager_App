@@ -5,7 +5,7 @@ export interface Product {
   id?: number;
   code: string;
   name: string;
-  volume: number; // Dung tích sản phẩm, có thể là số lượng hoặc thể tích tùy theo loại sản phẩm
+  volume: string; // Dung tích sản phẩm, có thể là số lượng hoặc thể tích tùy theo loại sản phẩm
   description?: string;
   unitType: string; // Loại đơn vị của sản phẩm (ví dụ: chai, thùng, v.v.)
   createdAt?: string; // Ngày tạo sản phẩm
@@ -32,5 +32,18 @@ export const getProductByIdAPI = async (id: number) => {
 
 export const createNewProductAPI = async (data: Product) => {
   const res = await axios.post(`${BASE_URL}/api/product`, data);
+  return res.data;
+};
+
+export const updateProductByIdAPI = async (
+  id: number,
+  updatedData: Partial<Product>
+) => {
+  const res = await axios.put(`${BASE_URL}/api/product/${id}`, updatedData);
+  return res.data;
+};
+
+export const deleteProductByIdAPI = async (id: number) => {
+  const res = await axios.delete(`${BASE_URL}/api/product/${id}`);
   return res.data;
 };

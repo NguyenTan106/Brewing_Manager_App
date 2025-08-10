@@ -3,6 +3,8 @@ import {
   handleCreateNewProduct,
   handleGetAllProducts,
   handleGetProductById,
+  handleDeleteProductById,
+  handleUpdateProductById,
 } from "../controllers/CRUD_Controllers/CRUD_product";
 const router = express.Router();
 
@@ -18,8 +20,19 @@ const getProductByIdController = router.get(
   handleGetProductById
 );
 
+const updateProductByIdController = router.put(
+  "/product/:id",
+  handleUpdateProductById
+);
+const deleteProductByIdController = router.delete(
+  "/product/:id",
+  handleDeleteProductById
+);
+
 export {
   createNewProductController,
   getAllProductsController,
   getProductByIdController,
+  updateProductByIdController,
+  deleteProductByIdController,
 };

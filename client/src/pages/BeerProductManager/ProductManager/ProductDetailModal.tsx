@@ -21,7 +21,11 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import type { Product } from "@/services/CRUD/CRUD_API_Product";
+import {
+  deleteProductByIdAPI,
+  type Product,
+} from "@/services/CRUD/CRUD_API_Product";
+import UpdateProductModal from "./UpdateProductModal";
 
 interface Props {
   showDetailModal: boolean;
@@ -40,10 +44,27 @@ export default function ProductDetailModal({
 
   const handleOpenUpdateModal = () => {
     setShowUpdateModal(true);
+  };
+
+  const handleDeleteBeerProductById = async (id: number) => {
+    const response = await deleteProductByIdAPI(id);
+    const errorMessage = response.message;
+    if (response.data == null) {
+      toast.error(`${errorMessage}`);
+      return;
+    }
+    toast.success(`${errorMessage}`);
     handleGetAllProductsAPI();
+    handleClose();
   };
   return (
     <>
+      <UpdateProductModal
+        showUpdateModal={showUpdateModal}
+        handleClose={() => setShowUpdateModal(false)}
+        selectedProduct={selectedProduct}
+        handleGetAllProductsAPI={handleGetAllProductsAPI}
+      />
       <Dialog
         open={showDetailModal}
         onOpenChange={(open) => !open && handleClose()}
@@ -109,7 +130,7 @@ export default function ProductDetailModal({
             <Button
               variant="secondary"
               className="bg-blue-600 text-white hover:bg-blue-500"
-              //   onClick={() => handleShowUpdateModal()}
+              onClick={() => handleOpenUpdateModal()}
               style={{
                 padding: "5px 10px",
                 fontSize: "14px",
@@ -143,12 +164,9 @@ export default function ProductDetailModal({
                 <AlertDialogFooter>
                   <AlertDialogCancel>Hủy</AlertDialogCancel>
                   <AlertDialogAction
-                  // onClick={() =>
-                  //   handleDeteleUserById(
-                  //     selectedUser?.id ?? 0,
-                  //     currentUserId?.id ?? 0
-                  //   )
-                  // }
+                    onClick={() =>
+                      handleDeleteBeerProductById(selectedProduct?.id ?? 0)
+                    }
                   >
                     Xác nhận
                   </AlertDialogAction>

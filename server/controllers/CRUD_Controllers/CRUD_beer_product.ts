@@ -3,8 +3,10 @@ import { Request, Response } from "express";
 
 import {
   createNewBeerProduct,
+  deleteBeerProductById,
   getAllBeerProducts,
   getBeerProductById,
+  updateBeerProductById,
 } from "../../prisma/CRUD_Services/CRUD_beerProduct_service";
 
 import { beerProductSchema } from "../../middlewares/schema";
@@ -65,8 +67,36 @@ const handleGetBeerProductById = async (req: Request, res: Response) => {
   }
 };
 
+const handleUpdateBeerProductById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const result = await updateBeerProductById(id, req.body);
+    res.status(200).json(result);
+  } catch (e) {
+    console.error("Lỗi trong controller handleUpdateBeerProductById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi cập nhật lô sản phẩm bia",
+    });
+  }
+};
+
+const handleDeleteBeerProductById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const result = await deleteBeerProductById(id);
+    res.status(200).json(result);
+  } catch (e) {
+    console.error("Lỗi trong controller handleDeleteBeerProductById:", e);
+    res.status(500).json({
+      message: "Lỗi server khi xóa lô sản phẩm bia",
+    });
+  }
+};
+
 export {
   handleCreateNewBeerProduct,
   handleGetAllBeerProducts,
   handleGetBeerProductById,
+  handleUpdateBeerProductById,
+  handleDeleteBeerProductById,
 };

@@ -21,11 +21,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   BeerProductStatusMapToUI,
+  updateBeerProductByIdAPI,
   type BeerProduct,
   type BeerProductStatusDB,
 } from "@/services/CRUD/CRUD_API_BeerProduct";
 import { useEffect, useState } from "react";
 import { getAllProductsAPI } from "@/services/CRUD/CRUD_API_Product";
+import { toast } from "sonner";
 
 interface Props {
   showUpdateModal: boolean;
@@ -70,6 +72,45 @@ export default function UpdateBeerProductModal({
       setEditForm(selectedBeerProduct);
     }
   }, [selectedBeerProduct]);
+
+  const handleUpdateBeerProductByIdAPI = async (id: number) => {
+    if (!id) return;
+    try {
+      if (
+        editForm.batchId === 0 ||
+        editForm.productId === 0 ||
+        editForm.quantity === "" ||
+        editForm.productionDate === "" ||
+        editForm.expiryDate === "" ||
+        editForm.status === ("" as BeerProductStatusDB)
+      ) {
+        toast.warning("Vui lòng điền đầy đủ thông tin");
+        return;
+      }
+      // Kiểm tra xem có thay đổi nào không
+      if (
+        selectedBeerProduct?.batchId == editForm.batchId &&
+        selectedBeerProduct?.productId == editForm.productId &&
+        selectedBeerProduct?.quantity == editForm.quantity &&
+        selectedBeerProduct?.productionDate == editForm.productionDate &&
+        selectedBeerProduct?.expiryDate == editForm.expiryDate &&
+        selectedBeerProduct?.notes == editForm.notes
+      ) {
+        toast.warning("Không có thay đổi nào để cập nhật");
+        return;
+      }
+      await updateBeerProductByIdAPI(id, editForm);
+
+      handleClose();
+      handleGetAllBeerProductsAPI();
+      toast.success("Cập nhật lô sản phẩm bia thành công", {
+        description: new Date().toLocaleTimeString(),
+      });
+    } catch (err) {
+      console.error("Lỗi khi cập nhật lô thành phẩm:", err);
+      toast.error("Lỗi khi cập nhật lô thành phẩm");
+    }
+  };
 
   const toDatetimeLocalValue = (date: string) => {
     const dateFormat = new Date(date); // ISO string từ DB
@@ -287,12 +328,13 @@ export default function UpdateBeerProductModal({
               <Button
                 variant="secondary"
                 className="bg-green-600 text-white hover:bg-green-700"
-                // onClick={() =>
-                //   handleUpdateIngredientByIdAPI(selectedIngredient?.id)
-                // }
-                // style={{
-                //   padding: "5px 10px",
-                // }}
+                onClick={() => {
+                  if (selectedBeerProduct?.id)
+                    handleUpdateBeerProductByIdAPI(selectedBeerProduct?.id);
+                }}
+                style={{
+                  padding: "5px 10px",
+                }}
               >
                 ✏️ <span className="d-none d-sm-inline">Cập nhật</span>
               </Button>
