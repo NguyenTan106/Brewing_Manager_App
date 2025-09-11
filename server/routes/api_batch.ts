@@ -10,16 +10,23 @@ import {
   handleUpdateFeedbackBatchStep,
   handleGetBatchStepById,
   handleCancelBacthById,
+  handleGetAllCompletedBatches,
 } from "../controllers/CRUD_Controllers/CRUD_batch";
 
 import {
+  handleGetBatchSummaryByDateRange,
   handleGetTotalBatches,
-  handleGetTotalBatchesByDayWeekYear,
+  handleGetTotalBatchesByTime,
 } from "../controllers/Report_Controllers/statistic_batch_controller";
 
 import { handlePaginationBatch } from "../controllers/pagination";
 
 const getAllBatchesController = router.get("/batches", handleGetAllBatches);
+const getAllCompletedBatchesController = router.get(
+  "/completed-batches",
+  handleGetAllCompletedBatches
+);
+
 const getBatchByIdController = router.get("/batch/:id", handleGetBatchById);
 const createBatchController = router.post("/batch/", handleCreateBatch);
 const updateBatchByIdController = router.put(
@@ -52,14 +59,19 @@ const getTotalBatchesController = router.get(
   handleGetTotalBatches
 );
 
-const getGetBatchStatsByWeekMonthYearController = router.get(
-  "/total-batches-by-week-month-year",
-  handleGetTotalBatchesByDayWeekYear
+const getTotalBatchesByTimeController = router.get(
+  "/total-batches-by-time",
+  handleGetTotalBatchesByTime
 );
 
 const getBatchStepByIdController = router.get(
   "/batch-step/:id",
   handleGetBatchStepById
+);
+
+const getBatchSummaryByDateRangeController = router.get(
+  "/batch-summary-by-date-range",
+  handleGetBatchSummaryByDateRange
 );
 
 export {
@@ -70,8 +82,10 @@ export {
   updateBatchByIdController,
   paginationBatchController,
   getTotalBatchesController,
-  getGetBatchStatsByWeekMonthYearController,
+  getTotalBatchesByTimeController,
   updateFeedbackBatchStepController,
   getBatchStepByIdController,
   cancelBatchByIdController,
+  getAllCompletedBatchesController,
+  getBatchSummaryByDateRangeController,
 };

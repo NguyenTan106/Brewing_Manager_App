@@ -24,9 +24,11 @@ import {
   updateBatchByIdController,
   paginationBatchController,
   getTotalBatchesController,
-  getGetBatchStatsByWeekMonthYearController,
+  getTotalBatchesByTimeController,
   updateFeedbackBatchStepController,
   getBatchStepByIdController,
+  getAllCompletedBatchesController,
+  getBatchSummaryByDateRangeController,
 } from "./routes/api_batch";
 
 import {
@@ -65,6 +67,30 @@ import {
 } from "./routes/api_user";
 
 import { sendAlertEmailService } from "./routes/api_send_email";
+import {
+  createNewSupplierController,
+  getAllSuppliersController,
+  getSupplierByIdController,
+  updateSupplierByIdController,
+  deleteSupplierByIdController,
+} from "./routes/api_supplier";
+
+import {
+  createNewBeerProductController,
+  getAllBeerProductsController,
+  getBeerProductByIdController,
+  updateBeerProductByIdController,
+  deleteBeerProductByIdController,
+  getTotalBeerProductsController,
+} from "./routes/api_beer_product";
+
+import {
+  createNewProductController,
+  getAllProductsController,
+  getProductByIdController,
+  updateProductByIdController,
+  deleteProductByIdController,
+} from "./routes/api_product";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -102,9 +128,11 @@ app.use("/api", deleteBatchByIdController);
 app.use("/api", updateBatchByIdController);
 app.use("/api", paginationBatchController);
 app.use("/api", getTotalBatchesController);
-app.use("/api", getGetBatchStatsByWeekMonthYearController);
+app.use("/api", getTotalBatchesByTimeController);
 app.use("/api", updateFeedbackBatchStepController);
 app.use("/api", getBatchStepByIdController);
+app.use("/api", getAllCompletedBatchesController);
+app.use("/api", getBatchSummaryByDateRangeController);
 
 //recipe
 app.use("/api", getAllRecipesController);
@@ -138,6 +166,40 @@ app.use("/api", deleteUserByIdController);
 
 // email
 app.use("/api", sendAlertEmailService);
+
+// supplier
+app.use("/api", createNewSupplierController);
+app.use("/api", getAllSuppliersController);
+app.use("/api", getSupplierByIdController);
+app.use("/api", updateSupplierByIdController);
+app.use("/api", deleteSupplierByIdController);
+
+// beer product
+app.use("/api", createNewBeerProductController);
+app.use("/api", getAllBeerProductsController);
+app.use("/api", getBeerProductByIdController);
+app.use("/api", updateBeerProductByIdController);
+app.use("/api", deleteBeerProductByIdController);
+app.use("/api", getTotalBeerProductsController);
+
+// product
+app.use("/api", createNewProductController);
+app.use("/api", getAllProductsController);
+app.use("/api", getProductByIdController);
+app.use("/api", updateProductByIdController);
+app.use("/api", deleteProductByIdController);
+
+// test api
+import {
+  getTempFromESP32Controller,
+  getLastestTempFromESP32Controller,
+  postTempFromESP32Controller,
+  getAllTempsController,
+} from "./routes/test/test_api";
+app.use("/api", getTempFromESP32Controller);
+app.use("/api", getLastestTempFromESP32Controller);
+app.use("/api", postTempFromESP32Controller);
+app.use("/api", getAllTempsController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

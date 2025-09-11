@@ -17,13 +17,8 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
 import type { Ingredient } from "@/services/CRUD/CRUD_API_Ingredient";
-import { useEffect, useState } from "react";
-import { createIngredientCostAPI } from "@/services/CRUD/CRUD_API_Ingredient";
 interface Props {
   showIngredientCostModal: boolean;
   handleClose: () => void;
@@ -60,7 +55,7 @@ export default function AddNewIngredientCost({
               <u>{selectedIngredient?.name}</u>:
             </Label>
             <Table className="text-base">
-              <TableHeader>
+              <TableHeader className="bg-gray-100 text-gray-800">
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>Giá nhập (VNĐ/1)</TableHead>
@@ -73,7 +68,7 @@ export default function AddNewIngredientCost({
                   selectedIngredient?.allCost.map((t) => (
                     <TableRow key={t.id}>
                       <TableCell>{t.id}</TableCell>
-                      <TableCell>{t.cost}</TableCell>
+                      <TableCell>{t.cost.toFixed(2)}</TableCell>
                       <TableCell className="whitespace-normal break-words">
                         {t.note}
                       </TableCell>

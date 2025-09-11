@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { getAllSuppliersAPI } from "@/services/CRUD/CRUD_API_Supplier";
 
 interface Type {
   id: number;
@@ -34,7 +35,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export function AddIngredient({
+export function AddNewIngredient({
   handlePaginationAPI,
   showAddIngredientModal,
   handleClose,
@@ -42,11 +43,16 @@ export function AddIngredient({
   const [showTypeModal, setShowTypeModal] = useState(false);
   const [type, setType] = useState<Type[]>([]);
   const [selectedTypeId, setSelectedTypeId] = useState<string>("");
+  const [selectedSupplierId, setSelectedSupplierId] = useState<string>("");
+  const [suppliers, setSuppliers] = useState<{ id: number; name: string }[]>(
+    []
+  );
   const [form, setForm] = useState({
     name: "",
     type: "",
     unit: "",
     quantity: 0,
+    supplierId: 0,
     lowStockThreshold: "",
     lastImportDate: "",
     notes: "",
@@ -54,11 +60,22 @@ export function AddIngredient({
 
   useEffect(() => {
     handleGetAllTypesAPI();
+    handleGetAllSuppliersAPI();
   }, []);
 
   const handleGetAllTypesAPI = async () => {
     const data = await getAllTypesAPI();
     setType(data);
+  };
+
+  const handleGetAllSuppliersAPI = async () => {
+    const data = await getAllSuppliersAPI();
+    setSuppliers(
+      data.data.map((supplier: { id: number; name: string }) => ({
+        id: supplier.id,
+        name: supplier.name,
+      }))
+    );
   };
 
   const clearForm = () => {
@@ -67,6 +84,7 @@ export function AddIngredient({
       type: "",
       unit: "",
       quantity: 0,
+      supplierId: 0,
       lowStockThreshold: "",
       lastImportDate: "",
       notes: "",
@@ -79,7 +97,8 @@ export function AddIngredient({
       form.type === "" ||
       form.unit === "" ||
       form.lowStockThreshold === "" ||
-      form.lastImportDate === ""
+      form.lastImportDate === "" ||
+      form.supplierId === 0
     ) {
       toast.warning("Vui lòng điền đầy đủ thông tin");
       return;
@@ -90,6 +109,7 @@ export function AddIngredient({
       type: form.type,
       unit: form.unit,
       quantity: Number(form.quantity), // ✅ ép về number
+      supplierId: Number(form.supplierId), // ✅ ép về number
       lowStockThreshold: parseFloat(form.lowStockThreshold),
       lastImportDate: form.lastImportDate,
       notes: form.notes,
@@ -218,6 +238,43 @@ export function AddIngredient({
                   }
                   placeholder="VD: 10"
                 />
+              </div>
+
+              <div className="flex flex-col gap-1 w-full min-w-0">
+                <Label className="text-base">
+                  <strong>Nhà cung cấp:</strong>
+                </Label>
+                <Select
+                  value={selectedSupplierId}
+                  onValueChange={(value) => {
+                    setSelectedSupplierId(value);
+                    const selected = suppliers.find(
+                      (t) => t.id.toString() === value
+                    );
+                    setForm((prev) => ({
+                      ...prev,
+                      supplierId: selected?.id ?? 0,
+                    }));
+                  }}
+                >
+                  <SelectTrigger
+                    className="w-full"
+                    style={{ fontSize: "0.95rem" }}
+                  >
+                    <SelectValue placeholder="Chọn nhà cung cấp" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {suppliers.map((t) => (
+                      <SelectItem
+                        style={{ fontSize: "0.95rem" }}
+                        key={t.id}
+                        value={t.id.toString()}
+                      >
+                        {t.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex flex-col gap-1 w-full min-w-0">

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import {
   getTotalBaches,
-  getTotalBatchesByWeekMonthYear,
+  getTotalBatchesByTime,
+  getBatchSummaryByDateRange,
 } from "../../prisma/Report_Services/statistic_batch_report";
 
 const handleGetTotalBatches = async (req: Request, res: Response) => {
@@ -16,12 +17,9 @@ const handleGetTotalBatches = async (req: Request, res: Response) => {
   }
 };
 
-const handleGetTotalBatchesByDayWeekYear = async (
-  req: Request,
-  res: Response
-) => {
+const handleGetTotalBatchesByTime = async (req: Request, res: Response) => {
   try {
-    const handle = await getTotalBatchesByWeekMonthYear();
+    const handle = await getTotalBatchesByTime();
     res.status(200).json(handle);
   } catch (e) {
     console.error(
@@ -34,4 +32,23 @@ const handleGetTotalBatchesByDayWeekYear = async (
   }
 };
 
-export { handleGetTotalBatches, handleGetTotalBatchesByDayWeekYear };
+const handleGetBatchSummaryByDateRange = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const handle = await getBatchSummaryByDateRange();
+    res.status(200).json(handle);
+  } catch (e) {
+    console.error("Lỗi trong controller handleGetBatchSummaryByDateRange:", e);
+    res.status(500).json({
+      message: "Lỗi server khi tính báo cáo mẻ theo tháng trong năm",
+    });
+  }
+};
+
+export {
+  handleGetTotalBatches,
+  handleGetTotalBatchesByTime,
+  handleGetBatchSummaryByDateRange,
+};

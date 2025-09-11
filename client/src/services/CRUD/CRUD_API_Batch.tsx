@@ -78,6 +78,11 @@ export const getAllBatchesAPI = async () => {
   return res.data.data;
 };
 
+export const getAllCompletedBatchesAPI = async () => {
+  const res = await axios.get(`${BASE_URL}/api/completed-batches`);
+  return res.data.data;
+};
+
 export const getBatchByIdAPI = async (id: number) => {
   const res = await axios.get(`${BASE_URL}/api/batch/${id}`);
   return res.data.data;

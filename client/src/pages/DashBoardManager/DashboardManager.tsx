@@ -5,9 +5,7 @@ import { TotalRecipes } from "./RecipeInfo/TotalRecipes";
 import { getTotalBatchesAPI } from "@/services/statistic_report/statistic_batch_API";
 import { getTotalIngredientsAPI } from "@/services/statistic_report/statistic_ingredient_API";
 import { getTotalRecipesAPI } from "@/services/statistic_report/statistic_recipe_API";
-import { Card, CardContent } from "@/components/ui/card";
 import { type TotalBatchesInfo } from "@/services/statistic_report/statistic_batch_API";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
 export default function DashBoardManager() {
@@ -42,31 +40,15 @@ export default function DashBoardManager() {
         <p className="text-3xl font-bold">Tổng quan kho:</p>
       </div>
       <Separator className="my-3" />
-      <div className="flex flex-col 2xl:flex-row gap-3 my-3">
-        <Card className="bg-white shadow-xl p-4 flex-2 min-w-[300px] w-full">
-          <CardContent className="grid">
-            <Label className="text-2xl font-bold">Thông tin mẻ</Label>
-            <Separator className="my-2" />
-            <TotalBatches totalBatches={totalBatches} />
-          </CardContent>
-        </Card>
-        <div className="flex flex-col lg:flex-row gap-3">
-          <Card className="bg-white shadow-xl p-4 flex-1 min-w-[250px] w-full">
-            <CardContent className="grid">
-              <Label className="text-2xl font-bold">
-                Thông tin nguyên liệu
-              </Label>
-              <Separator className="my-2" />
-              <TotalIngredients totalIngredients={totalIngredients} />
-            </CardContent>
-          </Card>
-          <Card className="bg-white shadow-xl p-4 flex-1 min-w-[250px] w-full">
-            <CardContent className="grid">
-              <Label className="text-2xl font-bold">Thông tin công thức</Label>
-              <Separator className="my-2" />
-              <TotalRecipes totalRecipes={totalRecipes} />
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 py-2 gap-3">
+        <div>
+          <TotalBatches totalBatches={totalBatches} />
+        </div>
+        <div>
+          <TotalIngredients totalIngredients={totalIngredients} />
+        </div>
+        <div>
+          <TotalRecipes totalRecipes={totalRecipes} />
         </div>
       </div>
     </>

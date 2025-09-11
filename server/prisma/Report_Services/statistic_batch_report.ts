@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { format } from "date-fns-tz";
 import {
   startOfWeek,
   startOfMonth,
@@ -7,10 +6,7 @@ import {
   endOfWeek,
   endOfMonth,
   endOfYear,
-  getWeek,
-  subDays,
 } from "date-fns";
-import { addDays, isBefore, isAfter, parse } from "date-fns";
 import { getBatchStatus } from "../CRUD_Services/CRUD_batch_service";
 const prisma = new PrismaClient();
 
@@ -19,7 +15,7 @@ const getTotalBaches = async (): Promise<{
   data: any;
 }> => {
   try {
-    const total = await prisma.batch.count({ where: { isCancelled: false } });
+    const total = await prisma.batch.count({});
     const totalCancel = await prisma.batch.count({
       where: { isCancelled: true },
     });
@@ -103,121 +99,175 @@ const getTotalBaches = async (): Promise<{
     throw new Error("Lỗi server khi tính tổng mẻ nấu");
   }
 };
-
-const getTotalBatchesByWeekMonthYear = async () => {
+const getTotalBatchesByTime = async () => {
   const now = new Date();
 
-  const monthStart = startOfMonth(now);
-  const monthEnd = endOfMonth(now);
   const yearStart = startOfYear(now);
   const yearEnd = endOfYear(now);
 
-  // 📅 Thống kê theo từng ngày trong tuần
-  const weeklyCountByDay: Record<string, number> = {};
-  // Tạo các key ngày theo định dạng "MM-dd" và khởi tạo = 0
-  for (let i = 6; i >= 0; i--) {
-    const date = subDays(now, i); // lùi ngày
-    const label = format(date, "MM-dd");
-    weeklyCountByDay[label] = 0;
-  }
-
-  // Truy vấn tất cả batch trong 7 ngày gần nhất
-  const weeklyBatches = await prisma.batch.findMany({
-    where: {
-      createdAt: {
-        gte: subDays(now, 6),
-        lte: now,
-      },
-    },
-    select: {
-      createdAt: true,
-    },
-  });
-
-  // Đếm batch theo ngày
-  for (const b of weeklyBatches) {
-    const label = format(b.createdAt, "MM-dd");
-    if (weeklyCountByDay[label] !== undefined) {
-      weeklyCountByDay[label]++;
-    }
-  }
-
-  // 📅 Thống kê theo từng ngày trong tháng
-  const monthlyBatches = await prisma.batch.findMany({
-    where: {
-      createdAt: {
-        gte: monthStart,
-        lte: monthEnd,
-      },
-    },
-    select: {
-      createdAt: true,
-    },
-  });
-
-  const weeklyCountByMonth: Record<string, number> = {};
-
-  let currentStart = monthStart;
-
-  while (isBefore(currentStart, monthEnd)) {
-    const currentEnd = addDays(currentStart, 6);
-    const rangeLabel = `${format(currentStart, "dd/MM")} - ${format(
-      isAfter(currentEnd, monthEnd) ? monthEnd : currentEnd,
-      "dd/MM"
-    )}`;
-
-    weeklyCountByMonth[rangeLabel] = 0;
-    currentStart = addDays(currentStart, 7);
-  }
-
-  // Gán batch vào từng khoảng
-  for (const b of monthlyBatches) {
-    for (const range in weeklyCountByMonth) {
-      const [startStr, endStr] = range.split(" - ");
-      const year = now.getFullYear();
-
-      const start = parse(`${startStr}/${year}`, "dd/MM/yyyy", new Date());
-      const end = parse(`${endStr}/${year}`, "dd/MM/yyyy", new Date());
-
-      if (b.createdAt >= start && b.createdAt <= end) {
-        weeklyCountByMonth[range]++;
-        break;
-      }
-    }
-  }
-  // Lấy tất cả các mẻ trong năm hiện tại
-  const batches = await prisma.batch.findMany({
+  // Tổng số mẻ
+  const result = await prisma.batch.groupBy({
+    by: ["createdAt"],
     where: {
       createdAt: {
         gte: yearStart,
         lte: yearEnd,
       },
     },
-    select: {
-      createdAt: true,
-    },
+    _count: { _all: true },
   });
 
-  // Tạo bộ đếm theo tháng
-  const monthlyCountByYear: Record<string, number> = {};
+  // Mẻ bị hủy
+  const cancelledBatches = await prisma.batch.groupBy({
+    by: ["createdAt"],
+    where: {
+      createdAt: {
+        gte: yearStart,
+        lte: yearEnd,
+      },
+      isCancelled: true,
+    },
+    _count: { _all: true },
+  });
 
-  for (let i = 0; i < 12; i++) {
-    const monthKey = `${i + 1}`.padStart(2, "0"); // "01", "02", ..., "12"
-    monthlyCountByYear[monthKey] = 0;
-  }
+  // Mẻ hoàn thành
+  const completedBatches = await prisma.batch.groupBy({
+    by: ["createdAt"],
+    where: {
+      createdAt: {
+        gte: yearStart,
+        lte: yearEnd,
+      },
+      isCancelled: false,
+    },
+    _count: { _all: true },
+  });
 
-  for (const b of batches) {
-    const month = format(b.createdAt, "MM"); // Lấy số tháng "01"..."12"
-    if (monthlyCountByYear[month] !== undefined) {
-      monthlyCountByYear[month]++;
-    }
-  }
+  // Merge dữ liệu
+  const data = result.map((item) => {
+    const dateStr = item.createdAt.toISOString().split("T")[0];
+    const cancelled =
+      cancelledBatches.find(
+        (c) => c.createdAt.toISOString().split("T")[0] === dateStr
+      )?._count._all || 0;
 
-  return {
-    weekly: weeklyCountByDay,
-    monthly: weeklyCountByMonth,
-    yearly: monthlyCountByYear,
-  };
+    const completed =
+      completedBatches.find(
+        (c) => c.createdAt.toISOString().split("T")[0] === dateStr
+      )?._count._all || 0;
+
+    return {
+      date: dateStr,
+      totalBatches: item._count._all,
+      cancelledBatches: cancelled,
+      completedBatches: completed,
+    };
+  });
+
+  return { data };
 };
 
-export { getTotalBaches, getTotalBatchesByWeekMonthYear };
+// | Ngày / Tháng | Tổng số mẻ | Mức thay đổi (%) | Trạng thái cảnh báo      | Ghi chú                            |
+// | ------------ | ---------- | ---------------- | ------------------------ | ---------------------------------- |
+// | 2024-04-01   | 222        | +15%             | 🔼 Tăng đột biến         | Cao hơn trung bình 7 ngày gần nhất |
+// | 2024-04-02   | 97         | -56%             | ⚠ Giảm mạnh              | Thấp hơn ngưỡng 100 mẻ/ngày        |
+// | 2024-04-03   | 110        | +13%             | Bình thường              | —                                  |
+// | 2024-04-04   | 50         | -55%             | 🔴 Cảnh báo nghiêm trọng | Có sự cố máy móc ở xưởng           |
+
+type BatchMonthSummary = {
+  month: Date;
+  totalBatches: number;
+  cancelledBatches: number;
+};
+
+type BatchStat = {
+  month: string;
+  totalBatches: number;
+  changePercent: string;
+  alertStatus: string;
+  note: string;
+};
+
+function analyzeBatchData(
+  data: { month: string; totalBatches: number; cancelledBatches: number }[]
+): BatchStat[] {
+  return data.map((item, index) => {
+    const cancelledPercent =
+      item.totalBatches === 0
+        ? 0
+        : (item.cancelledBatches / item.totalBatches) * 100;
+
+    if (index === 0) {
+      let alertStatus = "Bình thường";
+      let note = "Tháng đầu tiên";
+
+      if (cancelledPercent >= 20) {
+        alertStatus = "⚠ Nhiều mẻ bị huỷ";
+        note = `Tỷ lệ huỷ ${Math.round(cancelledPercent)}%`;
+      }
+
+      return {
+        ...item,
+        changePercent: "0%",
+        alertStatus,
+        note,
+      };
+    }
+    const prev = data[index - 1];
+    const diff = item.totalBatches - prev.totalBatches;
+    const changePercentNum =
+      prev.totalBatches === 0 ? 100 : (diff / prev.totalBatches) * 100;
+    const changePercent = `${changePercentNum >= 0 ? "+" : ""}${Math.round(
+      changePercentNum
+    )}%`;
+
+    let alertStatus = "Bình thường";
+    let note = "—";
+
+    if (cancelledPercent >= 20) {
+      alertStatus = "⚠ Nhiều mẻ bị huỷ";
+      note = `Tỷ lệ huỷ ${Math.round(cancelledPercent)}%`;
+    } else if (changePercentNum >= 50) {
+      alertStatus = "🔼 Tăng đột biến";
+      note = "Cao hơn trung bình kỳ trước";
+    } else if (changePercentNum <= -30) {
+      alertStatus = "🔻 Giảm mạnh";
+      note = "Thấp hơn bình thường";
+    }
+
+    return {
+      ...item,
+      changePercent,
+      alertStatus,
+      note,
+    };
+  });
+}
+
+const getBatchSummaryByDateRange = async () => {
+  const now = new Date();
+
+  const yearStart = startOfYear(now);
+  const yearEnd = endOfYear(now);
+
+  const result = await prisma.$queryRaw<BatchMonthSummary[]>`
+  SELECT 
+    DATE_TRUNC('month', "createdAt") AS month,
+    COALESCE(COUNT(*)::int, 0) AS "totalBatches",
+    COALESCE(SUM(CASE WHEN "isCancelled" = true THEN 1 ELSE 0 END)::int, 0) AS "cancelledBatches"
+  FROM "Batch"
+  WHERE "createdAt" >= ${yearStart} 
+    AND "createdAt" <= ${yearEnd}
+  GROUP BY month
+  ORDER BY month ASC
+`;
+
+  const rawData = result.map((item) => ({
+    month: item.month.toISOString().slice(0, 7),
+    totalBatches: item.totalBatches,
+    cancelledBatches: item.cancelledBatches,
+  }));
+  return { data: analyzeBatchData(rawData) };
+};
+
+export { getTotalBaches, getTotalBatchesByTime, getBatchSummaryByDateRange };

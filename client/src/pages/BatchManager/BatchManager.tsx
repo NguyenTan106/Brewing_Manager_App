@@ -146,10 +146,10 @@ export default function BatchManager() {
         handlePaginationAPI={() => handlePaginationAPI(currentPage, limit)}
       />
 
-      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
+      {/* <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
         <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
           <p className="text-3xl font-bold">Danh sách mẻ: </p>
-          <div className="relative w-full lg:w-[150%]">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
@@ -168,6 +168,33 @@ export default function BatchManager() {
           <FaPlus />
           <span className="hidden sm:inline">Thêm</span>
         </Button>
+      </div> */}
+
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p className="text-2xl sm:text-3xl font-bold whitespace-nowrap">
+          Danh sách mẻ:
+        </p>
+
+        <div className="relative w-full sm:w-72 flex gap-3">
+          <div>
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Tìm kiếm..."
+              className="pl-9"
+              value={searchItem}
+              onChange={(e) => setSearchItem(e.target.value)}
+            />
+          </div>
+          <Button
+            onClick={() => setShowAddModal(true)}
+            title="Thêm nguyên liệu mới"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white hover:bg-primary/90 transition"
+          >
+            <FaPlus />
+            <span className="hidden sm:inline">Thêm</span>
+          </Button>
+        </div>
       </div>
 
       <Separator className="my-2" />

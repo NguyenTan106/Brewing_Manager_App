@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { Supplier } from "./CRUD_API_Supplier";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export interface Ingredient {
@@ -9,6 +10,8 @@ export interface Ingredient {
   quantity: number;
   cost?: number;
   allCost?: IngredientCostHistory[];
+  supplierId?: number;
+  supplier?: Supplier | null;
   lowStockThreshold: number | string;
   lastImportDate: string | null;
   notes?: string;

@@ -1,14 +1,5 @@
 import type { TotalBatchesInfo } from "@/services/statistic_report/statistic_batch_API";
-import { type TooltipProps } from "recharts";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import {
   Select,
   SelectContent,
@@ -16,137 +7,272 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+
 import { useEffect, useState } from "react";
-import { getTotalBatchesByWeekMonthYearAPI } from "@/services/statistic_report/statistic_batch_API";
+import { getTotalBatchesByTimeAPI } from "@/services/statistic_report/statistic_batch_API";
+import { TrendingUp } from "lucide-react";
 interface Props {
   totalBatches: TotalBatchesInfo | null;
 }
 
-// Custom Tooltip Component
+const sampleChartData = [
+  { date: "2025-01-05", totalBatches: 12 },
+  { date: "2025-01-15", totalBatches: 18 },
+  { date: "2025-02-02", totalBatches: 20 },
+  { date: "2025-02-18", totalBatches: 25 },
+  { date: "2025-03-04", totalBatches: 30 },
+  { date: "2025-03-21", totalBatches: 28 },
+  { date: "2025-04-10", totalBatches: 35 },
+  { date: "2025-04-22", totalBatches: 31 },
+  { date: "2025-05-05", totalBatches: 40 },
+  { date: "2025-05-25", totalBatches: 42 },
+  { date: "2025-06-06", totalBatches: 50 },
+  { date: "2025-06-28", totalBatches: 55 },
+  { date: "2025-07-07", totalBatches: 45 },
+  { date: "2025-07-19", totalBatches: 48 },
+  { date: "2025-08-01", totalBatches: 60 },
+];
+const chartConfig = {
+  totalBatches: {
+    label: "Tổng số mẻ",
+    color: "var(--chart-1)",
+  },
+  cancelledBatches: {
+    label: "Tổng số mẻ bị hủy",
+    color: "var(--chart-2)",
+  },
+  completedBatches: {
+    label: "Tổng số mẻ hoàn thành",
+    color: "var(--chart-3)",
+  },
+} satisfies ChartConfig;
 
 export function TotalBatches({ totalBatches }: Props) {
-  const [viewBy, setViewBy] = useState<"weekly" | "monthly" | "yearly">(
-    "weekly"
-  );
-  const [chartData, setChartData] = useState<{
-    weekly: { label: string | number; value: number }[];
-    monthly: { label: string | number; value: number }[];
-    yearly: { label: string | number; value: number }[];
-  }>({
-    weekly: [],
-    monthly: [],
-    yearly: [],
-  });
+  const [timeRange, setTimeRange] = useState("30d");
+  const [chartData, setChartData] = useState<
+    { date: string; totalBatches: number }[]
+  >([]);
 
-  useEffect(() => {
-    handleGetTotalBatchesByWeekMonthYearAPI();
-  }, []);
-
-  const handleGetTotalBatchesByWeekMonthYearAPI = async () => {
-    const stats = await getTotalBatchesByWeekMonthYearAPI();
-    const transformToChartData = (data: Record<string, number>) =>
-      Object.entries(data).map(([label, value]) => ({
-        label,
-        value,
-      }));
-    setChartData({
-      weekly: transformToChartData(stats.weekly),
-      monthly: transformToChartData(stats.monthly),
-      yearly: transformToChartData(stats.yearly),
-    });
-  };
-
-  const CustomTooltip = ({
-    active,
-    payload,
-    label,
-  }: TooltipProps<number, string>) => {
-    if (active && payload && payload.length > 0) {
-      return (
-        <div className="bg-white shadow rounded px-3 py-2 text-sm border border-gray-200">
-          <p className="font-medium">{label}</p>
-          <p className="text-orange-500">Số mẻ: {payload[0]?.value}</p>
-        </div>
-      );
+  const filteredData = (() => {
+    let daysToSubtract = 0;
+    if (timeRange === "365d") {
+      daysToSubtract = 365;
+    } else if (timeRange === "90d") {
+      daysToSubtract = 90;
+    } else if (timeRange === "30d") {
+      daysToSubtract = 30;
+    } else if (timeRange === "7d") {
+      daysToSubtract = 7;
     }
 
-    return null;
+    const referenceDate = new Date();
+    const startDate = new Date(referenceDate);
+    startDate.setDate(startDate.getDate() - daysToSubtract);
+    startDate.setHours(0, 0, 0, 0); // reset giờ
+
+    return chartData.filter((item) => {
+      const date = new Date(item.date);
+      return date >= startDate;
+    });
+  })();
+
+  useEffect(() => {
+    handleGetTotalBatchesByTimeAPI();
+  }, []);
+
+  const handleGetTotalBatchesByTimeAPI = async () => {
+    const stats = await getTotalBatchesByTimeAPI();
+    setChartData(stats.data);
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6">
+    <>
       {/* Tổng quan */}
-      <div className="grid lg:grid-cols-4 grid-cols-2 text-center lg:text-left">
-        <div>
-          <p className="text-sm text-gray-500">Tổng số mẻ đã sản xuất</p>
-          <h2 className="text-3xl font-bold text-amber-700">
-            {totalBatches?.total ?? 0}
-          </h2>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Đang thực hiện</p>
-          <h2 className="text-3xl font-bold text-amber-700">
-            {totalBatches?.totalInProgress ?? 0}
-          </h2>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Đã hoàn thành</p>
-          <h2 className="text-3xl font-bold text-amber-700">
-            {totalBatches?.totalDone ?? 0}
-          </h2>
-        </div>
-        <div>
-          <p className="text-sm text-gray-500">Đã hủy</p>
-          <h2 className="text-3xl font-bold text-amber-700">
-            {totalBatches?.totalCancel ?? 0}
-          </h2>
-        </div>
+      <div className="grid grid-cols-1">
+        <Card className="w-full ">
+          <CardHeader className="flex items-center gap-2 space-y-0 border-b sm:flex-row">
+            <div className="grid flex-1 gap-1">
+              <CardTitle className="text-lg font-bold">Thông tin mẻ</CardTitle>
+              <CardDescription>
+                Hiển thị tổng số mẻ trong vòng 1 năm
+              </CardDescription>
+            </div>
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger
+                className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex"
+                aria-label="Select a value"
+              >
+                <SelectValue placeholder="Last 3 months" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="7d" className="rounded-lg">
+                  7 ngày trước
+                </SelectItem>
+                <SelectItem value="30d" className="rounded-lg">
+                  30 ngày trước
+                </SelectItem>
+                <SelectItem value="90d" className="rounded-lg">
+                  3 tháng trước
+                </SelectItem>
+                <SelectItem value="365d" className="rounded-lg">
+                  1 năm trước
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </CardHeader>
+          <CardContent>
+            <div className="grid lg:grid-cols-4 grid-cols-2 text-center  pb-5">
+              <div>
+                <p className="text-sm text-gray-500">Tổng số mẻ đã sản xuất</p>
+                <h2 className="text-3xl font-bold text-amber-700">
+                  {totalBatches?.total ?? 0}
+                </h2>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Đang thực hiện</p>
+                <h2 className="text-3xl font-bold text-amber-700">
+                  {totalBatches?.totalInProgress ?? 0}
+                </h2>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Đã hoàn thành</p>
+                <h2 className="text-3xl font-bold text-amber-700">
+                  {totalBatches?.totalDone ?? 0}
+                </h2>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Đã hủy</p>
+                <h2 className="text-3xl font-bold text-amber-700">
+                  {totalBatches?.totalCancel ?? 0}
+                </h2>
+              </div>
+            </div>
+            {/* Biểu đồ */}
+
+            <ChartContainer
+              config={chartConfig}
+              className="aspect-auto h-[250px] w-full"
+            >
+              <AreaChart data={filteredData}>
+                <defs>
+                  <linearGradient
+                    id="fillTotalBatches"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor="var(--chart-1)"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--chart-1)"
+                      stopOpacity={0.1}
+                    />
+                  </linearGradient>
+                  <linearGradient
+                    id="fillCancelledBatches"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor="var(--chart-2)"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--chart-2)"
+                      stopOpacity={0.1}
+                    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  minTickGap={32}
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    });
+                  }}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(value) => {
+                        return new Date(value).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        });
+                      }}
+                      indicator="dot"
+                    />
+                  }
+                />
+                <Area
+                  type="monotone"
+                  dataKey="totalBatches"
+                  stroke="var(--chart-1)"
+                  fill="url(#fillTotalBatches)"
+                  connectNulls
+                  isAnimationActive={false}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="cancelledBatches"
+                  stroke="var(--chart-2)"
+                  fill="url(#fillCancelledBatches)"
+                  connectNulls
+                  isAnimationActive={false}
+                />
+
+                <ChartLegend content={<ChartLegendContent />} />
+              </AreaChart>
+            </ChartContainer>
+          </CardContent>
+          <CardFooter className="flex-col gap-2">
+            <div className="flex w-full items-start gap-2 text-sm">
+              <div className="grid gap-2">
+                <div className="flex items-center gap-2 leading-none font-medium">
+                  Trending up by 5.2% this month
+                  <TrendingUp className="h-4 w-4" />
+                </div>
+                <div className="text-muted-foreground flex items-center gap-2 leading-none">
+                  January - June 2024
+                </div>
+              </div>
+            </div>
+          </CardFooter>
+        </Card>
       </div>
-      {/* Biểu đồ */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Biểu đồ sản xuất</h3>
-          <Select
-            onValueChange={(v) =>
-              setViewBy(v as "weekly" | "monthly" | "yearly")
-            }
-            defaultValue={viewBy}
-          >
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Xem theo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="weekly">Theo tuần</SelectItem>
-              <SelectItem value="monthly">Theo tháng</SelectItem>
-              <SelectItem value="yearly">Theo năm</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <ResponsiveContainer width="100%" height={260}>
-          <AreaChart
-            data={chartData[viewBy]}
-            margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
-          >
-            <defs>
-              <linearGradient id="fillArea" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.1} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="5 5" />
-            <XAxis dataKey="label" />
-            <YAxis allowDecimals={false} width={21} />
-            <Tooltip content={<CustomTooltip />} />
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="#f59e0b"
-              fill="url(#fillArea)"
-              strokeWidth={2}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+    </>
   );
 }

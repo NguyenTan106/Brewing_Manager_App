@@ -61,11 +61,15 @@ export default function UserManager() {
         handleGetAllUserAPI={handleGetAllUserAPI}
         setSelectedUser={setSelectedUser}
       />
-      <div className="flex justify-between items-center flex-wrap gap-2 mt-3">
-        <div className="grid grid-col-1 sm:grid-cols-2 gap-4 ">
-          <p className="text-3xl font-bold">Danh sách người dùng:</p>
-          <div className="relative w-full lg:w-[150%]">
-            <Search className="fixed translate-x-3 translate-y-3/5 h-4 w-4 text-muted-foreground" />
+
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p className="text-2xl sm:text-3xl font-bold whitespace-nowrap">
+          Danh sách người dùng:
+        </p>
+
+        <div className="relative w-full sm:w-72 flex gap-3">
+          <div>
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Tìm kiếm..."
@@ -74,8 +78,6 @@ export default function UserManager() {
               // onChange={(e) => setSearchItem(e.target.value)}
             />
           </div>
-        </div>
-        <div className="flex flex-row gap-5">
           <Button
             onClick={() => setShowAddNewUserModal(true)}
             title="Thêm nguyên liệu mới"

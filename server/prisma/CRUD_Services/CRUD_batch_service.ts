@@ -65,6 +65,78 @@ const getAllBatches = async (): Promise<{
   }
 };
 
+const getAllCompletedBatches = async (): Promise<{
+  message: string;
+  data: any;
+}> => {
+  try {
+    const data = await prisma.batch.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        batchIngredients: { include: { ingredient: true } },
+        recipe: {
+          include: {
+            recipeIngredients: { include: { ingredient: true } },
+          },
+        },
+        createdBy: {
+          select: {
+            username: true,
+            phone: true,
+            email: true,
+            fullname: true,
+            birthday: true,
+            branch: true,
+          },
+        },
+        batchSteps: true,
+        beerProduct: true, // Lấy thông tin beerProduct liên kết
+      },
+    });
+
+    // Đổi tên recipe nếu bị xóa
+    const validated = data.map((e) => ({
+      ...e,
+      recipe: {
+        ...e.recipe,
+        name: e.recipe?.isDeleted
+          ? `${e.recipe.name} (đã bị xóa)`
+          : e.recipe?.name,
+      },
+    }));
+
+    // Lọc batch hoàn thành & chưa có beerProduct
+    const filtered = validated.filter((batch) => {
+      const status = getBatchStatus(
+        batch.batchSteps,
+        batch.isCancelled ?? false
+      );
+      return status === "Đã hoàn thành" && batch.beerProduct === null;
+    });
+
+    if (filtered.length === 0) {
+      return {
+        message: "Không có mẻ hoàn thành chưa tạo BeerProduct",
+        data: [],
+      };
+    }
+
+    // Thêm status vào kết quả trả về
+    const result = filtered.map((batch) => ({
+      ...batch,
+      status: getBatchStatus(batch.batchSteps, batch.isCancelled ?? false),
+    }));
+
+    return {
+      message: "Thành công",
+      data: result,
+    };
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách mẻ nấu:", error);
+    throw new Error("Lỗi server khi truy xuất mẻ nấu");
+  }
+};
+
 const getBatchById = async (
   id: number
 ): Promise<{ message: string; data: any }> => {
@@ -618,4 +690,5 @@ export {
   getBatchPage,
   getBatchStepById,
   cancelBatchById,
+  getAllCompletedBatches,
 };
