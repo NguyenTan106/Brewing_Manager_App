@@ -22,3 +22,8 @@ export const getTotalBatchesByTimeAPI = async () => {
   const res = await axios.get(`${BASE_URL}/api/total-batches-by-time`);
   return res.data;
 };
+
+export const getBatchSummaryByDateRangeAPI = async () => {
+  const res = await axios.get(`${BASE_URL}/api/batch-summary-by-date-range`);
+  return res.data;
+};

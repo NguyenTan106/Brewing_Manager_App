@@ -28,6 +28,7 @@ import {
   updateFeedbackBatchStepController,
   getBatchStepByIdController,
   getAllCompletedBatchesController,
+  getBatchSummaryByDateRangeController,
 } from "./routes/api_batch";
 
 import {
@@ -80,6 +81,7 @@ import {
   getBeerProductByIdController,
   updateBeerProductByIdController,
   deleteBeerProductByIdController,
+  getTotalBeerProductsController,
 } from "./routes/api_beer_product";
 
 import {
@@ -130,6 +132,7 @@ app.use("/api", getTotalBatchesByTimeController);
 app.use("/api", updateFeedbackBatchStepController);
 app.use("/api", getBatchStepByIdController);
 app.use("/api", getAllCompletedBatchesController);
+app.use("/api", getBatchSummaryByDateRangeController);
 
 //recipe
 app.use("/api", getAllRecipesController);
@@ -177,6 +180,7 @@ app.use("/api", getAllBeerProductsController);
 app.use("/api", getBeerProductByIdController);
 app.use("/api", updateBeerProductByIdController);
 app.use("/api", deleteBeerProductByIdController);
+app.use("/api", getTotalBeerProductsController);
 
 // product
 app.use("/api", createNewProductController);
@@ -184,6 +188,18 @@ app.use("/api", getAllProductsController);
 app.use("/api", getProductByIdController);
 app.use("/api", updateProductByIdController);
 app.use("/api", deleteProductByIdController);
+
+// test api
+import {
+  getTempFromESP32Controller,
+  getLastestTempFromESP32Controller,
+  postTempFromESP32Controller,
+  getAllTempsController,
+} from "./routes/test/test_api";
+app.use("/api", getTempFromESP32Controller);
+app.use("/api", getLastestTempFromESP32Controller);
+app.use("/api", postTempFromESP32Controller);
+app.use("/api", getAllTempsController);
 
 app.listen(PORT, () => {
   console.log(`Brewing Manager backend running at http://localhost:${PORT}`);

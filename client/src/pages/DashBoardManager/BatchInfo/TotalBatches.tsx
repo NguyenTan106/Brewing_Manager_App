@@ -31,10 +31,35 @@ interface Props {
   totalBatches: TotalBatchesInfo | null;
 }
 
+const sampleChartData = [
+  { date: "2025-01-05", totalBatches: 12 },
+  { date: "2025-01-15", totalBatches: 18 },
+  { date: "2025-02-02", totalBatches: 20 },
+  { date: "2025-02-18", totalBatches: 25 },
+  { date: "2025-03-04", totalBatches: 30 },
+  { date: "2025-03-21", totalBatches: 28 },
+  { date: "2025-04-10", totalBatches: 35 },
+  { date: "2025-04-22", totalBatches: 31 },
+  { date: "2025-05-05", totalBatches: 40 },
+  { date: "2025-05-25", totalBatches: 42 },
+  { date: "2025-06-06", totalBatches: 50 },
+  { date: "2025-06-28", totalBatches: 55 },
+  { date: "2025-07-07", totalBatches: 45 },
+  { date: "2025-07-19", totalBatches: 48 },
+  { date: "2025-08-01", totalBatches: 60 },
+];
 const chartConfig = {
   totalBatches: {
     label: "Tổng số mẻ",
     color: "var(--chart-1)",
+  },
+  cancelledBatches: {
+    label: "Tổng số mẻ bị hủy",
+    color: "var(--chart-2)",
+  },
+  completedBatches: {
+    label: "Tổng số mẻ hoàn thành",
+    color: "var(--chart-3)",
   },
 } satisfies ChartConfig;
 
@@ -44,9 +69,7 @@ export function TotalBatches({ totalBatches }: Props) {
     { date: string; totalBatches: number }[]
   >([]);
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date);
-    const referenceDate = new Date();
+  const filteredData = (() => {
     let daysToSubtract = 0;
     if (timeRange === "365d") {
       daysToSubtract = 365;
@@ -57,10 +80,17 @@ export function TotalBatches({ totalBatches }: Props) {
     } else if (timeRange === "7d") {
       daysToSubtract = 7;
     }
+
+    const referenceDate = new Date();
     const startDate = new Date(referenceDate);
     startDate.setDate(startDate.getDate() - daysToSubtract);
-    return date >= startDate;
-  });
+    startDate.setHours(0, 0, 0, 0); // reset giờ
+
+    return chartData.filter((item) => {
+      const date = new Date(item.date);
+      return date >= startDate;
+    });
+  })();
 
   useEffect(() => {
     handleGetTotalBatchesByTimeAPI();
@@ -159,6 +189,24 @@ export function TotalBatches({ totalBatches }: Props) {
                       stopOpacity={0.1}
                     />
                   </linearGradient>
+                  <linearGradient
+                    id="fillCancelledBatches"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor="var(--chart-2)"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--chart-2)"
+                      stopOpacity={0.1}
+                    />
+                  </linearGradient>
                 </defs>
                 <CartesianGrid vertical={false} />
                 <XAxis
@@ -190,12 +238,22 @@ export function TotalBatches({ totalBatches }: Props) {
                   }
                 />
                 <Area
+                  type="monotone"
                   dataKey="totalBatches"
-                  type="natural"
-                  fill="url(#fillTotalBatches)"
                   stroke="var(--chart-1)"
-                  stackId="a"
+                  fill="url(#fillTotalBatches)"
+                  connectNulls
+                  isAnimationActive={false}
                 />
+                <Area
+                  type="monotone"
+                  dataKey="cancelledBatches"
+                  stroke="var(--chart-2)"
+                  fill="url(#fillCancelledBatches)"
+                  connectNulls
+                  isAnimationActive={false}
+                />
+
                 <ChartLegend content={<ChartLegendContent />} />
               </AreaChart>
             </ChartContainer>

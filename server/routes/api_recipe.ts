@@ -13,7 +13,7 @@ import {
   handleGetTotalRecipes,
   handleGetTop5RecipesMostUsed,
   handleGetTop5RecipesRecentlyUpdated,
-} from "../controllers/Report_Controllers/statistic_recipe_controler";
+} from "../controllers/Report_Controllers/statistic_recipe_controller";
 const getAllRecipesController = router.get("/recipes", handleGetAllRecipes);
 const getRecipeByIdController = router.get("/recipe/:id", handleGetRecipeById);
 const createRecipesController = router.post("/recipe", handleCreateRecipe);

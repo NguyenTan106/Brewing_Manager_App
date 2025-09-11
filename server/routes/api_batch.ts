@@ -14,6 +14,7 @@ import {
 } from "../controllers/CRUD_Controllers/CRUD_batch";
 
 import {
+  handleGetBatchSummaryByDateRange,
   handleGetTotalBatches,
   handleGetTotalBatchesByTime,
 } from "../controllers/Report_Controllers/statistic_batch_controller";
@@ -68,6 +69,11 @@ const getBatchStepByIdController = router.get(
   handleGetBatchStepById
 );
 
+const getBatchSummaryByDateRangeController = router.get(
+  "/batch-summary-by-date-range",
+  handleGetBatchSummaryByDateRange
+);
+
 export {
   getAllBatchesController,
   getBatchByIdController,
@@ -81,4 +87,5 @@ export {
   getBatchStepByIdController,
   cancelBatchByIdController,
   getAllCompletedBatchesController,
+  getBatchSummaryByDateRangeController,
 };

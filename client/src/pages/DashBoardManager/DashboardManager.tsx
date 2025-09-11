@@ -6,17 +6,7 @@ import { getTotalBatchesAPI } from "@/services/statistic_report/statistic_batch_
 import { getTotalIngredientsAPI } from "@/services/statistic_report/statistic_ingredient_API";
 import { getTotalRecipesAPI } from "@/services/statistic_report/statistic_recipe_API";
 import { type TotalBatchesInfo } from "@/services/statistic_report/statistic_batch_API";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
 
 export default function DashBoardManager() {
   const [totalBatches, setTotalBatches] = useState<TotalBatchesInfo | null>(

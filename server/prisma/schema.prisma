@@ -133,9 +133,18 @@ model Batch {
   batchIngredients BatchIngredient[]
   batchSteps       BatchStep[]
   beerProduct      BeerProduct?
+  TemperatureLog   TemperatureLog[]
 
   @@index([recipeId])
   @@index([createdById])
+}
+
+model TemperatureLog {
+  id          Int      @id @default(autoincrement())
+  batch       Batch    @relation(fields: [batchId], references: [id])
+  batchId     Int
+  temperature Float
+  timestamp   DateTime @default(now())
 }
 
 model BatchStep {
